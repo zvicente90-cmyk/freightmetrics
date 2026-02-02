@@ -571,7 +571,7 @@ def actualizar_datos_desde_apis():
     
     # 1. BTS Border Crossing Data
     try:
-        st.info("🌐 Consultando BTS...")
+        st.info("🌐 Consultando BTS Border Crossing Data...")
         bts_url = "https://data.bts.gov/resource/keg4-3bc2.json"
         params = {
             "$limit": 100,
@@ -584,18 +584,37 @@ def actualizar_datos_desde_apis():
         
         if response.status_code == 200:
             bts_data = response.json()
-            if bts_data:
+            if bts_data and len(bts_data) > 0:
                 df_bts = pd.DataFrame(bts_data)
-                df_aduanas = df_bts.groupby('port_name').agg({
-                    'value': 'sum',
-                    'date': 'max'
-                }).reset_index()
-                df_aduanas.columns = ['Aduana', 'Contenedores', 'Fecha']
-                df_aduanas['Valor_USD'] = df_aduanas['Contenedores'].astype(int) * 2200
                 
-                datos_combinados.append(df_aduanas)
-                resultados['fuentes'].append('BTS')
-                st.success(f"✅ BTS: {len(df_aduanas)} aduanas")
+                # Convertir value a numérico
+                df_bts['value'] = pd.to_numeric(df_bts['value'], errors='coerce')
+                df_bts = df_bts.dropna(subset=['value'])
+                
+                if not df_bts.empty:
+                    df_aduanas = df_bts.groupby('port_name').agg({
+                        'value': 'sum',
+                        'date': 'max'
+                    }).reset_index()
+                    df_aduanas.columns = ['Aduana', 'Contenedores', 'Fecha']
+                    df_aduanas['Valor_USD'] = df_aduanas['Contenedores'].astype(int) * 2200
+                    
+                    datos_combinados.append(df_aduanas)
+                    resultados['fuentes'].append('BTS')
+                    st.success(f"✅ BTS: {len(df_aduanas)} aduanas, {df_aduanas['Contenedores'].sum():,.0f} cruces")
+                else:
+                    st.warning("⚠️ BTS: Datos recibidos pero sin valores válidos")
+            else:
+                st.warning("⚠️ BTS: No hay datos disponibles en este momento")
+        else:
+            resultados['errores'].append(f"BTS: HTTP {response.status_code}")
+            st.warning(f"⚠️ BTS: Error HTTP {response.status_code}")
+    except requests.exceptions.Timeout:
+        resultados['errores'].append("BTS: Timeout (>15s)")
+        st.warning("⚠️ BTS: Timeout - La API no respondió a tiempo")
+    except requests.exceptions.ConnectionError:
+        resultados['errores'].append("BTS: Error de conexión")
+        st.warning("⚠️ BTS: No se pudo conectar a la API")
     except Exception as e:
         resultados['errores'].append(f"BTS: {str(e)[:80]}")
         st.warning(f"⚠️ BTS: {str(e)[:80]}")
@@ -609,14 +628,74 @@ def actualizar_datos_desde_apis():
         
         if response.status_code == 200:
             cbp_data = response.json()
-            # Procesar datos de tiempos de espera
             if cbp_data:
-                st.success(f"✅ CBP Wait Times obtenidos")
+                st.success(f"✅ CBP Wait Times: Datos obtenidos")
                 resultados['fuentes'].append('CBP Wait Times')
+                # Nota: CBP proporciona tiempos de espera, no volúmenes
+                # Por ahora solo marcamos como fuente consultada
+            else:
+                st.warning("⚠️ CBP: No hay datos de tiempos de espera disponibles")
+        else:
+            resultados['errores'].append(f"CBP: HTTP {response.status_code}")
+            st.warning(f"⚠️ CBP: Error HTTP {response.status_code}")
+    except requests.exceptions.Timeout:
+        resultados['errores'].append("CBP: Timeout")
+        st.warning("⚠️ CBP: Timeout - La API no respondió")
+    except requests.exceptions.ConnectionError:
+        resultados['errores'].append("CBP: Error de conexión")
+        st.warning("⚠️ CBP: No se pudo conectar")
     except Exception as e:
         resultados['errores'].append(f"CBP: {str(e)[:80]}")
+        st.warning(f"⚠️ CBP: {str(e)[:80]}")
     
-    # 3. Guardar datos combinados
+    # 3. Si no hay datos de APIs, usar datos existentes o generar datos demo
+    if not datos_combinados:
+        st.warning("⚠️ No se obtuvieron datos nuevos de APIs externas")
+        st.info("💡 Generando datos de demostración basados en patrones históricos...")
+        
+        # Generar datos demo más realistas
+        aduanas_principales = [
+            'Nuevo Laredo III (Comercio Mundial)',
+            'Reynosa (Pharr)',
+            'Laredo - Colombia',
+            'Cd. Juárez (Paso del Norte/Zaragoza)',
+            'Tijuana (Mesa de Otay)',
+            'Matamoros (Gral. Ignacio Zaragoza)',
+            'Nogales (Mariposa)',
+            'Mexicali II (Nvo. Mexicali)',
+            'Piedras Negras',
+            'San Luis Río Colorado',
+            'Agua Prieta',
+            'Cd. Acuña'
+        ]
+        
+        fecha_actual = datetime.now().strftime('%Y-%m-%d')
+        datos_demo = []
+        
+        for aduana in aduanas_principales:
+            # Volúmenes basados en importancia del puerto
+            if 'Nuevo Laredo' in aduana:
+                base_contenedores = np.random.randint(95000, 105000)
+            elif 'Reynosa' in aduana or 'Juárez' in aduana:
+                base_contenedores = np.random.randint(70000, 85000)
+            elif 'Tijuana' in aduana or 'Laredo' in aduana:
+                base_contenedores = np.random.randint(55000, 70000)
+            else:
+                base_contenedores = np.random.randint(30000, 55000)
+            
+            datos_demo.append({
+                'Aduana': aduana,
+                'Contenedores': base_contenedores,
+                'Valor_USD': base_contenedores * 2200,
+                'Fecha': fecha_actual
+            })
+        
+        df_demo = pd.DataFrame(datos_demo)
+        datos_combinados.append(df_demo)
+        resultados['fuentes'].append('Datos Demo')
+        st.info(f"📊 Datos demo generados: {len(df_demo)} aduanas")
+    
+    # 4. Guardar datos combinados
     if datos_combinados:
         try:
             df_final = pd.concat(datos_combinados, ignore_index=True)
@@ -629,12 +708,13 @@ def actualizar_datos_desde_apis():
             resultados['exito'] = True
             resultados['registros'] = len(df_final)
             
-            st.success(f"💾 Datos guardados: {len(df_final)} registros en {csv_path}")
+            st.success(f"💾 Datos guardados: {len(df_final)} registros en CSV")
+            st.success(f"📊 Total contenedores: {df_final['Contenedores'].sum():,.0f}")
         except Exception as e:
             resultados['errores'].append(f"Error al guardar: {e}")
             st.error(f"❌ Error al guardar: {e}")
     else:
-        st.warning("⚠️ No se obtuvieron datos de ninguna API")
+        st.error("❌ No se pudo generar ningún dato")
     
     return resultados
 
