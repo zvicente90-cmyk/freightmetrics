@@ -1166,7 +1166,10 @@ def aduana_esta_abierta(aduana_nombre, fecha, hora=None):
                     else:
                         cierre = datetime.strptime(cierre_str.strip(), '%H:%M').time()
                     
-                    if apertura <= hora_actual <= cierre:
+                    # Debug: verificar comparación
+                    esta_abierta = apertura <= hora_actual <= cierre
+                    
+                    if esta_abierta:
                         return {
                             'abierta': True, 
                             'mensaje': f"Abierto - Horario especial por {info_festivo['nombre']} ({apertura_str.strip()} - {cierre_str.strip()})",
@@ -1179,7 +1182,12 @@ def aduana_esta_abierta(aduana_nombre, fecha, hora=None):
                             'festivo': info_festivo['nombre']
                         }
                 except Exception as e:
-                    pass
+                    # En caso de error, asumir cerrado por festivo
+                    return {
+                        'abierta': False,
+                        'mensaje': f"Cerrado por {info_festivo['nombre']}",
+                        'festivo': info_festivo['nombre']
+                    }
             else:
                 # Sin hora específica, retornar que hay horario reducido
                 return {
