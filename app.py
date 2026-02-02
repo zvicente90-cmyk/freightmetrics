@@ -1144,49 +1144,62 @@ def aduana_esta_abierta(aduana_nombre, fecha, hora=None):
     # Verificar si es día festivo
     if es_dia_festivo(fecha):
         info_festivo = obtener_info_festivo(fecha)
-        horario_festivo = horario['festivos']
+        dia_semana = fecha.weekday()  # 0=Lunes, 6=Domingo
         
-        # Si el horario de festivos es "Cerrado", retornar cerrado
-        if 'Cerrado' in horario_festivo:
-            return {
-                'abierta': False, 
-                'mensaje': f"Cerrado por {info_festivo['nombre']}",
-                'festivo': info_festivo['nombre']
-            }
+        # NUEVA LÓGICA: Solo aplicar horario festivo reducido si:
+        # 1. Es festivo binacional (MX/US) como Año Nuevo o Navidad, O
+        # 2. Es fin de semana
+        # Si es festivo de un solo país en día laboral, mantener horario normal
         
-        # Si el horario tiene formato de horas (ej: "08:00 - 14:00"), usar ese horario
-        if ' - ' in horario_festivo:
-            if hora_actual is not None:
-                try:
-                    apertura_str, cierre_str = horario_festivo.split(' - ')
-                    apertura = datetime.strptime(apertura_str.strip(), '%H:%M').time()
-                    
-                    if cierre_str.strip() == '00:00' or cierre_str.strip() == '24:00':
-                        cierre = datetime.strptime('23:59', '%H:%M').time()
-                    else:
-                        cierre = datetime.strptime(cierre_str.strip(), '%H:%M').time()
-                    
-                    if apertura <= hora_actual <= cierre:
-                        return {
-                            'abierta': True, 
-                            'mensaje': f"Abierto - Horario especial por {info_festivo['nombre']} ({apertura_str.strip()} - {cierre_str.strip()})",
-                            'festivo': info_festivo['nombre']
-                        }
-                    else:
-                        return {
-                            'abierta': False, 
-                            'mensaje': f"Cerrado - {info_festivo['nombre']} (Horario especial: {apertura_str.strip()} - {cierre_str.strip()})",
-                            'festivo': info_festivo['nombre']
-                        }
-                except Exception as e:
-                    pass
-            else:
-                # Sin hora específica, retornar que hay horario reducido
+        es_festivo_binacional = info_festivo['pais'] == 'MX/US'
+        es_fin_de_semana = dia_semana >= 5  # Sábado o Domingo
+        
+        # Solo aplicar horario festivo si es binacional o fin de semana
+        if es_festivo_binacional or es_fin_de_semana:
+            horario_festivo = horario['festivos']
+            
+            # Si el horario de festivos es "Cerrado", retornar cerrado
+            if 'Cerrado' in horario_festivo:
                 return {
-                    'abierta': True,
-                    'mensaje': f"Horario especial por {info_festivo['nombre']} ({horario_festivo})",
+                    'abierta': False, 
+                    'mensaje': f"Cerrado por {info_festivo['nombre']}",
                     'festivo': info_festivo['nombre']
                 }
+            
+            # Si el horario tiene formato de horas (ej: "08:00 - 14:00"), usar ese horario
+            if ' - ' in horario_festivo:
+                if hora_actual is not None:
+                    try:
+                        apertura_str, cierre_str = horario_festivo.split(' - ')
+                        apertura = datetime.strptime(apertura_str.strip(), '%H:%M').time()
+                        
+                        if cierre_str.strip() == '00:00' or cierre_str.strip() == '24:00':
+                            cierre = datetime.strptime('23:59', '%H:%M').time()
+                        else:
+                            cierre = datetime.strptime(cierre_str.strip(), '%H:%M').time()
+                        
+                        if apertura <= hora_actual <= cierre:
+                            return {
+                                'abierta': True, 
+                                'mensaje': f"Abierto - Horario especial por {info_festivo['nombre']} ({apertura_str.strip()} - {cierre_str.strip()})",
+                                'festivo': info_festivo['nombre']
+                            }
+                        else:
+                            return {
+                                'abierta': False, 
+                                'mensaje': f"Cerrado - {info_festivo['nombre']} (Horario especial: {apertura_str.strip()} - {cierre_str.strip()})",
+                                'festivo': info_festivo['nombre']
+                            }
+                    except Exception as e:
+                        pass
+                else:
+                    # Sin hora específica, retornar que hay horario reducido
+                    return {
+                        'abierta': True,
+                        'mensaje': f"Horario especial por {info_festivo['nombre']} ({horario_festivo})",
+                        'festivo': info_festivo['nombre']
+                    }
+        # Si es festivo de un solo país en día laboral, continuar con horario normal (no return aquí)
     
     # Verificar día de la semana
     dia_semana = fecha.weekday()  # 0=Lunes, 6=Domingo
