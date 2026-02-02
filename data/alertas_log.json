@@ -1,851 +1,5 @@
 [
   {
-    "timestamp": "2026-01-31T16:04:25.797203",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 85,
-    "tiempo_espera": 120,
-    "mensaje": "Saturación: 85% | Espera: 120 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:04:25.797203",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 72,
-    "tiempo_espera": 95,
-    "mensaje": "Saturación: 72% | Espera: 95 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:04:25.797203",
-    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 80,
-    "tiempo_espera": 110,
-    "mensaje": "Saturación: 80% | Espera: 110 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:04:25.797203",
-    "aduana": "Tijuana (Mesa de Otay)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 92,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 92% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:07:53.417499",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:07:53.417499",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:07:53.417499",
-    "aduana": "Tijuana (Mesa de Otay)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:07:53.417499",
-    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:07:53.417499",
-    "aduana": "Mexicali II (Nvo. Mexicali)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:07:53.417499",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:07:53.417499",
-    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 83,
-    "tiempo_espera": 125,
-    "mensaje": "Saturación: 83% | Espera: 125 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:07:53.417499",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:07:53.417499",
-    "aduana": "Piedras Negras",
-    "nivel": "🟠 ALTO",
-    "saturacion": 68,
-    "tiempo_espera": 102,
-    "mensaje": "Saturación: 68% | Espera: 102 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:00.158574",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:00.158574",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:00.158574",
-    "aduana": "Tijuana (Mesa de Otay)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:00.158574",
-    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:00.158574",
-    "aduana": "Mexicali II (Nvo. Mexicali)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:00.158574",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:00.158574",
-    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 83,
-    "tiempo_espera": 125,
-    "mensaje": "Saturación: 83% | Espera: 125 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:00.158574",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:00.158574",
-    "aduana": "Piedras Negras",
-    "nivel": "🟠 ALTO",
-    "saturacion": 68,
-    "tiempo_espera": 102,
-    "mensaje": "Saturación: 68% | Espera: 102 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:04.769683",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:04.769683",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:04.769683",
-    "aduana": "Tijuana (Mesa de Otay)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:04.769683",
-    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:04.769683",
-    "aduana": "Mexicali II (Nvo. Mexicali)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:04.769683",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:04.769683",
-    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 83,
-    "tiempo_espera": 125,
-    "mensaje": "Saturación: 83% | Espera: 125 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:04.769683",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:08:04.769683",
-    "aduana": "Piedras Negras",
-    "nivel": "🟠 ALTO",
-    "saturacion": 68,
-    "tiempo_espera": 102,
-    "mensaje": "Saturación: 68% | Espera: 102 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:42.476473",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 73,
-    "tiempo_espera": 56,
-    "mensaje": "Saturación: 73% | Espera: 56 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:42.476473",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🟠 ALTO",
-    "saturacion": 40,
-    "tiempo_espera": 105,
-    "mensaje": "Saturación: 40% | Espera: 105 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:42.476473",
-    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 89,
-    "tiempo_espera": 117,
-    "mensaje": "Saturación: 89% | Espera: 117 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:42.476473",
-    "aduana": "Tijuana (Mesa de Otay)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 47,
-    "tiempo_espera": 126,
-    "mensaje": "Saturación: 47% | Espera: 126 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:42.476473",
-    "aduana": "Mexicali II (Nvo. Mexicali)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 79,
-    "tiempo_espera": 46,
-    "mensaje": "Saturación: 79% | Espera: 46 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:42.476473",
-    "aduana": "Piedras Negras",
-    "nivel": "🟠 ALTO",
-    "saturacion": 46,
-    "tiempo_espera": 111,
-    "mensaje": "Saturación: 46% | Espera: 111 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:52.692229",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 39,
-    "tiempo_espera": 131,
-    "mensaje": "Saturación: 39% | Espera: 131 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:52.692229",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 39,
-    "tiempo_espera": 135,
-    "mensaje": "Saturación: 39% | Espera: 135 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:52.692229",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 40,
-    "tiempo_espera": 99,
-    "mensaje": "Saturación: 40% | Espera: 99 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:52.692229",
-    "aduana": "Agua Prieta",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 68,
-    "tiempo_espera": 120,
-    "mensaje": "Saturación: 68% | Espera: 120 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:15:52.692229",
-    "aduana": "Cd. Acuña",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 88,
-    "tiempo_espera": 44,
-    "mensaje": "Saturación: 88% | Espera: 44 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:29.866466",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 45,
-    "tiempo_espera": 93,
-    "mensaje": "Saturación: 45% | Espera: 93 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:29.866466",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🟠 ALTO",
-    "saturacion": 79,
-    "tiempo_espera": 30,
-    "mensaje": "Saturación: 79% | Espera: 30 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:29.866466",
-    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 93,
-    "tiempo_espera": 129,
-    "mensaje": "Saturación: 93% | Espera: 129 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:29.866466",
-    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 93,
-    "tiempo_espera": 35,
-    "mensaje": "Saturación: 93% | Espera: 35 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:29.866466",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 81,
-    "tiempo_espera": 90,
-    "mensaje": "Saturación: 81% | Espera: 90 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:29.866466",
-    "aduana": "Piedras Negras",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 90,
-    "tiempo_espera": 57,
-    "mensaje": "Saturación: 90% | Espera: 57 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:29.866466",
-    "aduana": "San Luis Río Colorado",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 63,
-    "tiempo_espera": 138,
-    "mensaje": "Saturación: 63% | Espera: 138 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:29.866466",
-    "aduana": "Agua Prieta",
-    "nivel": "🟠 ALTO",
-    "saturacion": 61,
-    "tiempo_espera": 108,
-    "mensaje": "Saturación: 61% | Espera: 108 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:29.866466",
-    "aduana": "Cd. Acuña",
-    "nivel": "🟠 ALTO",
-    "saturacion": 70,
-    "tiempo_espera": 46,
-    "mensaje": "Saturación: 70% | Espera: 46 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:37.494846",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:37.494846",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:37.494846",
-    "aduana": "Tijuana (Mesa de Otay)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:37.494846",
-    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:37.494846",
-    "aduana": "Mexicali II (Nvo. Mexicali)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:37.494846",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:37.494846",
-    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 83,
-    "tiempo_espera": 125,
-    "mensaje": "Saturación: 83% | Espera: 125 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:37.494846",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:18:37.494846",
-    "aduana": "Piedras Negras",
-    "nivel": "🟠 ALTO",
-    "saturacion": 68,
-    "tiempo_espera": 102,
-    "mensaje": "Saturación: 68% | Espera: 102 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:18.265263",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 85,
-    "tiempo_espera": 114,
-    "mensaje": "Saturación: 85% | Espera: 114 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:18.265263",
-    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 65,
-    "tiempo_espera": 92,
-    "mensaje": "Saturación: 65% | Espera: 92 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:18.265263",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 87,
-    "tiempo_espera": 84,
-    "mensaje": "Saturación: 87% | Espera: 84 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:18.265263",
-    "aduana": "Mexicali II (Nvo. Mexicali)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 78,
-    "tiempo_espera": 42,
-    "mensaje": "Saturación: 78% | Espera: 42 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:18.265263",
-    "aduana": "Agua Prieta",
-    "nivel": "🟠 ALTO",
-    "saturacion": 75,
-    "tiempo_espera": 87,
-    "mensaje": "Saturación: 75% | Espera: 87 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:18.265263",
-    "aduana": "Cd. Acuña",
-    "nivel": "🟠 ALTO",
-    "saturacion": 76,
-    "tiempo_espera": 92,
-    "mensaje": "Saturación: 76% | Espera: 92 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:24.731361",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:24.731361",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:24.731361",
-    "aduana": "Tijuana (Mesa de Otay)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:24.731361",
-    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:24.731361",
-    "aduana": "Mexicali II (Nvo. Mexicali)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:24.731361",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:24.731361",
-    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 83,
-    "tiempo_espera": 125,
-    "mensaje": "Saturación: 83% | Espera: 125 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:24.731361",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:20:24.731361",
-    "aduana": "Piedras Negras",
-    "nivel": "🟠 ALTO",
-    "saturacion": 68,
-    "tiempo_espera": 102,
-    "mensaje": "Saturación: 68% | Espera: 102 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:23.603190",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 83,
-    "tiempo_espera": 71,
-    "mensaje": "Saturación: 83% | Espera: 71 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:23.603190",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 90,
-    "tiempo_espera": 138,
-    "mensaje": "Saturación: 90% | Espera: 138 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:23.603190",
-    "aduana": "Tijuana (Mesa de Otay)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 51,
-    "tiempo_espera": 123,
-    "mensaje": "Saturación: 51% | Espera: 123 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:23.603190",
-    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 58,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 58% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:23.603190",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🟠 ALTO",
-    "saturacion": 75,
-    "tiempo_espera": 66,
-    "mensaje": "Saturación: 75% | Espera: 66 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:23.603190",
-    "aduana": "Mexicali II (Nvo. Mexicali)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 135,
-    "mensaje": "Saturación: 95% | Espera: 135 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:23.603190",
-    "aduana": "Piedras Negras",
-    "nivel": "🟠 ALTO",
-    "saturacion": 72,
-    "tiempo_espera": 48,
-    "mensaje": "Saturación: 72% | Espera: 48 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:23.603190",
-    "aduana": "San Luis Río Colorado",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 43,
-    "tiempo_espera": 137,
-    "mensaje": "Saturación: 43% | Espera: 137 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:23.603190",
-    "aduana": "Agua Prieta",
-    "nivel": "🟠 ALTO",
-    "saturacion": 80,
-    "tiempo_espera": 106,
-    "mensaje": "Saturación: 80% | Espera: 106 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:28.527672",
-    "aduana": "Nuevo Laredo III (Comercio Mundial)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:28.527672",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:28.527672",
-    "aduana": "Tijuana (Mesa de Otay)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:28.527672",
-    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:28.527672",
-    "aduana": "Mexicali II (Nvo. Mexicali)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:28.527672",
-    "aduana": "Nogales (Mariposa)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:28.527672",
-    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 83,
-    "tiempo_espera": 125,
-    "mensaje": "Saturación: 83% | Espera: 125 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:28.527672",
-    "aduana": "Reynosa (Pharr)",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 95,
-    "tiempo_espera": 140,
-    "mensaje": "Saturación: 95% | Espera: 140 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-01-31T16:26:28.527672",
-    "aduana": "Piedras Negras",
-    "nivel": "🟠 ALTO",
-    "saturacion": 68,
-    "tiempo_espera": 102,
-    "mensaje": "Saturación: 68% | Espera: 102 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-01-31T16:28:59.255974",
-    "aduana": "Laredo - Colombia",
-    "nivel": "🟠 ALTO",
-    "saturacion": 70,
-    "tiempo_espera": 39,
-    "mensaje": "Saturación: 70% | Espera: 39 min",
-    "icono": "🟠"
-  },
-  {
     "timestamp": "2026-01-31T16:28:59.255974",
     "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
     "nivel": "🟠 ALTO",
@@ -897,6 +51,852 @@
     "saturacion": 74,
     "tiempo_espera": 74,
     "mensaje": "Saturación: 74% | Espera: 74 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:34.605318",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 62,
+    "tiempo_espera": 115,
+    "mensaje": "Saturación: 62% | Espera: 115 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:34.605318",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🟠 ALTO",
+    "saturacion": 63,
+    "tiempo_espera": 108,
+    "mensaje": "Saturación: 63% | Espera: 108 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:34.605318",
+    "aduana": "Tijuana (Mesa de Otay)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 74,
+    "tiempo_espera": 93,
+    "mensaje": "Saturación: 74% | Espera: 93 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:34.605318",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 35,
+    "tiempo_espera": 119,
+    "mensaje": "Saturación: 35% | Espera: 119 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:34.605318",
+    "aduana": "Piedras Negras",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 36,
+    "tiempo_espera": 132,
+    "mensaje": "Saturación: 36% | Espera: 132 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:58.595636",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:58.595636",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:58.595636",
+    "aduana": "Tijuana (Mesa de Otay)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:58.595636",
+    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:58.595636",
+    "aduana": "Mexicali II (Nvo. Mexicali)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:58.595636",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:58.595636",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T08:55:58.595636",
+    "aduana": "Piedras Negras",
+    "nivel": "🟠 ALTO",
+    "saturacion": 68,
+    "tiempo_espera": 102,
+    "mensaje": "Saturación: 68% | Espera: 102 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:23.194440",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 71,
+    "tiempo_espera": 119,
+    "mensaje": "Saturación: 71% | Espera: 119 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:23.194440",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 92,
+    "tiempo_espera": 122,
+    "mensaje": "Saturación: 92% | Espera: 122 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:23.194440",
+    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 35,
+    "tiempo_espera": 99,
+    "mensaje": "Saturación: 35% | Espera: 99 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:23.194440",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 83,
+    "tiempo_espera": 106,
+    "mensaje": "Saturación: 83% | Espera: 106 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:23.194440",
+    "aduana": "Mexicali II (Nvo. Mexicali)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 73,
+    "tiempo_espera": 36,
+    "mensaje": "Saturación: 73% | Espera: 36 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:23.194440",
+    "aduana": "Cd. Acuña",
+    "nivel": "🟠 ALTO",
+    "saturacion": 80,
+    "tiempo_espera": 69,
+    "mensaje": "Saturación: 80% | Espera: 69 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:36.213979",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 74,
+    "tiempo_espera": 77,
+    "mensaje": "Saturación: 74% | Espera: 77 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:36.213979",
+    "aduana": "Tijuana (Mesa de Otay)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 71,
+    "tiempo_espera": 135,
+    "mensaje": "Saturación: 71% | Espera: 135 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:36.213979",
+    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 75,
+    "tiempo_espera": 48,
+    "mensaje": "Saturación: 75% | Espera: 48 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:36.213979",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 87,
+    "mensaje": "Saturación: 95% | Espera: 87 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:36.213979",
+    "aduana": "Mexicali II (Nvo. Mexicali)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 73,
+    "tiempo_espera": 49,
+    "mensaje": "Saturación: 73% | Espera: 49 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:04:36.213979",
+    "aduana": "Piedras Negras",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 71,
+    "tiempo_espera": 123,
+    "mensaje": "Saturación: 71% | Espera: 123 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:33:42.982709",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 92,
+    "tiempo_espera": 93,
+    "mensaje": "Saturación: 92% | Espera: 93 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:33:42.982709",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 44,
+    "tiempo_espera": 122,
+    "mensaje": "Saturación: 44% | Espera: 122 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:33:42.982709",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🟠 ALTO",
+    "saturacion": 73,
+    "tiempo_espera": 46,
+    "mensaje": "Saturación: 73% | Espera: 46 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:33:42.982709",
+    "aduana": "Tijuana (Mesa de Otay)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 49,
+    "tiempo_espera": 108,
+    "mensaje": "Saturación: 49% | Espera: 108 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:33:42.982709",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 83,
+    "tiempo_espera": 64,
+    "mensaje": "Saturación: 83% | Espera: 64 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:33:42.982709",
+    "aduana": "Mexicali II (Nvo. Mexicali)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 92,
+    "tiempo_espera": 70,
+    "mensaje": "Saturación: 92% | Espera: 70 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:33:42.982709",
+    "aduana": "Piedras Negras",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 46,
+    "tiempo_espera": 136,
+    "mensaje": "Saturación: 46% | Espera: 136 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:33:42.982709",
+    "aduana": "Cd. Acuña",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 91,
+    "tiempo_espera": 42,
+    "mensaje": "Saturación: 91% | Espera: 42 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:34:06.119815",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:34:06.119815",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:34:06.119815",
+    "aduana": "Tijuana (Mesa de Otay)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:34:06.119815",
+    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:34:06.119815",
+    "aduana": "Mexicali II (Nvo. Mexicali)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:34:06.119815",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:34:06.119815",
+    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 83,
+    "tiempo_espera": 125,
+    "mensaje": "Saturación: 83% | Espera: 125 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:34:06.119815",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 140,
+    "mensaje": "Saturación: 95% | Espera: 140 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:34:06.119815",
+    "aduana": "Piedras Negras",
+    "nivel": "🟠 ALTO",
+    "saturacion": 68,
+    "tiempo_espera": 102,
+    "mensaje": "Saturación: 68% | Espera: 102 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 80,
+    "tiempo_espera": 111,
+    "mensaje": "Saturación: 80% | Espera: 111 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 89,
+    "tiempo_espera": 78,
+    "mensaje": "Saturación: 89% | Espera: 78 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 72,
+    "tiempo_espera": 122,
+    "mensaje": "Saturación: 72% | Espera: 122 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 86,
+    "tiempo_espera": 50,
+    "mensaje": "Saturación: 86% | Espera: 50 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Tijuana (Mesa de Otay)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 79,
+    "tiempo_espera": 51,
+    "mensaje": "Saturación: 79% | Espera: 51 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 75,
+    "tiempo_espera": 48,
+    "mensaje": "Saturación: 75% | Espera: 48 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 61,
+    "tiempo_espera": 129,
+    "mensaje": "Saturación: 61% | Espera: 129 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Mexicali II (Nvo. Mexicali)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 42,
+    "tiempo_espera": 91,
+    "mensaje": "Saturación: 42% | Espera: 91 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Piedras Negras",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 90,
+    "tiempo_espera": 60,
+    "mensaje": "Saturación: 90% | Espera: 60 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:40:14.470977",
+    "aduana": "Cd. Acuña",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 79,
+    "tiempo_espera": 120,
+    "mensaje": "Saturación: 79% | Espera: 120 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:41:34.161691",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 120,
+    "mensaje": "Saturación: 95% | Espera: 120 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:41:34.161691",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 102,
+    "mensaje": "Saturación: 95% | Espera: 102 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:41:34.161691",
+    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 98,
+    "mensaje": "Saturación: 95% | Espera: 98 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:41:34.161691",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 94,
+    "tiempo_espera": 79,
+    "mensaje": "Saturación: 94% | Espera: 79 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:41:34.161691",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 120,
+    "mensaje": "Saturación: 95% | Espera: 120 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:27.550454",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 95,
+    "mensaje": "Saturación: 95% | Espera: 95 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:27.550454",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🟠 ALTO",
+    "saturacion": 77,
+    "tiempo_espera": 57,
+    "mensaje": "Saturación: 77% | Espera: 57 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:27.550454",
+    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 85,
+    "mensaje": "Saturación: 95% | Espera: 85 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:27.550454",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 54,
+    "mensaje": "Saturación: 95% | Espera: 54 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:27.550454",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 96,
+    "mensaje": "Saturación: 95% | Espera: 96 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:46.655694",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 71,
+    "mensaje": "Saturación: 95% | Espera: 71 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:46.655694",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 85,
+    "mensaje": "Saturación: 95% | Espera: 85 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:46.655694",
+    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 90,
+    "mensaje": "Saturación: 95% | Espera: 90 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:46.655694",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 70,
+    "tiempo_espera": 59,
+    "mensaje": "Saturación: 70% | Espera: 59 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:46.655694",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 111,
+    "mensaje": "Saturación: 95% | Espera: 111 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:52.395453",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 120,
+    "mensaje": "Saturación: 95% | Espera: 120 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:52.395453",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 85,
+    "tiempo_espera": 74,
+    "mensaje": "Saturación: 85% | Espera: 74 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:52.395453",
+    "aduana": "Tijuana (Mesa de Otay)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 72,
+    "tiempo_espera": 58,
+    "mensaje": "Saturación: 72% | Espera: 58 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:52.395453",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 83,
+    "tiempo_espera": 48,
+    "mensaje": "Saturación: 83% | Espera: 48 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:43:52.395453",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 103,
+    "mensaje": "Saturación: 95% | Espera: 103 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:44:16.185544",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 120,
+    "mensaje": "Saturación: 95% | Espera: 120 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:44:16.185544",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🟠 ALTO",
+    "saturacion": 78,
+    "tiempo_espera": 63,
+    "mensaje": "Saturación: 78% | Espera: 63 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:44:16.185544",
+    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 85,
+    "mensaje": "Saturación: 95% | Espera: 85 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:44:16.185544",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 84,
+    "mensaje": "Saturación: 95% | Espera: 84 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:44:16.185544",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 120,
+    "mensaje": "Saturación: 95% | Espera: 120 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:22.607854",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 94,
+    "tiempo_espera": 75,
+    "mensaje": "Saturación: 94% | Espera: 75 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:22.607854",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 68,
+    "tiempo_espera": 133,
+    "mensaje": "Saturación: 68% | Espera: 133 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:22.607854",
+    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 64,
+    "tiempo_espera": 103,
+    "mensaje": "Saturación: 64% | Espera: 103 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:22.607854",
+    "aduana": "Tijuana (Mesa de Otay)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 57,
+    "tiempo_espera": 123,
+    "mensaje": "Saturación: 57% | Espera: 123 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:22.607854",
+    "aduana": "Matamoros (Gral. Ignacio Zaragoza)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 51,
+    "tiempo_espera": 100,
+    "mensaje": "Saturación: 51% | Espera: 100 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:22.607854",
+    "aduana": "Piedras Negras",
+    "nivel": "🟠 ALTO",
+    "saturacion": 84,
+    "tiempo_espera": 47,
+    "mensaje": "Saturación: 84% | Espera: 47 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:29.674084",
+    "aduana": "Nuevo Laredo III (Comercio Mundial)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 120,
+    "mensaje": "Saturación: 95% | Espera: 120 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:29.674084",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 90,
+    "tiempo_espera": 52,
+    "mensaje": "Saturación: 90% | Espera: 52 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:29.674084",
+    "aduana": "Tijuana (Mesa de Otay)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 78,
+    "tiempo_espera": 81,
+    "mensaje": "Saturación: 78% | Espera: 81 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:29.674084",
+    "aduana": "Cd. Juárez (Paso del Norte/Zaragoza)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 75,
+    "tiempo_espera": 63,
+    "mensaje": "Saturación: 75% | Espera: 63 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:29.674084",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 82,
+    "tiempo_espera": 55,
+    "mensaje": "Saturación: 82% | Espera: 55 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:52:29.674084",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95,
+    "tiempo_espera": 120,
+    "mensaje": "Saturación: 95% | Espera: 120 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:57:27.555926",
+    "aduana": "Reynosa (Pharr)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 70,
+    "tiempo_espera": 92,
+    "mensaje": "Saturación: 70% | Espera: 92 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:57:27.555926",
+    "aduana": "Laredo - Colombia",
+    "nivel": "🟠 ALTO",
+    "saturacion": 51,
+    "tiempo_espera": 92,
+    "mensaje": "Saturación: 51% | Espera: 92 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:57:27.555926",
+    "aduana": "Nogales (Mariposa)",
+    "nivel": "🟠 ALTO",
+    "saturacion": 75,
+    "tiempo_espera": 87,
+    "mensaje": "Saturación: 75% | Espera: 87 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-02-02T09:57:27.555926",
+    "aduana": "Mexicali II (Nvo. Mexicali)",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 75,
+    "tiempo_espera": 131,
+    "mensaje": "Saturación: 75% | Espera: 131 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-02-02T09:57:27.555926",
+    "aduana": "Cd. Acuña",
+    "nivel": "🟠 ALTO",
+    "saturacion": 38,
+    "tiempo_espera": 105,
+    "mensaje": "Saturación: 38% | Espera: 105 min",
     "icono": "🟠"
   }
 ]

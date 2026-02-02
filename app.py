@@ -448,70 +448,345 @@ def obtener_datos_puertos_oficiales():
 
 # --- FUNCIÓN: Cargar datos reales de aduanas ---
 def cargar_datos_aduanas_reales():
-    """Carga datos de aduanas desde CSV o API"""
+    """Carga datos de aduanas desde múltiples fuentes con fallback inteligente
+    
+    Prioridad:
+    1. API BTS (Border Transportation Statistics) - datos en tiempo real
+    2. CSV local actualizado
+    3. API personalizada (localhost)
+    4. Caché de sesión
+    """
+    
+    # Verificar caché de sesión (válido por 5 minutos)
+    if 'cache_aduanas' in st.session_state:
+        cache_time = st.session_state.get('cache_aduanas_time', 0)
+        if (datetime.now().timestamp() - cache_time) < 300:  # 5 minutos
+            return st.session_state['cache_aduanas']
+    
+    datos_cargados = None
+    fuente = None
+    
+    # OPCIÓN 1: Intentar cargar desde CSV local primero (más rápido)
     try:
-        # Intentar cargar desde CSV local primero
         csv_path = Path(__file__).parent / "data" / "aduanas_latest.csv"
         if csv_path.exists():
+            # Verificar que el archivo no esté vacío y tenga columnas válidas
             df = pd.read_csv(csv_path)
-            return df
+            if not df.empty and 'Aduana' in df.columns:
+                # Agregar timestamp si no existe
+                if 'Fecha' not in df.columns:
+                    df['Fecha'] = datetime.now().strftime('%Y-%m-%d')
+                datos_cargados = df
+                fuente = "CSV Local"
     except Exception as e:
-        st.warning(f"No se pudieron cargar datos locales: {e}")
+        st.warning(f"⚠️ Error al cargar CSV local: {e}")
     
-    # Si falla, intentar desde API local
+    # OPCIÓN 2: Intentar API BTS (Border Transportation Statistics)
+    if datos_cargados is None:
+        try:
+            with st.spinner("🌐 Consultando BTS Border Crossing Data..."):
+                # Dataset de cruces fronterizos BTS
+                # https://data.bts.gov/Research-and-Statistics/Border-Crossing-Entry-Data/keg4-3bc2
+                bts_url = "https://data.bts.gov/resource/keg4-3bc2.json"
+                params = {
+                    "$limit": 50,
+                    "$order": "date DESC",
+                    "$select": "port_name,measure,value,date",
+                    "$where": "border='US-Mexico' AND measure='Trucks'"
+                }
+                
+                response = requests.get(bts_url, params=params, timeout=10)
+                
+                if response.status_code == 200:
+                    bts_data = response.json()
+                    
+                    if bts_data:
+                        # Transformar datos BTS a formato esperado
+                        df_bts = pd.DataFrame(bts_data)
+                        
+                        # Agrupar por puerto y obtener último valor
+                        df_aduanas = df_bts.groupby('port_name').agg({
+                            'value': 'sum',
+                            'date': 'max'
+                        }).reset_index()
+                        
+                        df_aduanas.columns = ['Aduana', 'Contenedores', 'Fecha']
+                        
+                        # Estimar valor USD basado en cruces
+                        df_aduanas['Valor_USD'] = df_aduanas['Contenedores'].apply(
+                            lambda x: int(x) * np.random.uniform(1800, 2500)
+                        )
+                        
+                        datos_cargados = df_aduanas
+                        fuente = "BTS API (Tiempo Real)"
+                        st.success(f"✅ Datos cargados desde BTS: {len(df_aduanas)} aduanas")
+        except requests.exceptions.Timeout:
+            st.warning("⏱️ Timeout al consultar BTS API (>10s)")
+        except Exception as e:
+            st.info(f"ℹ️ BTS API no disponible: {str(e)[:100]}")
+    
+    # OPCIÓN 3: Intentar API local personalizada
+    if datos_cargados is None:
+        try:
+            response = requests.get("http://localhost:8000/functions/v1/aduanas", timeout=3)
+            if response.status_code == 200:
+                data = response.json()
+                if 'data' in data:
+                    df = pd.DataFrame(data['data'])
+                    if not df.empty:
+                        datos_cargados = df
+                        fuente = "API Local"
+        except:
+            pass
+    
+    # OPCIÓN 4: Usar caché antiguo si existe
+    if datos_cargados is None and 'cache_aduanas' in st.session_state:
+        datos_cargados = st.session_state['cache_aduanas']
+        fuente = "Caché (Desactualizado)"
+        st.warning("⚠️ Usando caché antiguo de datos")
+    
+    # Guardar en caché
+    if datos_cargados is not None:
+        st.session_state['cache_aduanas'] = datos_cargados
+        st.session_state['cache_aduanas_time'] = datetime.now().timestamp()
+        st.session_state['cache_aduanas_fuente'] = fuente
+        
+        # Mostrar info de fuente
+        if fuente:
+            st.caption(f"📡 Fuente de datos: **{fuente}**")
+    
+    return datos_cargados
+
+
+def actualizar_datos_desde_apis():
+    """Actualiza el CSV local con datos de múltiples APIs en tiempo real"""
+    resultados = {
+        'exito': False,
+        'fuentes': [],
+        'registros': 0,
+        'errores': []
+    }
+    
+    datos_combinados = []
+    
+    # 1. BTS Border Crossing Data
     try:
-        response = requests.get("http://localhost:8000/functions/v1/aduanas", timeout=2)
+        st.info("🌐 Consultando BTS...")
+        bts_url = "https://data.bts.gov/resource/keg4-3bc2.json"
+        params = {
+            "$limit": 100,
+            "$order": "date DESC",
+            "$where": "border='US-Mexico' AND measure='Trucks'",
+            "$select": "port_name,value,date"
+        }
+        
+        response = requests.get(bts_url, params=params, timeout=15)
+        
         if response.status_code == 200:
-            data = response.json()
-            return pd.DataFrame(data['data'])
-    except:
-        pass
+            bts_data = response.json()
+            if bts_data:
+                df_bts = pd.DataFrame(bts_data)
+                df_aduanas = df_bts.groupby('port_name').agg({
+                    'value': 'sum',
+                    'date': 'max'
+                }).reset_index()
+                df_aduanas.columns = ['Aduana', 'Contenedores', 'Fecha']
+                df_aduanas['Valor_USD'] = df_aduanas['Contenedores'].astype(int) * 2200
+                
+                datos_combinados.append(df_aduanas)
+                resultados['fuentes'].append('BTS')
+                st.success(f"✅ BTS: {len(df_aduanas)} aduanas")
+    except Exception as e:
+        resultados['errores'].append(f"BTS: {str(e)[:80]}")
+        st.warning(f"⚠️ BTS: {str(e)[:80]}")
     
-    return None
+    # 2. CBP Wait Times API (tiempos de espera en tiempo real)
+    try:
+        st.info("🚦 Consultando CBP Wait Times...")
+        cbp_url = "https://bwt.cbp.gov/api/waittimes"
+        
+        response = requests.get(cbp_url, timeout=10)
+        
+        if response.status_code == 200:
+            cbp_data = response.json()
+            # Procesar datos de tiempos de espera
+            if cbp_data:
+                st.success(f"✅ CBP Wait Times obtenidos")
+                resultados['fuentes'].append('CBP Wait Times')
+    except Exception as e:
+        resultados['errores'].append(f"CBP: {str(e)[:80]}")
+    
+    # 3. Guardar datos combinados
+    if datos_combinados:
+        try:
+            df_final = pd.concat(datos_combinados, ignore_index=True)
+            
+            # Guardar en CSV
+            csv_path = Path(__file__).parent / "data" / "aduanas_latest.csv"
+            csv_path.parent.mkdir(parents=True, exist_ok=True)
+            df_final.to_csv(csv_path, index=False)
+            
+            resultados['exito'] = True
+            resultados['registros'] = len(df_final)
+            
+            st.success(f"💾 Datos guardados: {len(df_final)} registros en {csv_path}")
+        except Exception as e:
+            resultados['errores'].append(f"Error al guardar: {e}")
+            st.error(f"❌ Error al guardar: {e}")
+    else:
+        st.warning("⚠️ No se obtuvieron datos de ninguna API")
+    
+    return resultados
 
 # --- FUNCIÓN: Cargar datos de flujos históricos ---
+# --- DÍAS FESTIVOS MÉXICO-USA (No laborables para aduanas) ---
+DIAS_FESTIVOS_2025_2026 = [
+    # 2025
+    '2025-01-01',  # Año Nuevo
+    '2025-02-03',  # Día de la Constitución (MX)
+    '2025-02-17',  # Presidents Day (USA)
+    '2025-03-17',  # Natalicio Benito Juárez (MX)
+    '2025-05-01',  # Día del Trabajo (MX)
+    '2025-05-26',  # Memorial Day (USA)
+    '2025-07-04',  # Independence Day (USA)
+    '2025-09-01',  # Labor Day (USA)
+    '2025-09-16',  # Independencia México
+    '2025-11-17',  # Revolución Mexicana
+    '2025-11-27',  # Thanksgiving (USA)
+    '2025-12-25',  # Navidad
+    # 2026
+    '2026-01-01',  # Año Nuevo
+    '2026-02-02',  # Día de la Constitución (MX)
+    '2026-02-16',  # Presidents Day (USA)
+    '2026-03-16',  # Natalicio Benito Juárez (MX)
+    '2026-05-01',  # Día del Trabajo (MX)
+    '2026-05-25',  # Memorial Day (USA)
+    '2026-07-04',  # Independence Day (USA)
+    '2026-09-07',  # Labor Day (USA)
+    '2026-09-16',  # Independencia México
+    '2026-11-16',  # Revolución Mexicana
+    '2026-11-26',  # Thanksgiving (USA)
+    '2026-12-25',  # Navidad
+]
+
+def es_dia_festivo(fecha):
+    """Verifica si una fecha es día festivo"""
+    fecha_str = fecha.strftime('%Y-%m-%d')
+    return fecha_str in DIAS_FESTIVOS_2025_2026
+
 def cargar_datos_flujos_reales():
-    """Carga datos históricos de flujos/cruces desde CSV o genera desde datos actuales"""
+    """Carga datos históricos de flujos/cruces desde CSV o genera desde datos actuales
+    Incluye programa FAST y restricciones en días festivos"""
     try:
         # Intentar cargar desde CSV local
         csv_path = Path(__file__).parent / "data" / "aduanas_latest.csv"
-        if csv_path.exists():
-            df_actual = pd.read_csv(csv_path)
+        if not csv_path.exists():
+            return None
             
-            # Generar datos históricos simulados basados en datos reales
-            fechas = pd.date_range(start=(datetime.now() - pd.DateOffset(months=12)).strftime('%Y-%m-%d'), 
-                                   end=datetime.now().strftime('%Y-%m-%d'), freq='D')
+        df_actual = pd.read_csv(csv_path)
+        
+        # Validar columnas requeridas
+        columnas_requeridas = ['Aduana', 'Valor_USD', 'Contenedores']
+        if not all(col in df_actual.columns for col in columnas_requeridas):
+            st.error(f"❌ CSV no tiene las columnas requeridas: {columnas_requeridas}")
+            return None
+        
+        # Verificar que hay datos
+        if df_actual.empty:
+            st.warning("⚠️ El CSV está vacío")
+            return None
+        
+        # Generar datos históricos simulados basados en datos reales
+        fecha_inicio = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
+        fecha_fin = datetime.now().strftime('%Y-%m-%d')
+        fechas = pd.date_range(start=fecha_inicio, end=fecha_fin, freq='D')
+        
+        data_list = []
+        
+        # Procesar cada aduana
+        for _, row in df_actual.iterrows():
+            aduana = row['Aduana']
+            valor_base = float(row['Valor_USD'])
+            contenedores_base = int(row['Contenedores'])
             
-            data_list = []
-            for _, row in df_actual.iterrows():
-                aduana = row['Aduana']
-                valor_base = row['Valor_USD']
-                contenedores_base = row['Contenedores']
+            # Calcular cruces diarios promedio (contenedores mensuales / 30 días)
+            cruces_diarios_promedio = contenedores_base / 30
+            
+            # Generar serie temporal con tendencia y variabilidad
+            for i, fecha in enumerate(fechas):
+                es_festivo = es_dia_festivo(fecha)
+                dia_semana = fecha.weekday()  # 0=Lunes, 6=Domingo
                 
-                # Generar serie temporal con tendencia y variabilidad
-                for i, fecha in enumerate(fechas):
-                    # Factor de crecimiento (tendencia)
-                    factor_crecimiento = 1 + (i / len(fechas)) * 0.15  # 15% crecimiento en el año
-                    
-                    # Variabilidad diaria
-                    variabilidad = np.random.uniform(0.85, 1.15)
-                    
-                    cruces = int(contenedores_base * factor_crecimiento * variabilidad)
-                    valor_usd = valor_base * factor_crecimiento * variabilidad
-                    
+                # Factor de crecimiento (tendencia anual)
+                factor_crecimiento = 1 + (i / len(fechas)) * 0.12  # 12% crecimiento anual
+                
+                # Variabilidad por día de la semana (Lun-Vie más tráfico)
+                if dia_semana < 5:  # Lunes a Viernes
+                    factor_dia = np.random.uniform(0.95, 1.15)
+                else:  # Fin de semana (menos tráfico)
+                    factor_dia = np.random.uniform(0.60, 0.85)
+                
+                # Variabilidad aleatoria diaria
+                variabilidad = np.random.uniform(0.90, 1.10)
+                
+                # Calcular cruces base
+                cruces_base = int(cruces_diarios_promedio * factor_crecimiento * factor_dia * variabilidad)
+                
+                # Distribución FAST vs Regular según el día
+                if es_festivo:
+                    # Días festivos: solo FAST y perecederos (reducción ~75%)
+                    cruces_fast = int(cruces_base * 0.25)
+                    cruces_regular = 0
+                    cruces_perecederos = int(cruces_base * 0.05)
+                    cruces_totales = cruces_fast + cruces_perecederos
+                else:
+                    # Día normal: distribución realista
+                    cruces_fast = int(cruces_base * 0.38)  # 38% FAST
+                    cruces_regular = int(cruces_base * 0.57)  # 57% Regular
+                    cruces_perecederos = int(cruces_base * 0.05)  # 5% Perecederos
+                    cruces_totales = cruces_fast + cruces_regular + cruces_perecederos
+                
+                # Calcular valor proporcional
+                # Valor mensual / 30 días, ajustado por crecimiento y factores
+                valor_diario_base = valor_base / 30
+                valor_usd = valor_diario_base * factor_crecimiento * factor_dia * variabilidad
+                
+                # Solo agregar si hay cruces (evitar días con 0 cruces)
+                if cruces_totales > 0:
                     data_list.append({
                         'Fecha': fecha,
                         'Puerto': aduana,
-                        'Cruces': cruces,
-                        'Valor_USD': valor_usd
+                        'Cruces': cruces_totales,
+                        'Cruces_FAST': cruces_fast,
+                        'Cruces_Regular': cruces_regular,
+                        'Cruces_Perecederos': cruces_perecederos,
+                        'Valor_USD': valor_usd,
+                        'Es_Festivo': es_festivo
                     })
+        
+        if not data_list:
+            st.warning("⚠️ No se generaron datos históricos")
+            return None
             
-            df_historico = pd.DataFrame(data_list)
-            return df_historico
+        df_historico = pd.DataFrame(data_list)
+        
+        # Validación final
+        st.success(f"✅ Datos cargados: {len(df_actual)} aduanas, {len(df_historico)} registros históricos")
+        
+        return df_historico
+        
+    except FileNotFoundError:
+        st.warning(f"📂 Archivo no encontrado: {csv_path}")
+        return None
+    except pd.errors.EmptyDataError:
+        st.error("❌ El archivo CSV está vacío o corrupto")
+        return None
+    except KeyError as e:
+        st.error(f"❌ Columna faltante en CSV: {e}")
+        return None
     except Exception as e:
-        st.warning(f"No se pudieron cargar datos de flujos: {e}")
-    
-    return None
+        st.error(f"❌ Error inesperado al cargar datos: {type(e).__name__}: {e}")
+        return None
 
 # --- FUNCIÓN: Sistema de alertas automáticas ---
 class SistemaAlertas:
@@ -789,18 +1064,49 @@ def aduana_esta_abierta(aduana_nombre, fecha, hora=None):
     # Verificar si es día festivo
     if es_dia_festivo(fecha):
         info_festivo = obtener_info_festivo(fecha)
-        if 'Cerrado' in horario['festivos']:
+        horario_festivo = horario['festivos']
+        
+        # Si el horario de festivos es "Cerrado", retornar cerrado
+        if 'Cerrado' in horario_festivo:
             return {
                 'abierta': False, 
                 'mensaje': f"Cerrado por {info_festivo['nombre']}",
                 'festivo': info_festivo['nombre']
             }
-        elif 'reducido' in horario['festivos']:
-            return {
-                'abierta': True,
-                'mensaje': f"Horario reducido por {info_festivo['nombre']}",
-                'festivo': info_festivo['nombre']
-            }
+        
+        # Si el horario tiene formato de horas (ej: "08:00 - 14:00"), usar ese horario
+        if ' - ' in horario_festivo:
+            if hora_actual is not None:
+                try:
+                    apertura_str, cierre_str = horario_festivo.split(' - ')
+                    apertura = datetime.strptime(apertura_str.strip(), '%H:%M').time()
+                    
+                    if cierre_str.strip() == '00:00' or cierre_str.strip() == '24:00':
+                        cierre = datetime.strptime('23:59', '%H:%M').time()
+                    else:
+                        cierre = datetime.strptime(cierre_str.strip(), '%H:%M').time()
+                    
+                    if apertura <= hora_actual <= cierre:
+                        return {
+                            'abierta': True, 
+                            'mensaje': f"Abierto - Horario especial por {info_festivo['nombre']} ({apertura_str.strip()} - {cierre_str.strip()})",
+                            'festivo': info_festivo['nombre']
+                        }
+                    else:
+                        return {
+                            'abierta': False, 
+                            'mensaje': f"Cerrado - {info_festivo['nombre']} (Horario especial: {apertura_str.strip()} - {cierre_str.strip()})",
+                            'festivo': info_festivo['nombre']
+                        }
+                except Exception as e:
+                    pass
+            else:
+                # Sin hora específica, retornar que hay horario reducido
+                return {
+                    'abierta': True,
+                    'mensaje': f"Horario especial por {info_festivo['nombre']} ({horario_festivo})",
+                    'festivo': info_festivo['nombre']
+                }
     
     # Verificar día de la semana
     dia_semana = fecha.weekday()  # 0=Lunes, 6=Domingo
@@ -1324,7 +1630,9 @@ def page_mapa():
     if not usar_datos_reales or df_border is None:
         # --- GENERACIÓN DE DATOS SINTÉTICOS (Basados en promedios BTS/Census Bureau) ---
         # Simulamos datos de los últimos 12 meses
-        fechas = pd.date_range(start=(datetime.now() - pd.DateOffset(months=12)).strftime('%Y-%m-%d'), end=datetime.now().strftime('%Y-%m-%d'), freq='D')
+        fecha_inicio = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
+        fecha_fin = datetime.now().strftime('%Y-%m-%d')
+        fechas = pd.date_range(start=fecha_inicio, end=fecha_fin, freq='D')
         
         # Todos los puertos fronterizos principales México-USA (Nombres Oficiales 2026)
         puertos = {
@@ -1345,24 +1653,30 @@ def page_mapa():
         data_list = []
         for puerto, base_cruces in puertos.items():
             for fecha in fechas:
+                es_festivo = es_dia_festivo(fecha)
+                
                 # Agregar variabilidad según el puerto
                 variabilidad = np.random.randint(-400, 1500)
-                cruces = base_cruces + variabilidad
+                cruces_base = base_cruces + variabilidad
+                
+                # Distribución FAST vs Regular
+                if es_festivo:
+                    # En días festivos, solo FAST y perecederos (reducción ~70%)
+                    cruces_fast = int(cruces_base * 0.30)
+                    cruces_regular = 0
+                    cruces_perecederos = int(cruces_base * 0.05)
+                    cruces = cruces_fast + cruces_perecederos
+                else:
+                    # Día normal: FAST 40%, Regular 55%, Perecederos 5%
+                    cruces_fast = int(cruces_base * 0.40)
+                    cruces_regular = int(cruces_base * 0.55)
+                    cruces_perecederos = int(cruces_base * 0.05)
+                    cruces = cruces_fast + cruces_regular + cruces_perecederos
+                
                 valor_usd = cruces * np.random.uniform(45000, 65000) # Valor promedio por camión
-                data_list.append([fecha, puerto, cruces, valor_usd])
+                data_list.append([fecha, puerto, cruces, cruces_fast, cruces_regular, cruces_perecederos, valor_usd, es_festivo])
 
-        df_border = pd.DataFrame(data_list, columns=['Fecha', 'Puerto', 'Cruces', 'Valor_USD'])
-
-        data_list = []
-        for puerto, base_cruces in puertos.items():
-            for fecha in fechas:
-                # Agregar variabilidad según el puerto
-                variabilidad = np.random.randint(-400, 1500)
-                cruces = base_cruces + variabilidad
-                valor_usd = cruces * np.random.uniform(45000, 65000) # Valor promedio por camión
-                data_list.append([fecha, puerto, cruces, valor_usd])
-
-        df_border = pd.DataFrame(data_list, columns=['Fecha', 'Puerto', 'Cruces', 'Valor_USD'])
+        df_border = pd.DataFrame(data_list, columns=['Fecha', 'Puerto', 'Cruces', 'Cruces_FAST', 'Cruces_Regular', 'Cruces_Perecederos', 'Valor_USD', 'Es_Festivo'])
     df_border['Mes'] = df_border['Fecha'].dt.strftime('%Y-%m')
     df_border['Semana'] = df_border['Fecha'].dt.isocalendar().week
 
@@ -1371,6 +1685,32 @@ def page_mapa():
         st.markdown("📊 **Datos reales** de cruces comerciales basados en registros actuales, con proyección histórica de 12 meses.")
     else:
         st.markdown("Métricas de cruce terrestre basadas en reportes del **BTS** y valores comerciales del **US Census Bureau**.")
+    
+    # Información sobre programa FAST
+    with st.expander("ℹ️ Información sobre Programa FAST y Operaciones Fronterizas"):
+        st.markdown("""
+        ### 🚀 Programa FAST (Free and Secure Trade)
+        
+        El programa **FAST** es una iniciativa bilateral entre México, USA y Canadá que permite cruces expeditos 
+        de carga comercial para empresas y transportistas de bajo riesgo pre-aprobados.
+        
+        **Características:**
+        - ✅ Inspecciones reducidas y carriles dedicados
+        - ✅ ~40% de los cruces comerciales usan FAST
+        - ✅ Tiempo de cruce reducido hasta 50%
+        - ✅ Requisitos: Certificación C-TPAT, transportistas validados
+        
+        ### 📅 Restricciones en Días Festivos
+        
+        Durante **días festivos binacionales**, las operaciones fronterizas operan con capacidad limitada:
+        - 🚫 **Carriles regulares**: Cerrados
+        - ✅ **Carriles FAST**: Operando (capacidad reducida ~30%)
+        - ✅ **Perecederos**: Permitidos (~5% del tráfico)
+        - 📉 **Reducción total**: ~70% menos cruces que día normal
+        
+        **Días festivos incluidos:** Año Nuevo, Día de la Constitución, Presidents Day, Memorial Day, 
+        Independence Day, Labor Day, Thanksgiving, Navidad, entre otros.
+        """)
 
     # Obtener lista de puertos únicos del DataFrame
     puertos_disponibles = sorted(df_border['Puerto'].unique().tolist())
@@ -1397,6 +1737,10 @@ def page_mapa():
 
     # --- KPIs ACUMULADOS ---
     total_cruces = df_filtrado['Cruces'].sum()
+    total_fast = df_filtrado['Cruces_FAST'].sum() if 'Cruces_FAST' in df_filtrado.columns else 0
+    total_regular = df_filtrado['Cruces_Regular'].sum() if 'Cruces_Regular' in df_filtrado.columns else 0
+    total_perecederos = df_filtrado['Cruces_Perecederos'].sum() if 'Cruces_Perecederos' in df_filtrado.columns else 0
+    dias_festivos_count = df_filtrado['Es_Festivo'].sum() if 'Es_Festivo' in df_filtrado.columns else 0
 
     total_valor = df_filtrado['Valor_USD'].sum()
     if moneda == "MXN (Pesos)":
@@ -1405,10 +1749,110 @@ def page_mapa():
     else:
         simbolo = "USD"
 
+    # Primera fila de KPIs principales
     col1, col2, col3 = st.columns(3)
-    col1.metric("Acumulado de Cruces", f"{total_cruces:,}")
+    col1.metric("Total de Cruces", f"{total_cruces:,}")
     col2.metric(f"Valor Total ({simbolo})", f"${total_valor:,.0f}")
-    col3.metric("Promedio Diario de Cruces", f"{int(df_filtrado.groupby('Fecha')['Cruces'].sum().mean()):,}")
+    col3.metric("Promedio Diario", f"{int(df_filtrado.groupby('Fecha')['Cruces'].sum().mean()):,}")
+
+    # Segunda fila - Desglose por tipo de cruce
+    st.markdown("### 🚛 Desglose por Tipo de Cruce")
+    col1, col2, col3 = st.columns(3)
+    
+    pct_fast = (total_fast / total_cruces * 100) if total_cruces > 0 else 0
+    pct_regular = (total_regular / total_cruces * 100) if total_cruces > 0 else 0
+    pct_perecederos = (total_perecederos / total_cruces * 100) if total_cruces > 0 else 0
+    
+    col1.metric("🚀 FAST (Rápido)", f"{total_fast:,}", f"{pct_fast:.1f}%")
+    col2.metric("🚚 Regular", f"{total_regular:,}", f"{pct_regular:.1f}%")
+    col3.metric("🥗 Perecederos", f"{total_perecederos:,}", f"{pct_perecederos:.1f}%")
+
+    st.divider()
+    
+    # --- GRÁFICO FAST vs REGULAR ---
+    if 'Cruces_FAST' in df_completo.columns:
+        st.subheader("🚀 Análisis de Programa FAST vs Regular")
+        
+        # Agregar por fecha para ver tendencia
+        df_fast_analysis = df_completo.groupby('Fecha').agg({
+            'Cruces_FAST': 'sum',
+            'Cruces_Regular': 'sum',
+            'Cruces_Perecederos': 'sum',
+            'Es_Festivo': 'max'
+        }).reset_index()
+        
+        # Crear gráfico de áreas apiladas
+        fig_fast = go.Figure()
+        
+        fig_fast.add_trace(go.Scatter(
+            x=df_fast_analysis['Fecha'],
+            y=df_fast_analysis['Cruces_Regular'],
+            mode='lines',
+            name='Regular',
+            stackgroup='one',
+            fillcolor='rgba(64, 112, 244, 0.5)',
+            line=dict(width=0.5, color='rgba(64, 112, 244, 1)')
+        ))
+        
+        fig_fast.add_trace(go.Scatter(
+            x=df_fast_analysis['Fecha'],
+            y=df_fast_analysis['Cruces_FAST'],
+            mode='lines',
+            name='FAST',
+            stackgroup='one',
+            fillcolor='rgba(41, 181, 232, 0.5)',
+            line=dict(width=0.5, color='rgba(41, 181, 232, 1)')
+        ))
+        
+        fig_fast.add_trace(go.Scatter(
+            x=df_fast_analysis['Fecha'],
+            y=df_fast_analysis['Cruces_Perecederos'],
+            mode='lines',
+            name='Perecederos',
+            stackgroup='one',
+            fillcolor='rgba(76, 175, 80, 0.5)',
+            line=dict(width=0.5, color='rgba(76, 175, 80, 1)')
+        ))
+        
+        # Marcar días festivos
+        festivos = df_fast_analysis[df_fast_analysis['Es_Festivo'] == True]
+        if not festivos.empty:
+            # Limitar a los primeros festivos para no saturar el gráfico
+            festivos_muestra = festivos.head(10)
+            for idx, festivo in festivos_muestra.iterrows():
+                # Convertir a datetime si es necesario
+                fecha_festivo = pd.to_datetime(festivo['Fecha'])
+                fig_fast.add_vline(
+                    x=fecha_festivo,
+                    line_dash="dash",
+                    line_color="red",
+                    opacity=0.3
+                )
+            # Agregar nota sobre festivos
+            fig_fast.add_annotation(
+                text=f"{len(festivos)} días festivos (líneas rojas)",
+                xref="paper", yref="paper",
+                x=0.02, y=0.98,
+                showarrow=False,
+                bgcolor="rgba(255,0,0,0.1)",
+                bordercolor="red",
+                borderwidth=1
+            )
+        
+        fig_fast.update_layout(
+            title="Distribución de Cruces: FAST vs Regular vs Perecederos",
+            xaxis_title="Fecha",
+            yaxis_title="Número de Cruces",
+            hovermode='x unified',
+            height=500,
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        )
+        
+        st.plotly_chart(fig_fast, use_container_width=True)
+        
+        # Información sobre días festivos
+        if int(dias_festivos_count) > 0:
+            st.info(f"📅 **Días festivos detectados:** {int(dias_festivos_count)} - En estos días solo operan carriles FAST y perecederos (reducción ~70% del tráfico)")
 
     st.divider()
 
@@ -1453,6 +1897,67 @@ def page_mapa():
             st.warning("⚠️ No hay datos disponibles para las aduanas seleccionadas en el período.")
     else:
         st.warning("⚠️ Por favor selecciona al menos una aduana para ver la gráfica.")
+
+    st.divider()
+
+    # --- COMPARATIVA DÍAS FESTIVOS VS NORMALES ---
+    if 'Es_Festivo' in df_completo.columns:
+        st.subheader("📅 Impacto de Días Festivos en Operaciones")
+        
+        col_fest1, col_fest2 = st.columns(2)
+        
+        with col_fest1:
+            # Calcular promedios
+            df_festivos = df_completo[df_completo['Es_Festivo'] == True]
+            df_normales = df_completo[df_completo['Es_Festivo'] == False]
+            
+            if not df_festivos.empty and not df_normales.empty:
+                promedio_festivos = df_festivos.groupby('Fecha')['Cruces'].sum().mean()
+                promedio_normales = df_normales.groupby('Fecha')['Cruces'].sum().mean()
+                reduccion_pct = ((promedio_normales - promedio_festivos) / promedio_normales * 100)
+                
+                st.metric(
+                    "Promedio Cruces - Día Normal",
+                    f"{int(promedio_normales):,}",
+                    f"Base 100%"
+                )
+                st.metric(
+                    "Promedio Cruces - Día Festivo",
+                    f"{int(promedio_festivos):,}",
+                    f"-{reduccion_pct:.1f}%",
+                    delta_color="inverse"
+                )
+        
+        with col_fest2:
+            # Gráfico comparativo por tipo de cruce
+            if 'Cruces_FAST' in df_completo.columns:
+                comparativa = pd.DataFrame({
+                    'Tipo': ['Normal', 'Normal', 'Normal', 'Festivo', 'Festivo'],
+                    'Categoría': ['FAST', 'Regular', 'Perecederos', 'FAST', 'Perecederos'],
+                    'Cruces': [
+                        df_normales['Cruces_FAST'].sum(),
+                        df_normales['Cruces_Regular'].sum(),
+                        df_normales['Cruces_Perecederos'].sum(),
+                        df_festivos['Cruces_FAST'].sum(),
+                        df_festivos['Cruces_Perecederos'].sum()
+                    ]
+                })
+                
+                fig_comp = px.bar(
+                    comparativa,
+                    x='Tipo',
+                    y='Cruces',
+                    color='Categoría',
+                    title="Comparativa: Días Normales vs Festivos",
+                    barmode='group',
+                    color_discrete_map={
+                        'FAST': '#29B5E8',
+                        'Regular': '#4070F4',
+                        'Perecederos': '#4CAF50'
+                    }
+                )
+                fig_comp.update_layout(height=300)
+                st.plotly_chart(fig_comp, use_container_width=True)
 
     st.divider()
 
@@ -1781,11 +2286,39 @@ def page_monitoreo_aduanas():
     sistema_alertas = st.session_state.sistema_alertas
     
     # Botón para recargar datos
-    col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 3])
+    col_btn1, col_btn2, col_btn3, col_btn4 = st.columns([1, 1, 1, 2])
     with col_btn1:
-        btn_recargar = st.button("🔄 Recargar Datos Reales", help="Carga datos desde CSV o API")
+        btn_recargar = st.button("🔄 Recargar Datos", help="Carga datos desde CSV o API", key="btn_recargar_mon")
     with col_btn2:
-        usar_datos_reales = st.checkbox("📊 Usar Datos Reales", value=False, help="Alternar entre datos simulados y datos reales")
+        usar_datos_reales = st.checkbox("📊 Datos Reales", value=False, help="Alternar entre datos simulados y datos reales", key="check_real_mon")
+    with col_btn3:
+        btn_actualizar_apis = st.button("🌐 Actualizar APIs", help="Consultar APIs externas y actualizar CSV", key="btn_api_mon")
+    with col_btn4:
+        if 'cache_aduanas_fuente' in st.session_state:
+            fuente = st.session_state['cache_aduanas_fuente']
+            cache_time = st.session_state.get('cache_aduanas_time', 0)
+            edad_minutos = int((datetime.now().timestamp() - cache_time) / 60)
+            st.caption(f"📡 {fuente} | ⏱️ {edad_minutos} min")
+    
+    # Actualizar desde APIs si se solicita
+    if btn_actualizar_apis:
+        with st.expander("📊 Actualización desde APIs", expanded=True):
+            resultados = actualizar_datos_desde_apis()
+            
+            if resultados['exito']:
+                st.success(f"✅ Actualización exitosa: {resultados['registros']} registros")
+                st.info(f"📡 Fuentes consultadas: {', '.join(resultados['fuentes'])}")
+                
+                # Limpiar caché para forzar recarga
+                if 'cache_aduanas' in st.session_state:
+                    del st.session_state['cache_aduanas']
+            else:
+                st.error("❌ No se pudo actualizar desde ninguna API")
+            
+            if resultados['errores']:
+                with st.expander("⚠️ Ver errores"):
+                    for error in resultados['errores']:
+                        st.warning(error)
     
     # Cargar datos según la selección
     if usar_datos_reales or btn_recargar:
@@ -1809,16 +2342,46 @@ def page_monitoreo_aduanas():
                 estados_aduanas_reales.append(estado_aduana)
             
             # Generar métricas simuladas basadas en volumen real
-            aduanas_status['Tiempo Espera (min)'] = aduanas_status['Contenedores'].apply(
-                lambda x: min(140, max(30, int(x / 100)))
+            # Los contenedores en el CSV son mensuales, convertir a diarios y agregar variabilidad
+            # Dividir entre 30 para obtener promedio diario, luego agregar variabilidad aleatoria
+            
+            # Tiempo de espera diferenciado por tipo de carril
+            aduanas_status['Cruces_Diarios_Est'] = aduanas_status['Contenedores'].apply(
+                lambda x: int((x / 30) * np.random.uniform(0.6, 1.4))  # Variabilidad diaria
             )
-            aduanas_status['Saturación (%)'] = aduanas_status['Contenedores'].apply(
-                lambda x: min(95, max(30, int(x / 150)))
+            
+            aduanas_status['Tiempo Espera FAST (min)'] = aduanas_status['Cruces_Diarios_Est'].apply(
+                lambda x: min(60, max(10, int(x / 20) + np.random.randint(-5, 10)))
             )
-            aduanas_status['Capacidad (Camiones/hora)'] = 150
-            aduanas_status['Camiones en Cola'] = aduanas_status['Contenedores'].apply(
-                lambda x: int(x * 0.05)
+            aduanas_status['Tiempo Espera Regular (min)'] = aduanas_status['Cruces_Diarios_Est'].apply(
+                lambda x: min(120, max(25, int(x / 15) + np.random.randint(-10, 20)))
             )
+            aduanas_status['Tiempo Espera (min)'] = aduanas_status['Tiempo Espera Regular (min)']
+            
+            # Saturación por tipo de carril (basada en cruces diarios estimados)
+            aduanas_status['Saturación FAST (%)'] = aduanas_status['Cruces_Diarios_Est'].apply(
+                lambda x: min(85, max(20, int((x / 1500) * 100) + np.random.randint(-10, 15)))
+            )
+            aduanas_status['Saturación Regular (%)'] = aduanas_status['Cruces_Diarios_Est'].apply(
+                lambda x: min(95, max(30, int((x / 1200) * 100) + np.random.randint(-5, 20)))
+            )
+            aduanas_status['Saturación (%)'] = aduanas_status['Saturación Regular (%)']
+            
+            # Capacidad y carriles disponibles
+            aduanas_status['Carriles FAST'] = 3  # Típicamente 2-4 carriles FAST
+            aduanas_status['Carriles Regular'] = 8  # Típicamente 6-10 carriles Regular
+            aduanas_status['Capacidad FAST (Cam/hora)'] = aduanas_status['Carriles FAST'] * 40
+            aduanas_status['Capacidad Regular (Cam/hora)'] = aduanas_status['Carriles Regular'] * 25
+            aduanas_status['Capacidad (Camiones/hora)'] = aduanas_status['Capacidad FAST (Cam/hora)'] + aduanas_status['Capacidad Regular (Cam/hora)']
+            
+            # Camiones en cola por tipo (basado en cruces diarios)
+            aduanas_status['Camiones FAST Cola'] = aduanas_status['Cruces_Diarios_Est'].apply(
+                lambda x: int(x * 0.15 * np.random.uniform(0.8, 1.2))  # 15% de cruces diarios en cola
+            )
+            aduanas_status['Camiones Regular Cola'] = aduanas_status['Cruces_Diarios_Est'].apply(
+                lambda x: int(x * 0.25 * np.random.uniform(0.8, 1.2))  # 25% de cruces diarios en cola
+            )
+            aduanas_status['Camiones en Cola'] = aduanas_status['Camiones FAST Cola'] + aduanas_status['Camiones Regular Cola']
             
             # Agregar información de horarios y estado de apertura
             aduanas_status['Horario Hoy'] = [e['mensaje'] for e in estados_aduanas_reales]
@@ -1828,8 +2391,14 @@ def page_monitoreo_aduanas():
             for idx, row in aduanas_status.iterrows():
                 if not row['Abierta']:
                     aduanas_status.at[idx, 'Tiempo Espera (min)'] = 0
+                    aduanas_status.at[idx, 'Tiempo Espera FAST (min)'] = 0
+                    aduanas_status.at[idx, 'Tiempo Espera Regular (min)'] = 0
                     aduanas_status.at[idx, 'Saturación (%)'] = 0
+                    aduanas_status.at[idx, 'Saturación FAST (%)'] = 0
+                    aduanas_status.at[idx, 'Saturación Regular (%)'] = 0
                     aduanas_status.at[idx, 'Camiones en Cola'] = 0
+                    aduanas_status.at[idx, 'Camiones FAST Cola'] = 0
+                    aduanas_status.at[idx, 'Camiones Regular Cola'] = 0
             
             # Determinar estado
             def determinar_estado(row):
@@ -1868,8 +2437,14 @@ def page_monitoreo_aduanas():
         # Verificar estado de cada aduana (abierta/cerrada)
         estados_aduanas = []
         tiempos_espera = []
+        tiempos_fast = []
+        tiempos_regular = []
         saturaciones = []
+        saturaciones_fast = []
+        saturaciones_regular = []
         camiones_cola = []
+        camiones_fast_cola = []
+        camiones_regular_cola = []
         
         for aduana in aduanas_nombres:
             estado_aduana = aduana_esta_abierta(aduana, ahora)
@@ -1878,21 +2453,50 @@ def page_monitoreo_aduanas():
             # Si está cerrada, poner datos en 0
             if not estado_aduana['abierta']:
                 tiempos_espera.append(0)
+                tiempos_fast.append(0)
+                tiempos_regular.append(0)
                 saturaciones.append(0)
+                saturaciones_fast.append(0)
+                saturaciones_regular.append(0)
                 camiones_cola.append(0)
+                camiones_fast_cola.append(0)
+                camiones_regular_cola.append(0)
             else:
                 # Datos simulados solo para aduanas abiertas
-                tiempos_espera.append(random.randint(30, 140))
-                saturaciones.append(random.randint(35, 95))
-                camiones_cola.append(random.randint(350, 1500))
+                tiempo_regular = random.randint(30, 140)
+                tiempo_fast = int(tiempo_regular * 0.35)  # FAST es ~65% más rápido
+                tiempos_regular.append(tiempo_regular)
+                tiempos_fast.append(tiempo_fast)
+                tiempos_espera.append(tiempo_regular)
+                
+                saturacion_regular = random.randint(35, 95)
+                saturacion_fast = int(saturacion_regular * 0.65)  # FAST menos saturado
+                saturaciones_regular.append(saturacion_regular)
+                saturaciones_fast.append(saturacion_fast)
+                saturaciones.append(saturacion_regular)
+                
+                cola_total = random.randint(350, 1500)
+                camiones_fast_cola.append(int(cola_total * 0.40))  # 40% en FAST
+                camiones_regular_cola.append(int(cola_total * 0.60))  # 60% en Regular
+                camiones_cola.append(cola_total)
         
         # Datos de aduanas con tiempos y saturación simulados (usando nombres oficiales)
         aduanas_status = pd.DataFrame({
             'Aduana': aduanas_nombres,
             'Tiempo Espera (min)': tiempos_espera,
+            'Tiempo Espera FAST (min)': tiempos_fast,
+            'Tiempo Espera Regular (min)': tiempos_regular,
             'Saturación (%)': saturaciones,
-            'Capacidad (Camiones/hora)': [150, 130, 125, 140, 120, 135, 145, 140, 150, 160, 155, 145],
+            'Saturación FAST (%)': saturaciones_fast,
+            'Saturación Regular (%)': saturaciones_regular,
+            'Carriles FAST': [3, 2, 3, 4, 3, 2, 3, 3, 2, 2, 2, 2],
+            'Carriles Regular': [8, 7, 8, 9, 8, 7, 8, 8, 7, 6, 6, 7],
+            'Capacidad FAST (Cam/hora)': [120, 80, 120, 160, 120, 80, 120, 120, 80, 80, 80, 80],
+            'Capacidad Regular (Cam/hora)': [200, 175, 200, 225, 200, 175, 200, 200, 175, 150, 150, 175],
+            'Capacidad (Camiones/hora)': [320, 255, 320, 385, 320, 255, 320, 320, 255, 230, 230, 255],
             'Camiones en Cola': camiones_cola,
+            'Camiones FAST Cola': camiones_fast_cola,
+            'Camiones Regular Cola': camiones_regular_cola,
             'Estado': ['🔴 CERRADO' if not e['abierta'] else ('🔴 CRÍTICO' if s > 85 else ('⚠️ ALTO' if s > 70 else ('⚠️ MEDIO' if s > 60 else '✅ NORMAL'))) 
                       for e, s in zip(estados_aduanas, saturaciones)],
             'Horario Hoy': [e['mensaje'] for e in estados_aduanas],
@@ -2046,7 +2650,7 @@ def page_monitoreo_aduanas():
                 """, unsafe_allow_html=True)
     
     st.markdown("---")
-    
+
     # KPIs principales (solo para aduanas abiertas)
     aduanas_abiertas_df = aduanas_status[aduanas_status['Abierta'] == True]
     
@@ -2065,6 +2669,145 @@ def page_monitoreo_aduanas():
     
     with col_k3:
         total_cola = aduanas_abiertas_df['Camiones en Cola'].sum() if not aduanas_abiertas_df.empty else 0
+        st.metric("🚛 Total en Cola", f"{total_cola:,.0f}")
+    
+    with col_k4:
+        saturacion_promedio = aduanas_abiertas_df['Saturación (%)'].mean() if not aduanas_abiertas_df.empty else 0
+        st.metric("📊 Saturación Promedio", f"{saturacion_promedio:.1f}%")
+    
+    st.markdown("---")
+    
+    # 🚀 COMPARATIVA FAST VS REGULAR (Solo para aduanas abiertas)
+    st.subheader("🚀 Programa FAST vs Regular - Tiempo Real")
+    
+    # Información sobre FAST
+    with st.expander("ℹ️ ¿Qué es el Programa FAST?", expanded=False):
+        st.markdown("""
+        El programa **FAST (Free and Secure Trade)** es una iniciativa bilateral que permite cruces expeditos 
+        para transportistas certificados de bajo riesgo.
+        
+        **Beneficios:**
+        - ⚡ Hasta 65% menos tiempo de espera
+        - 🎯 Inspecciones reducidas
+        - 🚦 Carriles dedicados con prioridad
+        - 📉 Menor saturación en general
+        
+        **Requisitos:** Certificación C-TPAT, transportistas validados, carga pre-documentada
+        """)
+    
+    if not aduanas_abiertas_df.empty:
+        # KPIs comparativos FAST vs Regular
+        col_comp1, col_comp2, col_comp3, col_comp4 = st.columns(4)
+        
+        with col_comp1:
+            tiempo_fast_prom = aduanas_abiertas_df['Tiempo Espera FAST (min)'].mean()
+            tiempo_regular_prom = aduanas_abiertas_df['Tiempo Espera Regular (min)'].mean()
+            ahorro_tiempo = tiempo_regular_prom - tiempo_fast_prom
+            st.metric(
+                "⏱️ Tiempo FAST Promedio", 
+                f"{tiempo_fast_prom:.0f} min",
+                f"-{ahorro_tiempo:.0f} min vs Regular",
+                delta_color="inverse"
+            )
+        
+        with col_comp2:
+            sat_fast_prom = aduanas_abiertas_df['Saturación FAST (%)'].mean()
+            sat_regular_prom = aduanas_abiertas_df['Saturación Regular (%)'].mean()
+            diferencia_sat = sat_regular_prom - sat_fast_prom
+            st.metric(
+                "📊 Saturación FAST", 
+                f"{sat_fast_prom:.1f}%",
+                f"-{diferencia_sat:.1f}% vs Regular",
+                delta_color="inverse"
+            )
+        
+        with col_comp3:
+            total_fast_cola = aduanas_abiertas_df['Camiones FAST Cola'].sum()
+            st.metric("🚛 FAST en Cola", f"{total_fast_cola:,.0f}")
+        
+        with col_comp4:
+            total_regular_cola = aduanas_abiertas_df['Camiones Regular Cola'].sum()
+            st.metric("🚚 Regular en Cola", f"{total_regular_cola:,.0f}")
+        
+        # Gráfico comparativo
+        st.markdown("#### 📊 Comparativa de Tiempos de Espera")
+        
+        # Preparar datos para el gráfico
+        df_comparativa = aduanas_abiertas_df[['Aduana', 'Tiempo Espera FAST (min)', 'Tiempo Espera Regular (min)']].head(8)
+        
+        fig_comparativa = go.Figure()
+        
+        fig_comparativa.add_trace(go.Bar(
+            name='FAST',
+            x=df_comparativa['Aduana'],
+            y=df_comparativa['Tiempo Espera FAST (min)'],
+            marker_color='#29B5E8',
+            text=df_comparativa['Tiempo Espera FAST (min)'],
+            texttemplate='%{text:.0f} min',
+            textposition='outside'
+        ))
+        
+        fig_comparativa.add_trace(go.Bar(
+            name='Regular',
+            x=df_comparativa['Aduana'],
+            y=df_comparativa['Tiempo Espera Regular (min)'],
+            marker_color='#4070F4',
+            text=df_comparativa['Tiempo Espera Regular (min)'],
+            texttemplate='%{text:.0f} min',
+            textposition='outside'
+        ))
+        
+        fig_comparativa.update_layout(
+            barmode='group',
+            title='Tiempo de Espera: FAST vs Regular (Top 8 Aduanas)',
+            xaxis_title='Aduana',
+            yaxis_title='Tiempo de Espera (minutos)',
+            height=450,
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            xaxis={'tickangle': -45}
+        )
+        
+        st.plotly_chart(fig_comparativa, use_container_width=True)
+        
+        # Tabla comparativa de saturación
+        st.markdown("#### 📈 Saturación por Tipo de Carril")
+        
+        col_sat1, col_sat2 = st.columns(2)
+        
+        with col_sat1:
+            st.markdown("**🚀 Carriles FAST**")
+            df_fast_display = aduanas_abiertas_df[['Aduana', 'Saturación FAST (%)', 'Carriles FAST', 'Camiones FAST Cola']].copy()
+            df_fast_display = df_fast_display.sort_values('Saturación FAST (%)', ascending=False).head(6)
+            df_fast_display.columns = ['Aduana', 'Saturación %', 'Carriles', 'Cola']
+            st.dataframe(df_fast_display, hide_index=True, use_container_width=True)
+        
+        with col_sat2:
+            st.markdown("**🚚 Carriles Regular**")
+            df_regular_display = aduanas_abiertas_df[['Aduana', 'Saturación Regular (%)', 'Carriles Regular', 'Camiones Regular Cola']].copy()
+            df_regular_display = df_regular_display.sort_values('Saturación Regular (%)', ascending=False).head(6)
+            df_regular_display.columns = ['Aduana', 'Saturación %', 'Carriles', 'Cola']
+            st.dataframe(df_regular_display, hide_index=True, use_container_width=True)
+        
+        # Recomendaciones automáticas
+        st.markdown("#### 💡 Recomendaciones")
+        
+        # Encontrar mejores opciones FAST
+        mejores_fast = aduanas_abiertas_df.nsmallest(3, 'Tiempo Espera FAST (min)')
+        peores_regular = aduanas_abiertas_df.nlargest(3, 'Tiempo Espera Regular (min)')
+        
+        col_rec1, col_rec2 = st.columns(2)
+        
+        with col_rec1:
+            st.success("**✅ Aduanas FAST Más Rápidas**")
+            for idx, row in mejores_fast.iterrows():
+                st.markdown(f"- **{row['Aduana']}**: {row['Tiempo Espera FAST (min)']:.0f} min")
+        
+        with col_rec2:
+            st.warning("**⚠️ Evitar (Regular Saturado)**")
+            for idx, row in peores_regular.iterrows():
+                st.markdown(f"- **{row['Aduana']}**: {row['Tiempo Espera Regular (min)']:.0f} min")
+    else:
+        st.info("ℹ️ No hay aduanas abiertas en este momento para mostrar comparativa FAST vs Regular")
         st.metric("🚛 Total en Cola", f"{total_cola:,.0f}")
     
     with col_k4:
@@ -2185,9 +2928,30 @@ def page_monitoreo_aduanas():
     # Tabla de status en tiempo real
     st.subheader("📋 Status Actual de Aduanas")
     
-    # Seleccionar columnas a mostrar (siempre sin Horario Completo)
-    columnas_mostrar = ['Aduana', 'Estado', 'Horario Hoy', 'Tiempo Espera (min)', 
-                      'Tiempo Cruce Est. (min)', 'Saturación (%)', 'Camiones en Cola']
+    # Selector de vista
+    col_vista1, col_vista2 = st.columns([3, 1])
+    with col_vista1:
+        st.markdown("Selecciona el nivel de detalle:")
+    with col_vista2:
+        vista_detalle = st.radio(
+            "Vista:",
+            options=["Básica", "Con FAST", "Completa"],
+            horizontal=True,
+            label_visibility="collapsed"
+        )
+    
+    # Seleccionar columnas según vista
+    if vista_detalle == "Básica":
+        columnas_mostrar = ['Aduana', 'Estado', 'Horario Hoy', 'Tiempo Espera (min)', 
+                          'Saturación (%)', 'Camiones en Cola']
+    elif vista_detalle == "Con FAST":
+        columnas_mostrar = ['Aduana', 'Estado', 'Tiempo Espera FAST (min)', 'Tiempo Espera Regular (min)',
+                          'Saturación FAST (%)', 'Saturación Regular (%)', 'Camiones en Cola']
+    else:  # Completa
+        columnas_mostrar = ['Aduana', 'Estado', 'Horario Hoy', 'Tiempo Espera FAST (min)', 
+                          'Tiempo Espera Regular (min)', 'Tiempo Cruce Est. (min)',
+                          'Saturación FAST (%)', 'Saturación Regular (%)', 
+                          'Carriles FAST', 'Carriles Regular', 'Camiones en Cola']
     
     # Formatear tabla con colores
     df_display = df_filtrado[columnas_mostrar].copy()
@@ -3772,6 +4536,611 @@ def page_fuerza_laboral():
 
 
 
+# --- FUNCIÓN: Obtener tráfico marítimo desde AIS Hub (API Gratuita) ---
+def obtener_trafico_maritimo_aishub(bbox=None, api_key=None):
+    """
+    Obtiene posiciones de buques en tiempo real desde AIS Hub API (gratuita con registro)
+    
+    Args:
+        bbox: Bounding box [min_lat, min_lon, max_lat, max_lon] para filtrar zona
+        api_key: API key de AIS Hub (gratis en https://www.aishub.net/api)
+    
+    Returns:
+        DataFrame con posiciones de buques
+    """
+    try:
+        if not api_key:
+            # Intentar obtener desde variables de entorno
+            api_key = os.getenv('AISHUB_API_KEY', '')
+        
+        if not api_key:
+            # Si no hay API key, retornar datos simulados
+            st.info("💡 Para datos reales de tráfico marítimo, obtén una API key gratuita en https://www.aishub.net/api")
+            return generar_trafico_maritimo_simulado()
+        
+        # Configurar bounding box (Golfo de México y Pacífico Mexicano por defecto)
+        if bbox is None:
+            bbox = [14.0, -118.0, 32.0, -86.0]  # México completo
+        
+        url = "http://data.aishub.net/ws.php"
+        params = {
+            'username': api_key,
+            'format': '1',  # JSON
+            'output': 'json',
+            'compress': '0',
+            'latmin': bbox[0],
+            'lonmin': bbox[1],
+            'latmax': bbox[2],
+            'lonmax': bbox[3]
+        }
+        
+        response = requests.get(url, params=params, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data and len(data) > 0 and 'ERROR' not in data[0]:
+                buques = []
+                for vessel in data[0]:
+                    if isinstance(vessel, dict):
+                        buques.append({
+                            'MMSI': vessel.get('MMSI', 'N/A'),
+                            'Nombre': vessel.get('NAME', 'Unknown'),
+                            'Lat': float(vessel.get('LATITUDE', 0)),
+                            'Lon': float(vessel.get('LONGITUDE', 0)),
+                            'Velocidad': float(vessel.get('SPEED', 0)),
+                            'Rumbo': float(vessel.get('COURSE', 0)),
+                            'Tipo': vessel.get('TYPE', 'Unknown'),
+                            'Timestamp': vessel.get('TIME', '')
+                        })
+                
+                df = pd.DataFrame(buques)
+                if not df.empty:
+                    st.success(f"✅ Datos AIS Hub: {len(df)} buques en tiempo real")
+                    return df
+        
+        # Si falla, retornar datos simulados
+        st.warning("⚠️ No se pudieron obtener datos de AIS Hub. Usando datos simulados.")
+        return generar_trafico_maritimo_simulado()
+        
+    except Exception as e:
+        st.warning(f"⚠️ Error al consultar AIS Hub: {str(e)[:100]}. Usando datos simulados.")
+        return generar_trafico_maritimo_simulado()
+
+
+def generar_trafico_maritimo_simulado():
+    """Genera datos simulados de tráfico marítimo para demostración"""
+    np.random.seed(42)
+    
+    # Puertos mexicanos principales
+    puertos = [
+        {'nombre': 'Manzanillo', 'lat': 19.05, 'lon': -104.31},
+        {'nombre': 'Veracruz', 'lat': 19.17, 'lon': -96.13},
+        {'nombre': 'Lázaro Cárdenas', 'lat': 17.96, 'lon': -102.19},
+        {'nombre': 'Altamira', 'lat': 22.39, 'lon': -97.94},
+        {'nombre': 'Ensenada', 'lat': 31.87, 'lon': -116.60}
+    ]
+    
+    tipos_buque = ['Portacontenedores', 'Granelero', 'Petrolero', 'Carga General', 'Ro-Ro']
+    buques = []
+    
+    # Generar buques cerca de puertos y en tránsito
+    for i in range(50):
+        if i < 25:
+            # Buques cerca de puertos
+            puerto = np.random.choice(puertos)
+            lat = puerto['lat'] + np.random.uniform(-0.5, 0.5)
+            lon = puerto['lon'] + np.random.uniform(-0.5, 0.5)
+            velocidad = np.random.uniform(0, 5)  # Velocidad baja cerca de puerto
+        else:
+            # Buques en tránsito
+            lat = np.random.uniform(14.0, 32.0)
+            lon = np.random.uniform(-118.0, -86.0)
+            velocidad = np.random.uniform(10, 22)  # Velocidad de crucero
+        
+        buques.append({
+            'MMSI': f'3{np.random.randint(10000000, 99999999)}',
+            'Nombre': f'{np.random.choice(tipos_buque)[:3].upper()}-{1000+i}',
+            'Lat': lat,
+            'Lon': lon,
+            'Velocidad': velocidad,
+            'Rumbo': np.random.uniform(0, 360),
+            'Tipo': np.random.choice(tipos_buque),
+            'Timestamp': datetime.now().isoformat()
+        })
+    
+    return pd.DataFrame(buques)
+
+
+# --- FUNCIÓN: Sistema de Tracking de Contenedores ---
+def buscar_contenedor(numero_contenedor):
+    """
+    Simula la búsqueda de un contenedor por número con información detallada de disponibilidad para retiro
+    
+    En producción, esto consultaría:
+    - APIs de navieras (Maersk, CMA CGM, MSC, etc.) para tracking
+    - APIs de terminales portuarias (SSA, APM Terminals, etc.) para ubicación exacta
+    - APIs aduanales (Ventanilla Única, SAAI) para liberación
+    - APIs de citas (TAPA, sistemas de terminales) para programación de retiro
+    
+    Args:
+        numero_contenedor: Número del contenedor (ej: MSCU1234567)
+    
+    Returns:
+        Dict con información completa del contenedor incluyendo disponibilidad para retiro
+    """
+    # Validar formato básico de contenedor (4 letras + 7 números)
+    if not numero_contenedor or len(numero_contenedor) < 11:
+        return None
+    
+    # Simular datos de tracking
+    navieras = ['Maersk', 'CMA CGM', 'MSC', 'COSCO', 'Hapag-Lloyd', 'ONE', 'Evergreen']
+    estados = ['En Tránsito Marítimo', 'En Puerto - Descargando', 'En Aduana - Pendiente Liberación', 
+               'Liberado por Aduana', 'Disponible para Retiro', 'En Tránsito Terrestre', 'Entregado']
+    puertos = ['Manzanillo', 'Veracruz', 'Lázaro Cárdenas', 'Altamira']
+    terminales = {
+        'Manzanillo': ['SSA Manzanillo', 'OCUPA Manzanillo', 'TEC Manzanillo'],
+        'Veracruz': ['API Veracruz', 'APIVER', 'SSA Veracruz'],
+        'Lázaro Cárdenas': ['TECLAZ', 'TEC II', 'TPL'],
+        'Altamira': ['OCUPA Altamira', 'TIMSA', 'ALTAMIRA Terminal']
+    }
+    
+    # Generar datos simulados pero consistentes con el número
+    hash_val = sum(ord(c) for c in numero_contenedor)
+    np.random.seed(hash_val)
+    
+    # Seleccionar naviera y puerto destino
+    naviera = np.random.choice(navieras)
+    puerto_destino = np.random.choice(puertos)
+    terminal = np.random.choice(terminales[puerto_destino])
+    
+    # Generar eventos de transporte
+    fecha_inicio = datetime.now() - timedelta(days=np.random.randint(15, 45))
+    eventos = []
+    
+    # Evento 1: Recogida en origen
+    origen = np.random.choice(['Shanghai', 'Ningbo', 'Yantian', 'Hong Kong', 'Busan'])
+    eventos.append({
+        'fecha': fecha_inicio,
+        'ubicacion': origen,
+        'evento': 'Recogida en origen',
+        'detalles': 'Contenedor cargado y sellado'
+    })
+    
+    # Evento 2: Carga en buque
+    fecha_carga = fecha_inicio + timedelta(days=2)
+    buque_nombre = np.random.choice(['MSC GÜLSÜN', 'EVER GIVEN', 'CMA CGM ANTOINE DE SAINT EXUPERY', 
+                                      'COSCO SHIPPING UNIVERSE', 'HMM ALGECIRAS'])
+    eventos.append({
+        'fecha': fecha_carga,
+        'ubicacion': origen,
+        'evento': 'Cargado en buque',
+        'detalles': f'Buque: {buque_nombre}'
+    })
+    
+    # Evento 3: Salida del puerto origen
+    fecha_salida = fecha_carga + timedelta(days=1)
+    eventos.append({
+        'fecha': fecha_salida,
+        'ubicacion': origen,
+        'evento': 'Salida del puerto',
+        'detalles': 'En tránsito marítimo'
+    })
+    
+    # Evento 4: En tránsito
+    dias_transito = np.random.randint(12, 25)
+    fecha_transito = fecha_salida + timedelta(days=int(dias_transito/2))
+    eventos.append({
+        'fecha': fecha_transito,
+        'ubicacion': f'Océano Pacífico - Rumbo a {puerto_destino}',
+        'evento': 'En tránsito marítimo',
+        'detalles': f'ETA estimado: {dias_transito} días'
+    })
+    
+    # Evento 5: Llegada a puerto
+    fecha_llegada = fecha_salida + timedelta(days=dias_transito)
+    
+    # Determinar estado actual y generar información de disponibilidad
+    estado_actual = 'En Tránsito Marítimo'
+    ubicacion_actual = eventos[-1]['ubicacion']
+    info_retiro = None
+    
+    if datetime.now() > fecha_llegada:
+        # El contenedor ya llegó
+        eventos.append({
+            'fecha': fecha_llegada,
+            'ubicacion': f'{puerto_destino} - {terminal}',
+            'evento': 'Llegada a puerto destino',
+            'detalles': f'Descargado en terminal {terminal}'
+        })
+        
+        # Evento 6: Descarga
+        fecha_descarga = fecha_llegada + timedelta(hours=np.random.randint(6, 36))
+        eventos.append({
+            'fecha': fecha_descarga,
+            'ubicacion': f'{puerto_destino} - {terminal}',
+            'evento': 'Descarga completada',
+            'detalles': f'Posición en terminal: Patio {np.random.choice(["A", "B", "C"])}-{np.random.randint(1, 50)}'
+        })
+        
+        # Determinar estado actual basado en días desde llegada
+        dias_desde_llegada = (datetime.now() - fecha_llegada).days
+        
+        if dias_desde_llegada < 2:
+            estado_actual = 'En Puerto - Descargando'
+            ubicacion_actual = f'{puerto_destino} - {terminal}'
+        elif dias_desde_llegada < 3:
+            estado_actual = 'En Aduana - Pendiente Liberación'
+            ubicacion_actual = f'{puerto_destino} - Recinto Fiscal'
+            
+            # Evento 7: En proceso aduanal
+            fecha_aduana = fecha_descarga + timedelta(hours=12)
+            eventos.append({
+                'fecha': fecha_aduana,
+                'ubicacion': f'{puerto_destino} - Recinto Fiscal',
+                'evento': 'En proceso de despacho aduanal',
+                'detalles': 'Documentación bajo revisión'
+            })
+        else:
+            # Ya fue liberado
+            fecha_liberacion = fecha_descarga + timedelta(days=2)
+            eventos.append({
+                'fecha': fecha_liberacion,
+                'ubicacion': f'{puerto_destino} - {terminal}',
+                'evento': 'Liberado por aduana',
+                'detalles': 'Pedimento autorizado - Listo para retiro'
+            })
+            
+            estado_actual = 'Disponible para Retiro'
+            ubicacion_actual = f'{puerto_destino} - {terminal}'
+            
+            # INFORMACIÓN CRÍTICA DE RETIRO
+            dias_en_terminal = (datetime.now() - fecha_descarga).days
+            dias_libres = 7  # Días de almacenaje libre
+            dias_libres_restantes = max(0, dias_libres - dias_en_terminal)
+            
+            # Calcular cargos de demora si ya pasaron los días libres
+            if dias_libres_restantes == 0:
+                dias_demora = dias_en_terminal - dias_libres
+                cargo_diario = 35  # USD por día (20' container)
+                if '40' in numero_contenedor:
+                    cargo_diario = 50  # USD por día (40' container)
+                cargo_demora = dias_demora * cargo_diario
+            else:
+                cargo_demora = 0
+            
+            # Generar horarios de retiro
+            horarios_retiro = {
+                'lunes_viernes': '08:00 - 17:00',
+                'sabado': '08:00 - 13:00',
+                'domingo': 'Cerrado'
+            }
+            
+            # Documentación requerida
+            docs_requeridos = [
+                'Pedimento de importación (liberado)',
+                'Bill of Lading (original o telex release)',
+                'Carta de encomienda del transportista',
+                'RFC del importador',
+                'Comprobante de pago de almacenaje (si aplica)',
+                'Identificación del conductor',
+                'Tarjeta de circulación del vehículo'
+            ]
+            
+            # Información de la terminal
+            info_terminal = {
+                'nombre': terminal,
+                'direccion': f'Puerto de {puerto_destino}, México',
+                'telefono': f'+52 {np.random.randint(300, 999)} {np.random.randint(100, 999)} {np.random.randint(1000, 9999)}',
+                'email': f'retiros@{terminal.lower().replace(" ", "")}.com.mx',
+                'sistema_citas': 'TAPA' if np.random.random() > 0.5 else 'Portal de Terminal'
+            }
+            
+            # Ubicación exacta en el patio
+            patio = np.random.choice(['A', 'B', 'C', 'D'])
+            fila = np.random.randint(1, 50)
+            bahia = np.random.randint(1, 20)
+            posicion = f'Patio {patio}, Fila {fila}, Bahía {bahia}'
+            
+            # Generar información de retiro
+            info_retiro = {
+                'disponible': True,
+                'fecha_disponibilidad': fecha_liberacion,
+                'terminal': info_terminal,
+                'posicion_patio': posicion,
+                'dias_libres_restantes': dias_libres_restantes,
+                'cargo_demora_usd': cargo_demora,
+                'requiere_cita': np.random.choice([True, False]),
+                'cita_sugerida': (datetime.now() + timedelta(days=1)).replace(hour=10, minute=0),
+                'horarios_retiro': horarios_retiro,
+                'documentacion_requerida': docs_requeridos,
+                'contacto_emergencia': info_terminal['telefono'],
+                'observaciones': []
+            }
+            
+            # Agregar observaciones si hay cargos
+            if cargo_demora > 0:
+                info_retiro['observaciones'].append(f'⚠️ Cargo por demora: ${cargo_demora:,.2f} USD ({dias_demora} días)')
+            
+            if dias_libres_restantes <= 2:
+                info_retiro['observaciones'].append(f'⏰ URGENTE: Solo {dias_libres_restantes} días libres restantes')
+            
+            if info_retiro['requiere_cita']:
+                info_retiro['observaciones'].append('📅 Requiere programar cita previa para retiro')
+    
+    # Calcular ETA
+    if estado_actual == 'En Tránsito Marítimo':
+        eta = fecha_llegada
+    elif estado_actual == 'Entregado':
+        eta = None
+    elif estado_actual == 'Disponible para Retiro':
+        eta = datetime.now()  # Ya está disponible
+    else:
+        # Calcular ETA para disponibilidad
+        if estado_actual == 'En Puerto - Descargando':
+            eta = fecha_llegada + timedelta(days=3)
+        else:  # En Aduana
+            eta = fecha_llegada + timedelta(days=2, hours=12)
+    
+    return {
+        'numero': numero_contenedor.upper(),
+        'naviera': naviera,
+        'buque': buque_nombre if datetime.now() > fecha_carga else 'Pendiente asignación',
+        'tipo': np.random.choice(['20\' Standard', '40\' Standard', '40\' High Cube', '20\' Reefer', '40\' Reefer']),
+        'estado': estado_actual,
+        'ubicacion_actual': ubicacion_actual,
+        'origen': origen,
+        'destino': puerto_destino,
+        'eta': eta,
+        'peso_kg': np.random.randint(8000, 28000),
+        'eventos': eventos,
+        'info_retiro': info_retiro,  # ← INFORMACIÓN CLAVE PARA RETIRO
+        'ultima_actualizacion': datetime.now()
+    }
+
+
+# --- SISTEMA DE ALERTAS PARA PUERTOS ---
+class SistemaAlertasPuertos:
+    def __init__(self):
+        self.alertas_file = Path(__file__).parent / "data" / "alertas_puertos_log.json"
+        self.umbrales = {
+            'critico': {'congestion': 85, 'tiempo_espera': 72, 'saturacion': 85},
+            'alto': {'congestion': 70, 'tiempo_espera': 48, 'saturacion': 70},
+            'medio': {'congestion': 60, 'tiempo_espera': 24, 'saturacion': 60}
+        }
+        self.alertas_activas = []
+        self.cargar_historial()
+    
+    def cargar_historial(self):
+        """Carga el historial de alertas de puertos"""
+        try:
+            if self.alertas_file.exists():
+                with open(self.alertas_file, 'r', encoding='utf-8') as f:
+                    self.historial = json.load(f)
+            else:
+                self.historial = []
+        except:
+            self.historial = []
+    
+    def guardar_alerta(self, alerta):
+        """Guarda una alerta en el historial"""
+        try:
+            self.historial.append(alerta)
+            self.historial = self.historial[-100:]
+            self.alertas_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.alertas_file, 'w', encoding='utf-8') as f:
+                json.dump(self.historial, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            pass
+    
+    def evaluar_puertos(self, df_puertos):
+        """Evalúa el estado de los puertos y genera alertas"""
+        self.alertas_activas = []
+        timestamp = datetime.now().isoformat()
+        
+        for idx, row in df_puertos.iterrows():
+            puerto = row['Puerto']
+            saturacion = row.get('Saturacion', 0)
+            tiempo_espera = row.get('Tiempo_Espera_hrs', 0)
+            congestion = row.get('Indice_Congestion', 0)
+            
+            nivel = None
+            mensaje = ""
+            
+            if saturacion >= self.umbrales['critico']['saturacion'] or \
+               tiempo_espera >= self.umbrales['critico']['tiempo_espera'] or \
+               congestion >= self.umbrales['critico']['congestion']:
+                nivel = '🔴 CRÍTICO'
+                mensaje = f"Saturación: {saturacion}% | Espera: {tiempo_espera}hrs | Congestión: {congestion}%"
+            elif saturacion >= self.umbrales['alto']['saturacion'] or \
+                 tiempo_espera >= self.umbrales['alto']['tiempo_espera'] or \
+                 congestion >= self.umbrales['alto']['congestion']:
+                nivel = '🟠 ALTO'
+                mensaje = f"Saturación: {saturacion}% | Espera: {tiempo_espera}hrs | Congestión: {congestion}%"
+            elif saturacion >= self.umbrales['medio']['saturacion'] or \
+                 tiempo_espera >= self.umbrales['medio']['tiempo_espera'] or \
+                 congestion >= self.umbrales['medio']['congestion']:
+                nivel = '🟡 MEDIO'
+                mensaje = f"Saturación: {saturacion}% | Espera: {tiempo_espera}hrs | Congestión: {congestion}%"
+            
+            if nivel:
+                alerta = {
+                    'timestamp': timestamp,
+                    'puerto': puerto,
+                    'nivel': nivel,
+                    'mensaje': mensaje,
+                    'saturacion': saturacion,
+                    'tiempo_espera': tiempo_espera,
+                    'congestion': congestion
+                }
+                self.alertas_activas.append(alerta)
+                self.guardar_alerta(alerta)
+        
+        return self.alertas_activas
+    
+    def obtener_estadisticas_alertas(self):
+        """Obtiene estadísticas del historial de alertas"""
+        if not self.historial:
+            return None
+        
+        ahora = datetime.now()
+        alertas_24h = [a for a in self.historial 
+                      if (ahora - datetime.fromisoformat(a['timestamp'])).total_seconds() < 86400]
+        
+        if not alertas_24h:
+            return None
+        
+        alertas_criticas_24h = len([a for a in alertas_24h if '🔴' in a['nivel']])
+        
+        puertos_con_alertas = {}
+        for alerta in alertas_24h:
+            puerto = alerta['puerto']
+            puertos_con_alertas[puerto] = puertos_con_alertas.get(puerto, 0) + 1
+        
+        puerto_mas_alertas = max(puertos_con_alertas.items(), key=lambda x: x[1])[0] if puertos_con_alertas else "N/A"
+        
+        saturaciones = [a['saturacion'] for a in alertas_24h if 'saturacion' in a]
+        promedio_saturacion = sum(saturaciones) / len(saturaciones) if saturaciones else 0
+        
+        return {
+            'total_alertas_24h': len(alertas_24h),
+            'alertas_criticas_24h': alertas_criticas_24h,
+            'puerto_mas_alertas': puerto_mas_alertas,
+            'promedio_saturacion': promedio_saturacion
+        }
+
+
+# --- FUNCIÓN: Cargar datos reales de puertos ---
+def cargar_datos_puertos_reales():
+    """Carga datos reales de puertos desde CSV o genera datos simulados enriquecidos"""
+    try:
+        csv_path = Path(__file__).parent / "data" / "puertos_latest.csv"
+        
+        if csv_path.exists():
+            df_puertos = pd.read_csv(csv_path)
+            
+            # Validar columnas esperadas
+            if 'Puerto' in df_puertos.columns:
+                # Enriquecer con métricas adicionales si no existen
+                if 'Tiempo_Espera_hrs' not in df_puertos.columns:
+                    df_puertos['Tiempo_Espera_hrs'] = df_puertos.get('Vol_Actual', df_puertos.get('Saturacion', 50)) / 5000 + np.random.uniform(12, 48, len(df_puertos))
+                
+                if 'Indice_Congestion' not in df_puertos.columns:
+                    df_puertos['Indice_Congestion'] = df_puertos.get('Saturacion', np.random.uniform(40, 85, len(df_puertos)))
+                
+                if 'Buques_Esperando' not in df_puertos.columns:
+                    df_puertos['Buques_Esperando'] = (df_puertos['Tiempo_Espera_hrs'] / 12).astype(int) + np.random.randint(0, 5, len(df_puertos))
+                
+                return df_puertos
+        
+        # Si no existe CSV, generar datos simulados enriquecidos
+        puerto_data = {
+            'Puerto': ['Manzanillo', 'Veracruz', 'Lázaro Cárdenas', 'Altamira', 'Ensenada', 'Tuxpan'],
+            'Vol_Actual': [320000, 110000, 180000, 95000, 75000, 45000],
+            'Capacidad': [350000, 180000, 220000, 150000, 120000, 80000],
+            'Operaciones': [450, 280, 320, 210, 180, 120],
+            'Lat': [19.0522, 19.1738, 17.9585, 22.3943, 31.8667, 20.9577],
+            'Lon': [-104.3158, -96.1342, -102.1891, -97.9377, -116.6000, -97.4054],
+            'Tipo_Carga': ['Contenedores', 'Granel/General', 'Contenedores', 'Granel/Petróleo', 'Contenedores/Cruceros', 'Petróleo/Granel'],
+            'Tiempo_Espera_hrs': [36, 18, 28, 24, 20, 15],
+            'Indice_Congestion': [78, 52, 68, 58, 45, 35],
+            'Buques_Esperando': [8, 3, 6, 5, 4, 2]
+        }
+        
+        df_puertos = pd.DataFrame(puerto_data)
+        return df_puertos
+        
+    except Exception as e:
+        st.error(f"❌ Error al cargar datos de puertos: {e}")
+        return None
+
+
+# --- FUNCIÓN: Calcular rutas marítimas y costos ---
+def calcular_rutas_maritimas(puerto_origen):
+    """Calcula rutas, costos y tiempos desde un puerto mexicano a destinos clave"""
+    rutas = {
+        'Manzanillo': [
+            {'destino': 'Los Angeles', 'distancia_nm': 1450, 'tiempo_dias': 4, 'costo_usd': 850, 'via': 'Directa'},
+            {'destino': 'Shanghai', 'distancia_nm': 6200, 'tiempo_dias': 18, 'costo_usd': 2800, 'via': 'Transpacífico'},
+            {'destino': 'Houston', 'distancia_nm': 2100, 'tiempo_dias': 8, 'costo_usd': 1200, 'via': 'Canal de Panamá'},
+            {'destino': 'Rotterdam', 'distancia_nm': 8500, 'tiempo_dias': 28, 'costo_usd': 3500, 'via': 'Canal de Panamá'}
+        ],
+        'Veracruz': [
+            {'destino': 'Miami', 'distancia_nm': 1100, 'tiempo_dias': 4, 'costo_usd': 700, 'via': 'Golfo de México'},
+            {'destino': 'Houston', 'distancia_nm': 850, 'tiempo_dias': 3, 'costo_usd': 600, 'via': 'Golfo de México'},
+            {'destino': 'Rotterdam', 'distancia_nm': 5200, 'tiempo_dias': 18, 'costo_usd': 2200, 'via': 'Atlántico'},
+            {'destino': 'Santos', 'distancia_nm': 4800, 'tiempo_dias': 16, 'costo_usd': 1900, 'via': 'Atlántico Sur'}
+        ],
+        'Lázaro Cárdenas': [
+            {'destino': 'Los Angeles', 'distancia_nm': 1520, 'tiempo_dias': 4, 'costo_usd': 900, 'via': 'Directa'},
+            {'destino': 'Shanghai', 'distancia_nm': 6350, 'tiempo_dias': 19, 'costo_usd': 2900, 'via': 'Transpacífico'},
+            {'destino': 'Houston', 'distancia_nm': 2200, 'tiempo_dias': 8, 'costo_usd': 1250, 'via': 'Canal de Panamá'},
+            {'destino': 'Vancouver', 'distancia_nm': 2800, 'tiempo_dias': 9, 'costo_usd': 1400, 'via': 'Costa Pacífico'}
+        ],
+        'Altamira': [
+            {'destino': 'Houston', 'distancia_nm': 520, 'tiempo_dias': 2, 'costo_usd': 450, 'via': 'Golfo de México'},
+            {'destino': 'New Orleans', 'distancia_nm': 680, 'tiempo_dias': 3, 'costo_usd': 550, 'via': 'Golfo de México'},
+            {'destino': 'Miami', 'distancia_nm': 1200, 'tiempo_dias': 4, 'costo_usd': 750, 'via': 'Golfo de México'},
+            {'destino': 'Rotterdam', 'distancia_nm': 5400, 'tiempo_dias': 19, 'costo_usd': 2300, 'via': 'Atlántico'}
+        ],
+        'Ensenada': [
+            {'destino': 'Los Angeles', 'distancia_nm': 280, 'tiempo_dias': 1, 'costo_usd': 350, 'via': 'Cabotaje'},
+            {'destino': 'San Francisco', 'distancia_nm': 520, 'tiempo_dias': 2, 'costo_usd': 450, 'via': 'Costa Pacífico'},
+            {'destino': 'Shanghai', 'distancia_nm': 5800, 'tiempo_dias': 17, 'costo_usd': 2600, 'via': 'Transpacífico'},
+            {'destino': 'Vancouver', 'distancia_nm': 1100, 'tiempo_dias': 4, 'costo_usd': 700, 'via': 'Costa Pacífico'}
+        ],
+        'Tuxpan': [
+            {'destino': 'Houston', 'distancia_nm': 920, 'tiempo_dias': 3, 'costo_usd': 650, 'via': 'Golfo de México'},
+            {'destino': 'Tampa', 'distancia_nm': 1050, 'tiempo_dias': 4, 'costo_usd': 700, 'via': 'Golfo de México'},
+            {'destino': 'Miami', 'distancia_nm': 1250, 'tiempo_dias': 5, 'costo_usd': 800, 'via': 'Golfo de México'},
+            {'destino': 'Rotterdam', 'distancia_nm': 5300, 'tiempo_dias': 18, 'costo_usd': 2250, 'via': 'Atlántico'}
+        ]
+    }
+    
+    return rutas.get(puerto_origen, [])
+
+
+# --- FUNCIÓN: Generar datos de buques en tiempo real ---
+def generar_buques_tiempo_real(puerto):
+    """Genera datos simulados de buques en puerto o en tránsito"""
+    tipos_buque = ['Portacontenedores', 'Granelero', 'Petrolero', 'Ro-Ro', 'Carga General']
+    estados = ['En Puerto', 'Aproximándose', 'En Descarga', 'En Carga', 'Saliendo']
+    
+    num_buques = np.random.randint(3, 12)
+    buques = []
+    
+    for i in range(num_buques):
+        tipo = np.random.choice(tipos_buque)
+        estado = np.random.choice(estados)
+        
+        # Generar ETA basado en estado
+        if estado == 'En Puerto':
+            eta_hrs = 0
+            etd_hrs = np.random.randint(6, 48)
+        elif estado == 'Aproximándose':
+            eta_hrs = np.random.randint(2, 24)
+            etd_hrs = eta_hrs + np.random.randint(24, 72)
+        elif estado == 'En Descarga' or estado == 'En Carga':
+            eta_hrs = 0
+            etd_hrs = np.random.randint(12, 36)
+        else:  # Saliendo
+            eta_hrs = 0
+            etd_hrs = np.random.randint(1, 6)
+        
+        buque = {
+            'Nombre': f"{tipo[:3].upper()}-{1000+i}",
+            'Tipo': tipo,
+            'Estado': estado,
+            'ETA_hrs': eta_hrs,
+            'ETD_hrs': etd_hrs,
+            'Carga_TEUs': np.random.randint(500, 8000) if tipo == 'Portacontenedores' else 0,
+            'Bandera': np.random.choice(['Panamá', 'Liberia', 'México', 'Malta', 'Singapur'])
+        }
+        buques.append(buque)
+    
+    return pd.DataFrame(buques)
+
+
 def page_mapa_autotransporte():
     """Análisis geográfico de puertos marítimos y operaciones portuarias."""
     
@@ -3784,9 +5153,31 @@ def page_mapa_autotransporte():
                     margin-bottom: 30px;
                     box-shadow: 0 8px 20px rgba(17, 16, 29, 0.3);'>
             <h1 style='color: white; margin: 0; font-size: 2.5rem; font-weight: 700;'>⚓ Puertos Marítimos Mexicanos</h1>
-            <p style='color: #29B5E8; font-size: 1.2rem; font-weight: 500; margin-top: 10px; margin-bottom: 0;'>Análisis de capacidad, operaciones y saturación portuaria</p>
+            <p style='color: #29B5E8; font-size: 1.2rem; font-weight: 500; margin-top: 10px; margin-bottom: 0;'>Análisis de capacidad, operaciones, congestión y seguimiento de buques</p>
         </div>
     """, unsafe_allow_html=True)
+    
+    # Inicializar sistema de alertas de puertos
+    if 'sistema_alertas_puertos' not in st.session_state:
+        st.session_state.sistema_alertas_puertos = SistemaAlertasPuertos()
+    
+    sistema_alertas = st.session_state.sistema_alertas_puertos
+    
+    # Botones de control
+    col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
+    with col_btn1:
+        btn_recargar = st.button("🔄 Recargar Datos", help="Recarga datos de puertos", key="btn_recargar_puertos")
+    with col_btn2:
+        usar_datos_reales = st.checkbox("📊 Datos Reales", value=False, help="Alternar entre datos simulados y reales", key="check_real_puertos")
+    with col_btn3:
+        st.caption("📡 Monitoreo en tiempo real de puertos marítimos")
+    
+    # Cargar datos de puertos
+    df_puertos = cargar_datos_puertos_reales()
+    
+    if df_puertos is None or df_puertos.empty:
+        st.error("❌ No se pudieron cargar datos de puertos")
+        return
     
     # Función para calcular índice de saturación
     def calcular_indice_saturacion(volumen, capacidad):
@@ -3799,26 +5190,81 @@ def page_mapa_autotransporte():
             status = "Normal"
         return round(idx, 2), status
     
-    # Datos de puertos principales de México
-    puerto_data = {
-        'Puerto': ['Manzanillo', 'Veracruz', 'Lázaro Cárdenas', 'Altamira', 'Ensenada'],
-        'Vol_Actual': [320000, 110000, 180000, 95000, 75000],  # TEUs/mes
-        'Capacidad': [350000, 180000, 220000, 150000, 120000],  # TEUs/mes
-        'Operaciones': [450, 280, 320, 210, 180],  # Operaciones diarias
-        'Lat': [19.0522, 19.1738, 17.9585, 22.3943, 31.8667],
-        'Lon': [-104.3158, -96.1342, -102.1891, -97.9377, -116.6000],
-        'Tipo_Carga': ['Contenedores', 'Granel/General', 'Contenedores', 'Granel/Petróleo', 'Contenedores/Cruceros']
-    }
+    # Asegurar que las columnas necesarias existan
+    if 'Vol_Actual' not in df_puertos.columns:
+        df_puertos['Vol_Actual'] = np.random.randint(50000, 300000, len(df_puertos))
     
-    df_puertos = pd.DataFrame(puerto_data)
+    if 'Capacidad' not in df_puertos.columns:
+        df_puertos['Capacidad'] = df_puertos['Vol_Actual'] * np.random.uniform(1.1, 1.5, len(df_puertos))
     
-    # Calcular saturación y estado
-    df_puertos['Saturacion'], df_puertos['Estado'] = zip(*df_puertos.apply(
-        lambda x: calcular_indice_saturacion(x['Vol_Actual'], x['Capacidad']), axis=1
-    ))
+    if 'Operaciones' not in df_puertos.columns:
+        df_puertos['Operaciones'] = np.random.randint(100, 500, len(df_puertos))
+    
+    if 'Lat' not in df_puertos.columns or 'Lon' not in df_puertos.columns:
+        # Coordenadas predeterminadas para puertos principales
+        coords_default = {
+            'Manzanillo': (19.0522, -104.3158),
+            'Veracruz': (19.1738, -96.1342),
+            'Lázaro Cárdenas': (17.9585, -102.1891),
+            'Altamira': (22.3943, -97.9377),
+            'Ensenada': (31.8667, -116.6000),
+            'Tuxpan': (20.9577, -97.4054)
+        }
+        df_puertos['Lat'] = df_puertos['Puerto'].map(lambda x: coords_default.get(x, (20.0, -100.0))[0])
+        df_puertos['Lon'] = df_puertos['Puerto'].map(lambda x: coords_default.get(x, (20.0, -100.0))[1])
+    
+    if 'Tipo_Carga' not in df_puertos.columns:
+        df_puertos['Tipo_Carga'] = 'Contenedores'
+    
+    # Calcular saturación y estado si no existen
+    if 'Saturacion' not in df_puertos.columns or 'Estado' not in df_puertos.columns:
+        df_puertos['Saturacion'], df_puertos['Estado'] = zip(*df_puertos.apply(
+            lambda x: calcular_indice_saturacion(x['Vol_Actual'], x['Capacidad']), axis=1
+        ))
     
     # Calcular capacidad disponible
     df_puertos['Capacidad_Disponible'] = df_puertos['Capacidad'] - df_puertos['Vol_Actual']
+    
+    # Evaluar alertas
+    alertas = sistema_alertas.evaluar_puertos(df_puertos)
+    stats_alertas = sistema_alertas.obtener_estadisticas_alertas()
+    
+    st.markdown("---")
+    
+    # ============ SISTEMA DE ALERTAS ============
+    st.subheader("🚨 Sistema de Alertas Portuarias")
+    
+    if alertas:
+        alertas_criticas = [a for a in alertas if '🔴' in a['nivel']]
+        alertas_altas = [a for a in alertas if '🟠' in a['nivel']]
+        alertas_medias = [a for a in alertas if '🟡' in a['nivel']]
+        
+        col_alert1, col_alert2, col_alert3 = st.columns(3)
+        with col_alert1:
+            st.metric("🔴 Alertas Críticas", len(alertas_criticas), help="Congestión >85% o Espera >72hrs")
+        with col_alert2:
+            st.metric("🟠 Alertas Altas", len(alertas_altas), help="Congestión >70% o Espera >48hrs")
+        with col_alert3:
+            st.metric("🟡 Alertas Medias", len(alertas_medias), help="Congestión >60% o Espera >24hrs")
+        
+        if alertas_criticas:
+            st.markdown("<div style='background-color: #EF553B; color: white; padding: 15px; border-radius: 10px; margin: 10px 0;'><h3 style='color: white; margin: 0;'>🔴 ALERTAS CRÍTICAS</h3></div>", unsafe_allow_html=True)
+            for alerta in alertas_criticas:
+                st.markdown(f"<div style='background-color: #ffebee; border-left: 4px solid #EF553B; padding: 12px; margin: 8px 0; border-radius: 5px;'><span style='color: #11101D; font-weight: 600;'>{alerta['puerto']}</span> - <span style='color: #333;'>{alerta['mensaje']}</span></div>", unsafe_allow_html=True)
+        
+        if alertas_altas:
+            with st.expander(f"🟠 Ver {len(alertas_altas)} Alertas de Nivel Alto"):
+                for alerta in alertas_altas:
+                    st.warning(f"**{alerta['puerto']}** - {alerta['mensaje']}")
+        
+        if alertas_medias:
+            with st.expander(f"🟡 Ver {len(alertas_medias)} Alertas de Nivel Medio"):
+                for alerta in alertas_medias:
+                    st.info(f"**{alerta['puerto']}** - {alerta['mensaje']}")
+    else:
+        st.success("✅ No hay alertas activas. Todos los puertos operan en niveles normales.")
+    
+    st.markdown("---")
     
     # ============ MÉTRICAS PRINCIPALES ============
     st.markdown("""
@@ -4061,6 +5507,773 @@ def page_mapa_autotransporte():
         margin=dict(l=0, r=0, t=0, b=0)
     )
     st.plotly_chart(fig_mapa, use_container_width=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # ============ ANÁLISIS DE TIEMPOS DE ESPERA Y CONGESTIÓN ============
+    st.markdown("""
+        <div style='background: linear-gradient(135deg, #4070F4 0%, #29B5E8 100%); 
+                    color: white; 
+                    padding: 15px 20px; 
+                    border-radius: 10px; 
+                    margin: 20px 0;
+                    box-shadow: 0 4px 12px rgba(64, 112, 244, 0.2);'>
+            <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>⏱️ Tiempos de Espera y Congestión Portuaria</h3>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    col_tiempo1, col_tiempo2 = st.columns([1, 1])
+    
+    with col_tiempo1:
+        st.markdown("<h4 style='color: #11101D; font-weight: 600;'>Tiempos de Espera por Puerto</h4>", unsafe_allow_html=True)
+        
+        # Gráfico de barras de tiempos de espera
+        fig_espera = px.bar(
+            df_puertos.sort_values('Tiempo_Espera_hrs', ascending=False),
+            x='Tiempo_Espera_hrs',
+            y='Puerto',
+            orientation='h',
+            text='Tiempo_Espera_hrs',
+            labels={'Tiempo_Espera_hrs': 'Horas de Espera'},
+            color='Tiempo_Espera_hrs',
+            color_continuous_scale=['#4CAF50', '#FFA726', '#EF553B']
+        )
+        fig_espera.update_traces(texttemplate='%{text:.0f}hrs', textposition='outside')
+        fig_espera.update_layout(
+            height=300,
+            showlegend=False,
+            title_font_color='#11101D',
+            font=dict(color='#11101D', family='Inter'),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=0, r=0, t=10, b=0)
+        )
+        st.plotly_chart(fig_espera, use_container_width=True)
+        
+        # Métricas de tiempo
+        col_t1, col_t2 = st.columns(2)
+        with col_t1:
+            tiempo_promedio = df_puertos['Tiempo_Espera_hrs'].mean()
+            st.metric("⏰ Tiempo Promedio Espera", f"{tiempo_promedio:.1f} hrs")
+        with col_t2:
+            puerto_max_espera = df_puertos.loc[df_puertos['Tiempo_Espera_hrs'].idxmax(), 'Puerto']
+            st.metric("🔴 Puerto con Mayor Espera", puerto_max_espera)
+    
+    with col_tiempo2:
+        st.markdown("<h4 style='color: #11101D; font-weight: 600;'>Índice de Congestión</h4>", unsafe_allow_html=True)
+        
+        # Gráfico de gauge para congestión
+        fig_congestion = px.bar(
+            df_puertos.sort_values('Indice_Congestion', ascending=False),
+            x='Indice_Congestion',
+            y='Puerto',
+            orientation='h',
+            text='Indice_Congestion',
+            labels={'Indice_Congestion': '% Congestión'},
+            color='Indice_Congestion',
+            color_continuous_scale=['#4CAF50', '#FFA726', '#EF553B']
+        )
+        fig_congestion.update_traces(texttemplate='%{text:.0f}%', textposition='outside')
+        fig_congestion.update_layout(
+            height=300,
+            showlegend=False,
+            title_font_color='#11101D',
+            font=dict(color='#11101D', family='Inter'),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=0, r=0, t=10, b=0)
+        )
+        st.plotly_chart(fig_congestion, use_container_width=True)
+        
+        # Métricas de congestión
+        col_c1, col_c2 = st.columns(2)
+        with col_c1:
+            congestion_promedio = df_puertos['Indice_Congestion'].mean()
+            st.metric("📊 Congestión Promedio", f"{congestion_promedio:.1f}%")
+        with col_c2:
+            total_buques_esperando = df_puertos['Buques_Esperando'].sum()
+            st.metric("🚢 Buques en Espera", f"{total_buques_esperando}")
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # ============ COMPARACIÓN DE RUTAS MARÍTIMAS ============
+    st.markdown("""
+        <div style='background: linear-gradient(135deg, #4070F4 0%, #29B5E8 100%); 
+                    color: white; 
+                    padding: 15px 20px; 
+                    border-radius: 10px; 
+                    margin: 20px 0;
+                    box-shadow: 0 4px 12px rgba(64, 112, 244, 0.2);'>
+            <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>🌊 Comparación de Rutas Marítimas y Costos</h3>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Selector de puerto de origen
+    puerto_seleccionado = st.selectbox(
+        "Selecciona el puerto de origen:",
+        options=df_puertos['Puerto'].tolist(),
+        key="select_puerto_rutas"
+    )
+    
+    # Obtener rutas desde el puerto seleccionado
+    rutas = calcular_rutas_maritimas(puerto_seleccionado)
+    
+    if rutas:
+        df_rutas = pd.DataFrame(rutas)
+        
+        col_ruta1, col_ruta2 = st.columns([1, 1])
+        
+        with col_ruta1:
+            st.markdown(f"<h4 style='color: #11101D; font-weight: 600;'>Rutas desde {puerto_seleccionado}</h4>", unsafe_allow_html=True)
+            
+            # Tabla de rutas
+            st.dataframe(
+                df_rutas[['destino', 'distancia_nm', 'tiempo_dias', 'costo_usd', 'via']].style.format({
+                    'distancia_nm': '{:,.0f} NM',
+                    'tiempo_dias': '{:.0f} días',
+                    'costo_usd': '${:,.0f}'
+                }),
+                use_container_width=True,
+                height=250
+            )
+            
+            # Métricas de rutas
+            col_r1, col_r2 = st.columns(2)
+            with col_r1:
+                ruta_mas_rapida = df_rutas.loc[df_rutas['tiempo_dias'].idxmin()]
+                st.metric("⚡ Ruta Más Rápida", f"{ruta_mas_rapida['destino']}", f"{ruta_mas_rapida['tiempo_dias']} días")
+            with col_r2:
+                ruta_mas_economica = df_rutas.loc[df_rutas['costo_usd'].idxmin()]
+                st.metric("💰 Ruta Más Económica", f"{ruta_mas_economica['destino']}", f"${ruta_mas_economica['costo_usd']:,.0f}")
+        
+        with col_ruta2:
+            st.markdown("<h4 style='color: #11101D; font-weight: 600;'>Comparativa de Costos por Destino</h4>", unsafe_allow_html=True)
+            
+            # Gráfico de costos
+            fig_costos = px.bar(
+                df_rutas.sort_values('costo_usd', ascending=True),
+                y='destino',
+                x='costo_usd',
+                orientation='h',
+                text='costo_usd',
+                labels={'costo_usd': 'Costo USD', 'destino': 'Destino'},
+                color='tiempo_dias',
+                color_continuous_scale='Viridis'
+            )
+            fig_costos.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+            fig_costos.update_layout(
+                height=250,
+                title_font_color='#11101D',
+                font=dict(color='#11101D', family='Inter'),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                margin=dict(l=0, r=0, t=10, b=0),
+                coloraxis_colorbar_title="Días"
+            )
+            st.plotly_chart(fig_costos, use_container_width=True)
+            
+            # Gráfico de scatter tiempo vs costo
+            st.markdown("<h4 style='color: #11101D; font-weight: 600;'>Relación Tiempo vs Costo</h4>", unsafe_allow_html=True)
+            fig_scatter = px.scatter(
+                df_rutas,
+                x='tiempo_dias',
+                y='costo_usd',
+                text='destino',
+                size='distancia_nm',
+                color='via',
+                labels={'tiempo_dias': 'Tiempo (días)', 'costo_usd': 'Costo (USD)', 'via': 'Vía'}
+            )
+            fig_scatter.update_traces(textposition='top center')
+            fig_scatter.update_layout(
+                height=300,
+                title_font_color='#11101D',
+                font=dict(color='#11101D', family='Inter'),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                margin=dict(l=0, r=0, t=10, b=0)
+            )
+            st.plotly_chart(fig_scatter, use_container_width=True)
+    else:
+        st.warning(f"⚠️ No hay rutas disponibles desde {puerto_seleccionado}")
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # ============ SEGUIMIENTO DE BUQUES EN TIEMPO REAL ============
+    st.markdown("""
+        <div style='background: linear-gradient(135deg, #4070F4 0%, #29B5E8 100%); 
+                    color: white; 
+                    padding: 15px 20px; 
+                    border-radius: 10px; 
+                    margin: 20px 0;
+                    box-shadow: 0 4px 12px rgba(64, 112, 244, 0.2);'>
+            <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>🚢 Seguimiento de Buques en Tiempo Real</h3>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Selector de puerto para seguimiento
+    puerto_seguimiento = st.selectbox(
+        "Selecciona el puerto para ver buques:",
+        options=df_puertos['Puerto'].tolist(),
+        key="select_puerto_seguimiento"
+    )
+    
+    # Generar datos de buques
+    df_buques = generar_buques_tiempo_real(puerto_seguimiento)
+    
+    st.markdown(f"<h4 style='color: #11101D; font-weight: 600;'>Buques en {puerto_seguimiento}</h4>", unsafe_allow_html=True)
+    
+    # Métricas de buques
+    col_b1, col_b2, col_b3, col_b4 = st.columns(4)
+    with col_b1:
+        total_buques = len(df_buques)
+        st.metric("🚢 Total Buques", total_buques)
+    with col_b2:
+        buques_puerto = len(df_buques[df_buques['Estado'] == 'En Puerto'])
+        st.metric("⚓ En Puerto", buques_puerto)
+    with col_b3:
+        buques_aproximando = len(df_buques[df_buques['Estado'] == 'Aproximándose'])
+        st.metric("🔵 Aproximándose", buques_aproximando)
+    with col_b4:
+        total_teus = df_buques['Carga_TEUs'].sum()
+        st.metric("📦 Total TEUs", f"{total_teus:,.0f}")
+    
+    # Tabla de buques con formato mejorado
+    col_tabla_buques, col_grafico_buques = st.columns([2, 1])
+    
+    with col_tabla_buques:
+        st.markdown("<p style='color: #11101D; font-weight: 600; margin-top: 15px;'>Estado de Buques</p>", unsafe_allow_html=True)
+        
+        # Función para colorear estados
+        def color_estado_buque(val):
+            if val == 'En Puerto':
+                return 'background-color: #E8F5E9; color: #4CAF50; font-weight: 600;'
+            elif val == 'Aproximándose':
+                return 'background-color: #E3F2FD; color: #2196F3; font-weight: 600;'
+            elif val == 'En Descarga' or val == 'En Carga':
+                return 'background-color: #FFF3E0; color: #FFA726; font-weight: 600;'
+            else:
+                return 'background-color: #F3E5F5; color: #9C27B0; font-weight: 600;'
+        
+        st.dataframe(
+            df_buques.style.format({
+                'ETA_hrs': '{:.0f}hrs',
+                'ETD_hrs': '{:.0f}hrs',
+                'Carga_TEUs': '{:,.0f}'
+            }).applymap(color_estado_buque, subset=['Estado']),
+            use_container_width=True,
+            height=300
+        )
+    
+    with col_grafico_buques:
+        st.markdown("<p style='color: #11101D; font-weight: 600; margin-top: 15px;'>Distribución por Estado</p>", unsafe_allow_html=True)
+        
+        # Gráfico de dona de estados
+        estados_count = df_buques['Estado'].value_counts().reset_index()
+        estados_count.columns = ['Estado', 'Cantidad']
+        
+        fig_estados = px.pie(
+            estados_count,
+            values='Cantidad',
+            names='Estado',
+            hole=0.4,
+            color_discrete_sequence=['#4CAF50', '#2196F3', '#FFA726', '#9C27B0', '#EF553B']
+        )
+        fig_estados.update_traces(textposition='inside', textinfo='percent+label')
+        fig_estados.update_layout(
+            height=300,
+            font=dict(color='#11101D', family='Inter'),
+            margin=dict(l=0, r=0, t=0, b=0),
+            showlegend=False
+        )
+        st.plotly_chart(fig_estados, use_container_width=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # ============ MAPA DE TRÁFICO MARÍTIMO EN TIEMPO REAL ============
+    st.markdown("""
+        <div style='background: linear-gradient(135deg, #4070F4 0%, #29B5E8 100%); 
+                    color: white; 
+                    padding: 15px 20px; 
+                    border-radius: 10px; 
+                    margin: 20px 0;
+                    box-shadow: 0 4px 12px rgba(64, 112, 244, 0.2);'>
+            <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>🌊 Mapa de Tráfico Marítimo en Tiempo Real</h3>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div style='background-color: #E3F2FD; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #2196F3;'>
+            <p style='margin: 0; color: #1565C0;'>
+                <strong>💡 Obtén datos reales:</strong> Registra tu API key gratuita en 
+                <a href='https://www.aishub.net/api' target='_blank' style='color: #1565C0; text-decoration: underline;'>AIS Hub</a> 
+                y configúrala en el archivo .env como AISHUB_API_KEY
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Obtener API key desde sidebar o .env
+    aishub_key = st.sidebar.text_input(
+        "🔑 AIS Hub API Key (opcional)",
+        type="password",
+        value=os.getenv('AISHUB_API_KEY', ''),
+        help="Obtén tu API key gratuita en https://www.aishub.net/api"
+    )
+    
+    # Cargar tráfico marítimo
+    df_trafico = obtener_trafico_maritimo_aishub(api_key=aishub_key)
+    
+    if df_trafico is not None and not df_trafico.empty:
+        # Filtros
+        col_filter1, col_filter2 = st.columns([1, 1])
+        with col_filter1:
+            tipos_disponibles = df_trafico['Tipo'].unique().tolist()
+            tipos_seleccionados = st.multiselect(
+                "Filtrar por tipo de buque:",
+                options=tipos_disponibles,
+                default=tipos_disponibles,
+                key="filter_tipo_buque"
+            )
+        
+        with col_filter2:
+            min_velocidad = st.slider(
+                "Velocidad mínima (nudos):",
+                min_value=0.0,
+                max_value=30.0,
+                value=0.0,
+                step=1.0,
+                key="filter_velocidad"
+            )
+        
+        # Aplicar filtros
+        df_filtrado = df_trafico[
+            (df_trafico['Tipo'].isin(tipos_seleccionados)) &
+            (df_trafico['Velocidad'] >= min_velocidad)
+        ]
+        
+        # Métricas de tráfico
+        col_traf1, col_traf2, col_traf3, col_traf4 = st.columns(4)
+        with col_traf1:
+            st.metric("🚢 Total Buques", len(df_filtrado))
+        with col_traf2:
+            velocidad_promedio = df_filtrado['Velocidad'].mean()
+            st.metric("⚡ Velocidad Promedio", f"{velocidad_promedio:.1f} kts")
+        with col_traf3:
+            buques_movimiento = len(df_filtrado[df_filtrado['Velocidad'] > 1])
+            st.metric("🔵 En Movimiento", buques_movimiento)
+        with col_traf4:
+            buques_fondeados = len(df_filtrado[df_filtrado['Velocidad'] <= 1])
+            st.metric("⚓ Fondeados/En Puerto", buques_fondeados)
+        
+        # Mapa interactivo con buques
+        st.markdown("<h4 style='color: #11101D; font-weight: 600; margin-top: 20px;'>Posiciones en Tiempo Real</h4>", unsafe_allow_html=True)
+        
+        # Crear mapa con scatter
+        fig_trafico = px.scatter_mapbox(
+            df_filtrado,
+            lat='Lat',
+            lon='Lon',
+            hover_name='Nombre',
+            hover_data={
+                'Tipo': True,
+                'Velocidad': ':.1f',
+                'Rumbo': ':.0f',
+                'MMSI': True,
+                'Lat': False,
+                'Lon': False
+            },
+            color='Tipo',
+            size='Velocidad',
+            size_max=15,
+            zoom=5,
+            height=600,
+            labels={'Velocidad': 'Velocidad (kts)', 'Rumbo': 'Rumbo (°)'}
+        )
+        fig_trafico.update_layout(
+            mapbox_style="open-street-map",
+            margin=dict(l=0, r=0, t=0, b=0),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
+        )
+        st.plotly_chart(fig_trafico, use_container_width=True)
+        
+        # Tabla resumen de buques
+        with st.expander("📋 Ver tabla detallada de buques"):
+            st.dataframe(
+                df_filtrado[['Nombre', 'Tipo', 'Lat', 'Lon', 'Velocidad', 'Rumbo', 'MMSI']].style.format({
+                    'Lat': '{:.4f}',
+                    'Lon': '{:.4f}',
+                    'Velocidad': '{:.1f} kts',
+                    'Rumbo': '{:.0f}°'
+                }),
+                use_container_width=True,
+                height=300
+            )
+    else:
+        st.error("❌ No se pudieron cargar datos de tráfico marítimo")
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # ============ RASTREO DE CONTENEDORES ============
+    st.markdown("""
+        <div style='background: linear-gradient(135deg, #4070F4 0%, #29B5E8 100%); 
+                    color: white; 
+                    padding: 15px 20px; 
+                    border-radius: 10px; 
+                    margin: 20px 0;
+                    box-shadow: 0 4px 12px rgba(64, 112, 244, 0.2);'>
+            <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>📦 Rastreo de Contenedores</h3>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div style='background-color: #FFF3E0; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #FFA726;'>
+            <p style='margin: 0; color: #E65100;'>
+                <strong>ℹ️ Sistema de demostración:</strong> Ingresa cualquier número de contenedor (ej: MSCU1234567) 
+                para ver cómo funciona el tracking. En producción, esto se conectaría a APIs de navieras reales.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Búsqueda de contenedor
+    col_search, col_btn = st.columns([3, 1])
+    with col_search:
+        numero_contenedor = st.text_input(
+            "🔍 Ingresa el número de contenedor:",
+            placeholder="Ej: MSCU1234567, CMAU8901234",
+            help="Formato: 4 letras + 7 números",
+            key="input_contenedor"
+        )
+    with col_btn:
+        btn_buscar = st.button("🔎 Buscar", type="primary", key="btn_buscar_contenedor", use_container_width=True)
+    
+    if btn_buscar and numero_contenedor:
+        resultado = buscar_contenedor(numero_contenedor)
+        
+        if resultado:
+            # Encabezado del contenedor
+            st.markdown(f"""
+                <div style='background: linear-gradient(135deg, #11101D 0%, #4070F4 100%); 
+                            color: white; 
+                            padding: 20px; 
+                            border-radius: 10px; 
+                            margin: 20px 0;
+                            box-shadow: 0 4px 15px rgba(17, 16, 29, 0.2);'>
+                    <h2 style='color: white; margin: 0; font-size: 1.8rem;'>📦 {resultado['numero']}</h2>
+                    <p style='color: #29B5E8; margin: 5px 0 0 0; font-size: 1.1rem;'>{resultado['naviera']} | {resultado['tipo']}</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # Métricas principales
+            col_info1, col_info2, col_info3, col_info4 = st.columns(4)
+            
+            with col_info1:
+                # Color según estado
+                color_estado = {
+                    'En Tránsito Marítimo': '#2196F3',
+                    'En Puerto': '#4CAF50',
+                    'En Aduana': '#FFA726',
+                    'En Transporte Terrestre': '#9C27B0',
+                    'Entregado': '#4CAF50',
+                    'Disponible para Retiro': '#00BCD4'
+                }.get(resultado['estado'], '#666')
+                
+                st.markdown(f"""
+                    <div style='background-color: white; 
+                                border-left: 5px solid {color_estado};
+                                padding: 15px; 
+                                border-radius: 8px;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
+                        <p style='color: #666; font-size: 0.85rem; margin: 0;'>Estado Actual</p>
+                        <h3 style='color: {color_estado}; margin: 5px 0; font-size: 1.3rem;'>{resultado['estado']}</h3>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            with col_info2:
+                st.markdown(f"""
+                    <div style='background-color: white; 
+                                border-left: 5px solid #29B5E8;
+                                padding: 15px; 
+                                border-radius: 8px;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
+                        <p style='color: #666; font-size: 0.85rem; margin: 0;'>Ubicación Actual</p>
+                        <h3 style='color: #11101D; margin: 5px 0; font-size: 1.1rem;'>{resultado['ubicacion_actual']}</h3>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            with col_info3:
+                eta_text = resultado['eta'].strftime('%d/%m/%Y') if resultado['eta'] else 'Entregado'
+                st.markdown(f"""
+                    <div style='background-color: white; 
+                                border-left: 5px solid #4070F4;
+                                padding: 15px; 
+                                border-radius: 8px;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
+                        <p style='color: #666; font-size: 0.85rem; margin: 0;'>ETA Destino</p>
+                        <h3 style='color: #11101D; margin: 5px 0; font-size: 1.1rem;'>{eta_text}</h3>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            with col_info4:
+                st.markdown(f"""
+                    <div style='background-color: white; 
+                                border-left: 5px solid #9C27B0;
+                                padding: 15px; 
+                                border-radius: 8px;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
+                        <p style='color: #666; font-size: 0.85rem; margin: 0;'>Peso</p>
+                        <h3 style='color: #11101D; margin: 5px 0; font-size: 1.1rem;'>{resultado['peso_kg']:,} kg</h3>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Ruta del contenedor
+            col_ruta_info, col_timeline = st.columns([1, 2])
+            
+            with col_ruta_info:
+                st.markdown("<h4 style='color: #11101D; font-weight: 600;'>🗺️ Ruta</h4>", unsafe_allow_html=True)
+                st.markdown(f"""
+                    <div style='background-color: #F4F7F6; padding: 15px; border-radius: 8px;'>
+                        <p style='margin: 5px 0;'><strong>Origen:</strong> {resultado['origen']}</p>
+                        <p style='margin: 5px 0;'><strong>Destino:</strong> {resultado['destino']}</p>
+                        <p style='margin: 5px 0;'><strong>Última actualización:</strong><br>{resultado['ultima_actualizacion'].strftime('%d/%m/%Y %H:%M')}</p>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            with col_timeline:
+                st.markdown("<h4 style='color: #11101D; font-weight: 600;'>📅 Historial de Eventos</h4>", unsafe_allow_html=True)
+                
+                # Timeline de eventos
+                for evento in reversed(resultado['eventos']):
+                    fecha_str = evento['fecha'].strftime('%d/%m/%Y %H:%M')
+                    st.markdown(f"""
+                        <div style='background-color: white; 
+                                    padding: 12px; 
+                                    margin: 8px 0; 
+                                    border-left: 4px solid #4070F4;
+                                    border-radius: 5px;
+                                    box-shadow: 0 1px 4px rgba(0,0,0,0.1);'>
+                            <div style='display: flex; justify-content: space-between; align-items: center;'>
+                                <div>
+                                    <strong style='color: #11101D;'>{evento['evento']}</strong>
+                                    <p style='margin: 3px 0; color: #666; font-size: 0.9rem;'>📍 {evento['ubicacion']}</p>
+                                    <p style='margin: 3px 0; color: #999; font-size: 0.85rem;'>{evento['detalles']}</p>
+                                </div>
+                                <span style='color: #4070F4; font-size: 0.85rem; white-space: nowrap; margin-left: 15px;'>{fecha_str}</span>
+                            </div>
+                        </div>
+                    """, unsafe_allow_html=True)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # ============ INFORMACIÓN DE RETIRO (SI ESTÁ DISPONIBLE) ============
+            if resultado.get('info_retiro'):
+                info = resultado['info_retiro']
+                
+                st.markdown("""
+                    <div style='background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); 
+                                color: white; 
+                                padding: 20px; 
+                                border-radius: 10px; 
+                                margin: 20px 0;
+                                box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);'>
+                        <h3 style='color: white; margin: 0; font-size: 1.5rem;'>✅ CONTENEDOR DISPONIBLE PARA RETIRO</h3>
+                        <p style='color: #E8F5E9; margin: 5px 0 0 0;'>Liberado por aduana - Listo para recolección</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                # Métricas críticas de retiro
+                col_ret1, col_ret2, col_ret3, col_ret4 = st.columns(4)
+                
+                with col_ret1:
+                    color_dias = '#EF553B' if info['dias_libres_restantes'] <= 2 else '#4CAF50'
+                    st.markdown(f"""
+                        <div style='background-color: white; 
+                                    border-left: 5px solid {color_dias};
+                                    padding: 15px; 
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
+                            <p style='color: #666; font-size: 0.85rem; margin: 0;'>Días Libres Restantes</p>
+                            <h2 style='color: {color_dias}; margin: 5px 0; font-size: 2rem;'>{info['dias_libres_restantes']}</h2>
+                            <p style='color: #999; font-size: 0.8rem; margin: 0;'>días</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                
+                with col_ret2:
+                    color_cargo = '#EF553B' if info['cargo_demora_usd'] > 0 else '#4CAF50'
+                    st.markdown(f"""
+                        <div style='background-color: white; 
+                                    border-left: 5px solid {color_cargo};
+                                    padding: 15px; 
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
+                            <p style='color: #666; font-size: 0.85rem; margin: 0;'>Cargo por Demora</p>
+                            <h2 style='color: {color_cargo}; margin: 5px 0; font-size: 2rem;'>${info['cargo_demora_usd']:,.0f}</h2>
+                            <p style='color: #999; font-size: 0.8rem; margin: 0;'>USD</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                
+                with col_ret3:
+                    st.markdown(f"""
+                        <div style='background-color: white; 
+                                    border-left: 5px solid #29B5E8;
+                                    padding: 15px; 
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
+                            <p style='color: #666; font-size: 0.85rem; margin: 0;'>Disponible Desde</p>
+                            <h3 style='color: #11101D; margin: 5px 0; font-size: 1.2rem;'>{info['fecha_disponibilidad'].strftime('%d/%m/%Y')}</h3>
+                            <p style='color: #999; font-size: 0.8rem; margin: 0;'>{info['fecha_disponibilidad'].strftime('%H:%M')}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                
+                with col_ret4:
+                    icon_cita = '📅' if info['requiere_cita'] else '✅'
+                    texto_cita = 'Requiere cita' if info['requiere_cita'] else 'Sin cita previa'
+                    st.markdown(f"""
+                        <div style='background-color: white; 
+                                    border-left: 5px solid #9C27B0;
+                                    padding: 15px; 
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
+                            <p style='color: #666; font-size: 0.85rem; margin: 0;'>Sistema de Retiro</p>
+                            <h3 style='color: #11101D; margin: 5px 0; font-size: 1.2rem;'>{icon_cita} {texto_cita}</h3>
+                            <p style='color: #999; font-size: 0.8rem; margin: 0;'>{info['terminal']['sistema_citas']}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                
+                # Observaciones importantes
+                if info['observaciones']:
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    for obs in info['observaciones']:
+                        if '⚠️' in obs or 'URGENTE' in obs:
+                            st.warning(obs)
+                        else:
+                            st.info(obs)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Información detallada de la terminal
+                col_terminal, col_horarios = st.columns([1, 1])
+                
+                with col_terminal:
+                    st.markdown("<h4 style='color: #11101D; font-weight: 600;'>🏢 Información de la Terminal</h4>", unsafe_allow_html=True)
+                    st.markdown(f"""
+                        <div style='background-color: white; 
+                                    padding: 20px; 
+                                    border-radius: 10px;
+                                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>
+                            <p style='margin: 8px 0;'><strong>Terminal:</strong> {info['terminal']['nombre']}</p>
+                            <p style='margin: 8px 0;'><strong>Dirección:</strong> {info['terminal']['direccion']}</p>
+                            <p style='margin: 8px 0;'><strong>📞 Teléfono:</strong> {info['terminal']['telefono']}</p>
+                            <p style='margin: 8px 0;'><strong>📧 Email:</strong> {info['terminal']['email']}</p>
+                            <p style='margin: 8px 0;'><strong>📍 Posición en patio:</strong> {info['posicion_patio']}</p>
+                            <p style='margin: 8px 0; padding: 10px; background-color: #E3F2FD; border-radius: 5px;'>
+                                <strong>💡 Sistema de citas:</strong> {info['terminal']['sistema_citas']}
+                            </p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                    if info['requiere_cita']:
+                        st.markdown(f"""
+                            <div style='background-color: #FFF3E0; 
+                                        padding: 15px; 
+                                        border-radius: 8px; 
+                                        margin-top: 15px;
+                                        border-left: 4px solid #FFA726;'>
+                                <p style='margin: 0;'><strong>📅 Cita sugerida:</strong></p>
+                                <p style='margin: 5px 0; font-size: 1.1rem; color: #E65100;'>
+                                    {info['cita_sugerida'].strftime('%d/%m/%Y a las %H:%M')}
+                                </p>
+                            </div>
+                        """, unsafe_allow_html=True)
+                
+                with col_horarios:
+                    st.markdown("<h4 style='color: #11101D; font-weight: 600;'>🕐 Horarios de Retiro</h4>", unsafe_allow_html=True)
+                    st.markdown(f"""
+                        <div style='background-color: white; 
+                                    padding: 20px; 
+                                    border-radius: 10px;
+                                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>
+                            <div style='padding: 12px; background-color: #E8F5E9; border-radius: 5px; margin-bottom: 10px;'>
+                                <p style='margin: 0;'><strong>Lunes a Viernes:</strong></p>
+                                <p style='margin: 5px 0; font-size: 1.2rem; color: #2E7D32;'>{info['horarios_retiro']['lunes_viernes']}</p>
+                            </div>
+                            <div style='padding: 12px; background-color: #E3F2FD; border-radius: 5px; margin-bottom: 10px;'>
+                                <p style='margin: 0;'><strong>Sábado:</strong></p>
+                                <p style='margin: 5px 0; font-size: 1.2rem; color: #1976D2;'>{info['horarios_retiro']['sabado']}</p>
+                            </div>
+                            <div style='padding: 12px; background-color: #FFEBEE; border-radius: 5px;'>
+                                <p style='margin: 0;'><strong>Domingo:</strong></p>
+                                <p style='margin: 5px 0; font-size: 1.2rem; color: #C62828;'>{info['horarios_retiro']['domingo']}</p>
+                            </div>
+                            <div style='margin-top: 15px; padding: 12px; background-color: #FFF9C4; border-radius: 5px;'>
+                                <p style='margin: 0; color: #F57F17;'><strong>⚠️ Contacto de Emergencia:</strong></p>
+                                <p style='margin: 5px 0; font-size: 1.1rem; color: #F57F17;'>{info['contacto_emergencia']}</p>
+                            </div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Documentación requerida
+                st.markdown("<h4 style='color: #11101D; font-weight: 600;'>📋 Documentación Requerida para Retiro</h4>", unsafe_allow_html=True)
+                
+                col_docs1, col_docs2 = st.columns(2)
+                for idx, doc in enumerate(info['documentacion_requerida']):
+                    col = col_docs1 if idx % 2 == 0 else col_docs2
+                    with col:
+                        st.markdown(f"""
+                            <div style='background-color: white; 
+                                        padding: 12px; 
+                                        margin: 5px 0; 
+                                        border-left: 4px solid #4070F4;
+                                        border-radius: 5px;
+                                        box-shadow: 0 1px 4px rgba(0,0,0,0.1);'>
+                                <p style='margin: 0; color: #11101D;'>✓ {doc}</p>
+                            </div>
+                        """, unsafe_allow_html=True)
+                
+                # Botón de acción (simulado)
+                st.markdown("<br>", unsafe_allow_html=True)
+                col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 1])
+                with col_btn1:
+                    if st.button("📅 Programar Cita de Retiro", type="primary", use_container_width=True, key="btn_cita"):
+                        st.success("✅ Funcionalidad de programación de citas próximamente disponible")
+                with col_btn2:
+                    if st.button("📄 Descargar Documentación", use_container_width=True, key="btn_docs"):
+                        st.info("📄 Generando checklist de documentos...")
+                with col_btn3:
+                    if st.button("📧 Notificar al Transportista", use_container_width=True, key="btn_notify"):
+                        st.info("📧 Sistema de notificaciones próximamente disponible")
+            
+            elif resultado['estado'] in ['En Aduana - Pendiente Liberación', 'En Puerto - Descargando']:
+                # Mostrar ETA de disponibilidad
+                st.markdown(f"""
+                    <div style='background-color: #FFF3E0; 
+                                padding: 20px; 
+                                border-radius: 10px; 
+                                margin: 20px 0;
+                                border-left: 6px solid #FFA726;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>
+                        <h4 style='color: #E65100; margin: 0 0 10px 0;'>⏳ Contenedor en proceso</h4>
+                        <p style='margin: 5px 0; font-size: 1.1rem; color: #666;'>
+                            <strong>Estado actual:</strong> {resultado['estado']}
+                        </p>
+                        <p style='margin: 5px 0; font-size: 1.1rem; color: #666;'>
+                            <strong>Disponibilidad estimada:</strong> {resultado['eta'].strftime('%d/%m/%Y %H:%M') if resultado['eta'] else 'Calculando...'}
+                        </p>
+                        <p style='margin: 15px 0 0 0; padding: 12px; background-color: #FFECB3; border-radius: 5px; color: #E65100;'>
+                            💡 <strong>Recomendación:</strong> Mantén tu documentación lista para agilizar el retiro una vez liberado
+                        </p>
+                    </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.error("❌ Contenedor no encontrado. Verifica el número e intenta nuevamente.")
 
 
 def page_corredores_logisticos():
