@@ -1218,20 +1218,25 @@ def aduana_esta_abierta(aduana_nombre, fecha, hora=None):
                 # Convertir a time objects
                 apertura = datetime.strptime(apertura_str.strip(), '%H:%M').time()
                 
-                # Manejar medianoche (00:00 o 24:00)
-                if cierre_str.strip() == '00:00' or cierre_str.strip() == '24:00':
-                    cierre = datetime.strptime('23:59', '%H:%M').time()
+                # Manejar medianoche (00:00 o 24:00) - hasta el final del día
+                if cierre_str.strip() in ['00:00', '24:00']:
+                    # Medianoche significa que está abierto hasta las 23:59:59
+                    # Si la hora de apertura es menor que la hora actual, está abierto
+                    if hora_actual >= apertura:
+                        return {'abierta': True, 'mensaje': f'Abierto ({apertura_str.strip()} - 00:00)', 'festivo': None}
+                    else:
+                        return {'abierta': False, 'mensaje': f'Cerrado (Abre a las {apertura_str.strip()})', 'festivo': None}
                 else:
                     cierre = datetime.strptime(cierre_str.strip(), '%H:%M').time()
-                
-                # Verificar si hora actual está en el rango
-                if apertura <= hora_actual <= cierre:
-                    return {'abierta': True, 'mensaje': f'Abierto ({apertura_str.strip()} - {cierre_str.strip()})', 'festivo': None}
-                else:
-                    if hora_actual < apertura:
-                        return {'abierta': False, 'mensaje': f'Cerrado (Abre a las {apertura_str.strip()})', 'festivo': None}
+                    
+                    # Verificar si hora actual está en el rango
+                    if apertura <= hora_actual <= cierre:
+                        return {'abierta': True, 'mensaje': f'Abierto ({apertura_str.strip()} - {cierre_str.strip()})', 'festivo': None}
                     else:
-                        return {'abierta': False, 'mensaje': f'Cerrado (Cierra a las {cierre_str.strip()})', 'festivo': None}
+                        if hora_actual < apertura:
+                            return {'abierta': False, 'mensaje': f'Cerrado (Abre a las {apertura_str.strip()})', 'festivo': None}
+                        else:
+                            return {'abierta': False, 'mensaje': f'Cerrado (Cierra a las {cierre_str.strip()})', 'festivo': None}
         except Exception as e:
             # Si hay error parseando horario, asumir abierto
             pass
