@@ -27,3 +27,42 @@ Thumbs.db
 *.tmp
 *.bak
 ~$*
+
+# Archivos de pruebas y desarrollo
+test_*.py
+analizar_*.py
+verificar_*.py
+diagnostico_*.py
+descargar_*.py
+probar_*.py
+regenerar_*.py
+resumen_*.py
+simular_*.py
+mostrar_*.py
+integrar_*.py
+monitorear_*.py
+generar_datos_prueba.py
+ejemplo_*.py
+simulacion_2026.py
+
+# Directorios de pruebas
+tests/
+api/
+
+# Archivos de documentación temporal
+*_README.md
+*.md
+
+# Archivos CSV de prueba/exportación
+*.csv
+!data/*.csv
+
+# Archivos TSV
+*.tsv
+
+# HTML
+htlm/
+*.html
+
+# Componentes temporales
+ui_components.py
