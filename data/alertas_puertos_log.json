@@ -286,5 +286,329 @@
     "saturacion": 73.67,
     "tiempo_espera": 13.644544351793602,
     "congestion": 68
+  },
+  {
+    "timestamp": "2026-02-02T11:17:02.304377",
+    "puerto": "Manzanillo",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 71.8% | Espera: 37.27525516385521hrs | Congestión: 82%",
+    "saturacion": 71.8,
+    "tiempo_espera": 37.27525516385521,
+    "congestion": 82
+  },
+  {
+    "timestamp": "2026-02-02T11:17:02.304377",
+    "puerto": "Veracruz",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 74.73% | Espera: 21.11323083473496hrs | Congestión: 33%",
+    "saturacion": 74.73,
+    "tiempo_espera": 21.11323083473496,
+    "congestion": 33
+  },
+  {
+    "timestamp": "2026-02-02T11:17:02.304377",
+    "puerto": "Lázaro Cárdenas",
+    "nivel": "🟡 MEDIO",
+    "mensaje": "Saturación: 67.9% | Espera: 14.071324976598978hrs | Congestión: 45%",
+    "saturacion": 67.9,
+    "tiempo_espera": 14.071324976598978,
+    "congestion": 45
+  },
+  {
+    "timestamp": "2026-02-02T11:17:02.304377",
+    "puerto": "Altamira",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 77.88% | Espera: 34.15233010220224hrs | Congestión: 68%",
+    "saturacion": 77.88,
+    "tiempo_espera": 34.15233010220224,
+    "congestion": 68
+  },
+  {
+    "timestamp": "2026-02-02T11:17:11.787781",
+    "puerto": "Manzanillo",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 67.75% | Espera: 26.362570438305443hrs | Congestión: 82%",
+    "saturacion": 67.75,
+    "tiempo_espera": 26.362570438305443,
+    "congestion": 82
+  },
+  {
+    "timestamp": "2026-02-02T11:17:11.787781",
+    "puerto": "Veracruz",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 75.18% | Espera: 34.17720352987979hrs | Congestión: 33%",
+    "saturacion": 75.18,
+    "tiempo_espera": 34.17720352987979,
+    "congestion": 33
+  },
+  {
+    "timestamp": "2026-02-02T11:17:11.787781",
+    "puerto": "Lázaro Cárdenas",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 79.66% | Espera: 34.87237143123518hrs | Congestión: 45%",
+    "saturacion": 79.66,
+    "tiempo_espera": 34.87237143123518,
+    "congestion": 45
+  },
+  {
+    "timestamp": "2026-02-02T11:17:11.787781",
+    "puerto": "Altamira",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 73.67% | Espera: 13.644544351793602hrs | Congestión: 68%",
+    "saturacion": 73.67,
+    "tiempo_espera": 13.644544351793602,
+    "congestion": 68
+  },
+  {
+    "timestamp": "2026-02-02T12:18:38.110104",
+    "puerto": "Manzanillo",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 78.9% | Espera: 20.663631207163068hrs | Congestión: 82%",
+    "saturacion": 78.9,
+    "tiempo_espera": 20.663631207163068,
+    "congestion": 82
+  },
+  {
+    "timestamp": "2026-02-02T12:18:38.110104",
+    "puerto": "Veracruz",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 74.6% | Espera: 19.62899254489123hrs | Congestión: 33%",
+    "saturacion": 74.6,
+    "tiempo_espera": 19.62899254489123,
+    "congestion": 33
+  },
+  {
+    "timestamp": "2026-02-02T12:18:38.110104",
+    "puerto": "Lázaro Cárdenas",
+    "nivel": "🟡 MEDIO",
+    "mensaje": "Saturación: 67.28% | Espera: 12.25851462882546hrs | Congestión: 45%",
+    "saturacion": 67.28,
+    "tiempo_espera": 12.25851462882546,
+    "congestion": 45
+  },
+  {
+    "timestamp": "2026-02-02T12:18:38.110104",
+    "puerto": "Altamira",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 76.66% | Espera: 23.506440044994353hrs | Congestión: 68%",
+    "saturacion": 76.66,
+    "tiempo_espera": 23.506440044994353,
+    "congestion": 68
+  },
+  {
+    "timestamp": "2026-02-02T12:49:08.914832",
+    "puerto": "Manzanillo",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 72.42% | Espera: 19.631810148541373hrs | Congestión: 82%",
+    "saturacion": 72.42,
+    "tiempo_espera": 19.631810148541373,
+    "congestion": 82
+  },
+  {
+    "timestamp": "2026-02-02T12:49:08.914832",
+    "puerto": "Veracruz",
+    "nivel": "🔴 CRÍTICO",
+    "mensaje": "Saturación: 89.56% | Espera: 24.621787400613606hrs | Congestión: 33%",
+    "saturacion": 89.56,
+    "tiempo_espera": 24.621787400613606,
+    "congestion": 33
+  },
+  {
+    "timestamp": "2026-02-02T12:49:08.914832",
+    "puerto": "Lázaro Cárdenas",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 71.84% | Espera: 44.95716617730772hrs | Congestión: 45%",
+    "saturacion": 71.84,
+    "tiempo_espera": 44.95716617730772,
+    "congestion": 45
+  },
+  {
+    "timestamp": "2026-02-02T12:49:08.914832",
+    "puerto": "Altamira",
+    "nivel": "🔴 CRÍTICO",
+    "mensaje": "Saturación: 90.45% | Espera: 34.033547441266116hrs | Congestión: 68%",
+    "saturacion": 90.45,
+    "tiempo_espera": 34.033547441266116,
+    "congestion": 68
+  },
+  {
+    "timestamp": "2026-02-02T12:49:32.965386",
+    "puerto": "Manzanillo",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 67.75% | Espera: 26.362570438305443hrs | Congestión: 82%",
+    "saturacion": 67.75,
+    "tiempo_espera": 26.362570438305443,
+    "congestion": 82
+  },
+  {
+    "timestamp": "2026-02-02T12:49:32.965386",
+    "puerto": "Veracruz",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 75.18% | Espera: 34.17720352987979hrs | Congestión: 33%",
+    "saturacion": 75.18,
+    "tiempo_espera": 34.17720352987979,
+    "congestion": 33
+  },
+  {
+    "timestamp": "2026-02-02T12:49:32.965386",
+    "puerto": "Lázaro Cárdenas",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 79.66% | Espera: 34.87237143123518hrs | Congestión: 45%",
+    "saturacion": 79.66,
+    "tiempo_espera": 34.87237143123518,
+    "congestion": 45
+  },
+  {
+    "timestamp": "2026-02-02T12:49:32.965386",
+    "puerto": "Altamira",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 73.67% | Espera: 13.644544351793602hrs | Congestión: 68%",
+    "saturacion": 73.67,
+    "tiempo_espera": 13.644544351793602,
+    "congestion": 68
+  },
+  {
+    "timestamp": "2026-02-05T13:59:52.014892",
+    "puerto": "Manzanillo",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 67.41% | Espera: 39.28576369064428hrs | Congestión: 82%",
+    "saturacion": 67.41,
+    "tiempo_espera": 39.28576369064428,
+    "congestion": 82
+  },
+  {
+    "timestamp": "2026-02-05T13:59:52.014892",
+    "puerto": "Veracruz",
+    "nivel": "🟡 MEDIO",
+    "mensaje": "Saturación: 69.69% | Espera: 27.09780026174644hrs | Congestión: 33%",
+    "saturacion": 69.69,
+    "tiempo_espera": 27.09780026174644,
+    "congestion": 33
+  },
+  {
+    "timestamp": "2026-02-05T13:59:52.014892",
+    "puerto": "Lázaro Cárdenas",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 80.29% | Espera: 22.711821572123014hrs | Congestión: 45%",
+    "saturacion": 80.29,
+    "tiempo_espera": 22.711821572123014,
+    "congestion": 45
+  },
+  {
+    "timestamp": "2026-02-05T13:59:52.014892",
+    "puerto": "Altamira",
+    "nivel": "🔴 CRÍTICO",
+    "mensaje": "Saturación: 88.57% | Espera: 28.953093497655107hrs | Congestión: 68%",
+    "saturacion": 88.57,
+    "tiempo_espera": 28.953093497655107,
+    "congestion": 68
+  },
+  {
+    "timestamp": "2026-02-05T18:55:42.878486",
+    "puerto": "Manzanillo",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 83.95% | Espera: 17.82036634114416hrs | Congestión: 82%",
+    "saturacion": 83.95,
+    "tiempo_espera": 17.82036634114416,
+    "congestion": 82
+  },
+  {
+    "timestamp": "2026-02-05T18:55:42.878486",
+    "puerto": "Veracruz",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 78.69% | Espera: 45.47571548433263hrs | Congestión: 33%",
+    "saturacion": 78.69,
+    "tiempo_espera": 45.47571548433263,
+    "congestion": 33
+  },
+  {
+    "timestamp": "2026-02-05T18:55:42.878486",
+    "puerto": "Lázaro Cárdenas",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 70.07% | Espera: 41.101333664319014hrs | Congestión: 45%",
+    "saturacion": 70.07,
+    "tiempo_espera": 41.101333664319014,
+    "congestion": 45
+  },
+  {
+    "timestamp": "2026-02-05T18:55:42.878486",
+    "puerto": "Altamira",
+    "nivel": "🟡 MEDIO",
+    "mensaje": "Saturación: 69.24% | Espera: 34.81613523437524hrs | Congestión: 68%",
+    "saturacion": 69.24,
+    "tiempo_espera": 34.81613523437524,
+    "congestion": 68
+  },
+  {
+    "timestamp": "2026-02-05T18:56:16.882348",
+    "puerto": "Manzanillo",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 67.75% | Espera: 26.362570438305443hrs | Congestión: 82%",
+    "saturacion": 67.75,
+    "tiempo_espera": 26.362570438305443,
+    "congestion": 82
+  },
+  {
+    "timestamp": "2026-02-05T18:56:16.882348",
+    "puerto": "Veracruz",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 75.18% | Espera: 34.17720352987979hrs | Congestión: 33%",
+    "saturacion": 75.18,
+    "tiempo_espera": 34.17720352987979,
+    "congestion": 33
+  },
+  {
+    "timestamp": "2026-02-05T18:56:16.882348",
+    "puerto": "Lázaro Cárdenas",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 79.66% | Espera: 34.87237143123518hrs | Congestión: 45%",
+    "saturacion": 79.66,
+    "tiempo_espera": 34.87237143123518,
+    "congestion": 45
+  },
+  {
+    "timestamp": "2026-02-05T18:56:16.882348",
+    "puerto": "Altamira",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 73.67% | Espera: 13.644544351793602hrs | Congestión: 68%",
+    "saturacion": 73.67,
+    "tiempo_espera": 13.644544351793602,
+    "congestion": 68
+  },
+  {
+    "timestamp": "2026-02-05T18:57:10.692603",
+    "puerto": "Manzanillo",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 83.95% | Espera: 17.82036634114416hrs | Congestión: 82%",
+    "saturacion": 83.95,
+    "tiempo_espera": 17.82036634114416,
+    "congestion": 82
+  },
+  {
+    "timestamp": "2026-02-05T18:57:10.692603",
+    "puerto": "Veracruz",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 78.69% | Espera: 45.47571548433263hrs | Congestión: 33%",
+    "saturacion": 78.69,
+    "tiempo_espera": 45.47571548433263,
+    "congestion": 33
+  },
+  {
+    "timestamp": "2026-02-05T18:57:10.692603",
+    "puerto": "Lázaro Cárdenas",
+    "nivel": "🟠 ALTO",
+    "mensaje": "Saturación: 70.07% | Espera: 41.101333664319014hrs | Congestión: 45%",
+    "saturacion": 70.07,
+    "tiempo_espera": 41.101333664319014,
+    "congestion": 45
+  },
+  {
+    "timestamp": "2026-02-05T18:57:10.692603",
+    "puerto": "Altamira",
+    "nivel": "🟡 MEDIO",
+    "mensaje": "Saturación: 69.24% | Espera: 34.81613523437524hrs | Congestión: 68%",
+    "saturacion": 69.24,
+    "tiempo_espera": 34.81613523437524,
+    "congestion": 68
   }
 ]
