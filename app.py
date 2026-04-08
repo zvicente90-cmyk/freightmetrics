@@ -25,6 +25,21 @@ except ImportError:
     MONITOREO_V2_AVAILABLE = False
     page_monitoreo_v2 = None
 
+# Importar nuevas páginas: Índice FreightMetrics y Oracle Rate
+try:
+    from indice_freightmetrics import page_indice_freightmetrics
+    INDICE_FM_AVAILABLE = True
+except ImportError:
+    INDICE_FM_AVAILABLE = False
+    page_indice_freightmetrics = None
+
+try:
+    from oracle_rate import page_oracle_rate
+    ORACLE_RATE_AVAILABLE = True
+except ImportError:
+    ORACLE_RATE_AVAILABLE = False
+    page_oracle_rate = None
+
 # Importar componentes UI mejorados
 try:
     from ui_components import (
@@ -63,6 +78,8 @@ TRANSLATIONS = {
         'menu_ports': 'Puertos Marítimos',
         'menu_workforce': 'Fuerza Laboral',
         'menu_nearshoring': 'Nearshoring',
+        'menu_indice': 'Índice FreightMetrics',
+        'menu_oracle': 'Oracle Rate',
         
         # Botones y acciones
         'download_pdf': 'Descargar PDF',
@@ -147,6 +164,8 @@ TRANSLATIONS = {
         'menu_ports': 'Maritime Ports',
         'menu_workforce': 'Workforce',
         'menu_nearshoring': 'Nearshoring',
+        'menu_indice': 'FreightMetrics Index',
+        'menu_oracle': 'Oracle Rate',
         
         # Buttons and actions
         'download_pdf': 'Download PDF',
@@ -231,6 +250,8 @@ TRANSLATIONS = {
         'menu_ports': 'Ports Maritimes',
         'menu_workforce': 'Main-d\'œuvre',
         'menu_nearshoring': 'Relocalisation',
+        'menu_indice': 'Indice FreightMetrics',
+        'menu_oracle': 'Oracle Rate',
         
         # Boutons et actions
         'download_pdf': 'Télécharger PDF',
@@ -1091,11 +1112,6 @@ DIAS_FESTIVOS_2025_2026 = [
     '2026-12-25',  # Navidad
 ]
 
-def es_dia_festivo(fecha):
-    """Verifica si una fecha es día festivo"""
-    fecha_str = fecha.strftime('%Y-%m-%d')
-    return fecha_str in DIAS_FESTIVOS_2025_2026
-
 def cargar_datos_flujos_reales():
     """Carga datos históricos de flujos/cruces desde CSV o genera desde datos actuales
     Incluye programa FAST y restricciones en días festivos"""
@@ -1477,7 +1493,7 @@ def obtener_horarios_aduanas():
                 }
             
     except Exception as e:
-        print(f"⚠️ Error cargando horarios de México desde TSV: {e}")
+        st.warning(f"⚠️ Error cargando horarios de México desde TSV: {e}")
     
     # ============= ADUANAS CANADÁ-USA =============
     try:
@@ -1547,14 +1563,14 @@ def obtener_horarios_aduanas():
                 }
             
     except Exception as e:
-        print(f"⚠️ Error cargando horarios de Canadá desde TSV: {e}")
+        st.warning(f"⚠️ Error cargando horarios de Canadá desde TSV: {e}")
     
     # Si se cargaron horarios, retornarlos
     if horarios:
         return horarios
             
     # ============= FALLBACK: Horarios predeterminados =============
-    print("⚠️ Usando horarios predeterminados.")
+    st.warning("⚠️ Usando horarios predeterminados.")
     
     # Fallback: Horarios predeterminados si falla la carga del TSV
     horarios = {
@@ -2210,7 +2226,9 @@ lang = st.session_state.language
 
 # Métrica en la barra lateral
 with st.sidebar:
-    st.title("Analítica Pro")
+    st.title("FreightMetrics")
+    st.markdown("**Connecting Borders, Delivering Insights.**")
+    st.markdown("---")
     st.metric("Tipo de Cambio USD/MXN", f"${tipo_cambio:.2f}")
     opcion = st.radio(
         "Selecciona una página:" if lang == 'es' else ("Select a page:" if lang == 'en' else "Sélectionnez une page:"),
@@ -2221,35 +2239,11 @@ with st.sidebar:
             t('menu_corridors', lang),
             t('menu_ports', lang),
             t('menu_workforce', lang),
-            t('menu_nearshoring', lang)
+            t('menu_nearshoring', lang),
+            t('menu_indice', lang),
+            t('menu_oracle', lang)
         ]
     )
-    st.markdown("---")
-    operaciones_por_operador = st.number_input(
-        "Operaciones por operador (promedio)", value=2.0, min_value=0.1, max_value=50.0, step=0.1
-    )
-    st.caption("Usado para estimar requerimiento de operadores y detectar déficit")
-
-    # API Key para consumir el backend protegido (opcional)
-    try:
-        api_key_default = os.getenv('API_KEY', '')
-    except Exception:
-        api_key_default = ''
-
-    api_key = st.text_input("API Key (para llamadas a la API)", value=api_key_default, type="password")
-
-    # Botón para guardar la API Key en .env (útil para no reingresarla)
-    if st.button("Guardar API Key en .env"):
-        try:
-            dotenv_path = find_dotenv()
-            if not dotenv_path:
-                dotenv_path = os.path.join(os.getcwd(), '.env')
-                # crear archivo si no existe
-                open(dotenv_path, 'a').close()
-            set_key(dotenv_path, 'API_KEY', api_key)
-            st.success("API Key guardada en .env")
-        except Exception as e:
-            st.error(f"No se pudo guardar la API Key: {e}")
 
 # --- FUNCIÓN PARA CARGAR DATOS HISTÓRICOS MULTI-AÑO ---
 @st.cache_data(ttl=600)  # Cache de 10 minutos
@@ -2544,9 +2538,11 @@ def simular_cruces_2026(tendencias, fecha_inicio='2026-01-01', fecha_fin=None):
         return pd.DataFrame()
 
 
+# --- FUNCIÓN SIMPLE: CARGAR DATOS POR AÑO ---
+@st.cache_data(ttl=300)  # Cache de 5 minutos
 # --- FUNCIÓN CENTRALIZADA: DATOS DE CRUCES CONSOLIDADOS ---
 @st.cache_data(ttl=300)  # Cache de 5 minutos
-def obtener_datos_cruces_consolidados(usar_datos_reales=True, incluir_simulacion_2026=True):
+def obtener_datos_cruces_consolidados(usar_datos_reales=True, incluir_simulacion_2026=True, year=None):
     """
     Función centralizada que genera/carga datos de cruces aduanales de BTS.
     Unifica datos de: Trucks, Truck Containers Loaded, Truck Containers Empty
@@ -2555,6 +2551,7 @@ def obtener_datos_cruces_consolidados(usar_datos_reales=True, incluir_simulacion
     Args:
         usar_datos_reales: Si True, intenta cargar datos reales de BTS
         incluir_simulacion_2026: Si True, genera predicciones para 2026 basadas en tendencias históricas
+        year: Año específico a cargar (ej: 2023, 2024, 2025, 2026). Si None, carga todos.
     
     Retorna:
         - df_border: DataFrame con historial de cruces (datos reales + simulaciones cuando aplique)
@@ -2568,13 +2565,21 @@ def obtener_datos_cruces_consolidados(usar_datos_reales=True, incluir_simulacion
         try:
             # OPCIÓN 1: Cargar datos históricos de BTS desde archivos CSV
             data_dir = Path(__file__).parent / "data"
-            # Priorizar 2026 (año actual de análisis)
-            archivos_historicos = [
-                data_dir / "border_crossings_2026_historical.csv",
-                data_dir / "border_crossings_2025_historical.csv",
-                data_dir / "border_crossings_2024_historical.csv",
-                data_dir / "border_crossings_2023_historical.csv"
-            ]
+            
+            # Determinar qué archivos cargar
+            if year:
+                # Si se especifica un año, cargar solo ese archivo
+                archivos_historicos = [
+                    data_dir / f"border_crossings_{year}_historical.csv"
+                ]
+            else:
+                # Si no se especifica año, usar el orden por defecto (priorizar 2026)
+                archivos_historicos = [
+                    data_dir / "border_crossings_2026_historical.csv",
+                    data_dir / "border_crossings_2025_historical.csv",
+                    data_dir / "border_crossings_2024_historical.csv",
+                    data_dir / "border_crossings_2023_historical.csv"
+                ]
             
             dfs_historicos = []
             for archivo in archivos_historicos:
@@ -2831,6 +2836,14 @@ def obtener_datos_cruces_consolidados(usar_datos_reales=True, incluir_simulacion
     df_border['Mes'] = pd.to_datetime(df_border['Fecha']).dt.strftime('%Y-%m')
     df_border['Semana'] = pd.to_datetime(df_border['Fecha']).dt.isocalendar().week
     
+    # ===== CREAR ALIASES PARA COMPATIBILIDAD CON DIFERENTES MÓDULOS =====
+    # Algunos módulos usan 'Truck Containers Loaded', otros 'Trucks_Loaded'
+    if 'Trucks_Loaded' in df_border.columns and 'Truck Containers Loaded' not in df_border.columns:
+        df_border['Truck Containers Loaded'] = df_border['Trucks_Loaded']
+    
+    if 'Trucks_Empty' in df_border.columns and 'Truck Containers Empty' not in df_border.columns:
+        df_border['Truck Containers Empty'] = df_border['Trucks_Empty']
+    
     # Crear DataFrame del día actual para monitoreo
     fecha_hoy = datetime.now().date()
     
@@ -2857,6 +2870,13 @@ def obtener_datos_cruces_consolidados(usar_datos_reales=True, incluir_simulacion
     # Agregar columna de Contenedores (para compatibilidad)
     if 'Contenedores' not in df_diario_hoy.columns:
         df_diario_hoy['Contenedores'] = df_diario_hoy['Cruces']
+    
+    # ===== CREAR ALIASES DE COLUMNAS PARA COMPATIBILIDAD =====
+    if 'Trucks_Loaded' in df_diario_hoy.columns and 'Truck Containers Loaded' not in df_diario_hoy.columns:
+        df_diario_hoy['Truck Containers Loaded'] = df_diario_hoy['Trucks_Loaded']
+    
+    if 'Trucks_Empty' in df_diario_hoy.columns and 'Truck Containers Empty' not in df_diario_hoy.columns:
+        df_diario_hoy['Truck Containers Empty'] = df_diario_hoy['Trucks_Empty']
     
     # ===== VERIFICAR Y CREAR COLUMNAS DE TIPOS BTS SI NO EXISTEN =====
     if 'Trucks' not in df_diario_hoy.columns or 'Trucks_Loaded' not in df_diario_hoy.columns or 'Trucks_Empty' not in df_diario_hoy.columns:
@@ -3081,531 +3101,211 @@ def page_inicio():
         )
 
 def page_mapa():
-    # Página: Flujos de Carga Transfronterizos (Solo Filtros)
     st.title("🚛 Flujos de Carga Transfronterizos")
     st.markdown("---")
-    
-    # Lista de 37 aduanas principales (sincronizada con Monitoreo de Aduanas)
-    ADUANAS_PRINCIPALES_MEXICO = [
-        'Laredo', 'Ysleta', 'Otay Mesa', 'Hidalgo', 'Brownsville',
-        'Eagle Pass', 'El Paso', 'Nogales', 'Calexico East', 'Santa Teresa',
-        'San Luis', 'Del Rio', 'Douglas', 'Tecate', 'Tornillo',
-        'Naco', 'Rio Grande City', 'Progreso', 'Roma', 'Presidio',
-        'Columbus', 'Lukeville'
-    ]
-    
-    ADUANAS_PRINCIPALES_CANADA = [
-        'Alcan', 'Alexandria Bay', 'Antler', 'Baudette', 'Beecher Falls',
-        'Blaine', 'Boundary', 'Bridgewater', 'Buffalo Niagara Falls', 'Calais',
-        'Carbury', 'Champlain Rouses Point', 'Dalton Cache', 'Danville', 'Del Bonita'
-    ]
-    
-    ADUANAS_PRINCIPALES = ADUANAS_PRINCIPALES_MEXICO + ADUANAS_PRINCIPALES_CANADA
-    
-    # Año 2026 con sistema híbrido
-    years_selected = [2026]
-    year_label = '2026'
-    
-    with st.expander("🔍 FILTROS DE BÚSQUEDA", expanded=True):
-        col_filter2, col_filter3 = st.columns(2)
-        
-        # Filtro de frontera
-        with col_filter2:
-            st.markdown("**🌎 Frontera**")
-            border_option = st.radio(
-                "Selecciona frontera:",
-                ["🇲🇽 México", "🇨🇦 Canadá", "🌎 Ambas"],
-                index=2,
-                label_visibility="collapsed"
-            )
-            
-            border_selected = []
-            if border_option == "🇲🇽 México":
-                border_selected = ['México']
-                border_label = "México"
-            elif border_option == "🇨🇦 Canadá":
-                border_selected = ['Canadá']
-                border_label = "Canadá"
-            else:
-                border_selected = ['México', 'Canadá']
-                border_label = "Ambas Fronteras"
-        
-        # Filtro de mes
-        with col_filter3:
-            st.markdown("**📅 Mes**")
-            month_names = ["Todos los Meses", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
-                          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-            
-            mes_option = st.selectbox(
-                "Selecciona mes:",
-                options=month_names,
-                index=0,
-                label_visibility="collapsed"
-            )
-            
-            meses_map = {
-                "Enero": 1, "Febrero": 2, "Marzo": 3, "Abril": 4,
-                "Mayo": 5, "Junio": 6, "Julio": 7, "Agosto": 8,
-                "Septiembre": 9, "Octubre": 10, "Noviembre": 11, "Diciembre": 12
-            }
-            
-            if mes_option == "Todos los Meses":
-                mes_seleccionado = None
-                mes_nombre = "Todos los Meses"
-            else:
-                mes_seleccionado = meses_map[mes_option]
-                mes_nombre = mes_option
-        
-        # Toggle de datos reales
-        col_data1, col_data2 = st.columns(2)
-        with col_data1:
-            usar_datos_reales = st.toggle("📊 Sistema Híbrido BTS", value=True,
-                                         help="Real BTS 2023-2025 + Simulación 2026")
-        with col_data2:
-            if usar_datos_reales:
-                st.caption("🔮 Real + Simulado 2026")
-            else:
-                st.caption("ℹ️ Solo simulado")
-    
-    st.markdown("---")
-    
-    # Calcular fechas
-    year_base = 2026
-    year_fin = 2026
-    
-    if mes_seleccionado is not None:
-        fecha_inicio = datetime(year_base, mes_seleccionado, 1)
-        if mes_seleccionado == 12:
-            fecha_fin = datetime(year_fin, 12, 31, 23, 59, 59)
-        else:
-            fecha_fin = datetime(year_fin, mes_seleccionado + 1, 1) - timedelta(seconds=1)
-        periodo_texto = f"{mes_nombre} ({year_label})"
-    else:
-        fecha_inicio = datetime(year_base, 1, 1)
-        fecha_fin = datetime(year_fin, 12, 31, 23, 59, 59)
-        periodo_texto = f"Todos los Meses ({year_label})"
-    
-    # Cargar datos
-    df_border, _ = obtener_datos_cruces_consolidados(
-        usar_datos_reales=usar_datos_reales,
-        incluir_simulacion_2026=usar_datos_reales
-    )
-    
-    if df_border is None or df_border.empty:
-        st.error("❌ No se pudieron cargar los datos.")
-        return
-    
-    # Filtrar solo las 37 aduanas principales
-    if 'Puerto' in df_border.columns:
-        df_border = df_border[df_border['Puerto'].isin(ADUANAS_PRINCIPALES)].copy()
-    
-    if df_border.empty:
-        st.warning("⚠️ No hay datos para las aduanas principales.")
-        return
-    
-    # Mapear columnas
-    columnas_mapeo = {
-        'Cruces_FAST': 'Trucks',
-        'Cruces_Regular': 'Truck Containers Loaded',
-        'Cruces_Perecederos': 'Truck Containers Empty'
-    }
-    for col_origen, col_destino in columnas_mapeo.items():
-        if col_origen in df_border.columns and col_destino not in df_border.columns:
-            df_border[col_destino] = df_border[col_origen]
-    
-    # Contar aduanas por frontera
-    aduanas_mexico = len([a for a in df_border['Puerto'].unique() if a in ADUANAS_PRINCIPALES_MEXICO])
-    aduanas_canada = len([a for a in df_border['Puerto'].unique() if a in ADUANAS_PRINCIPALES_CANADA])
-    
-    # Mensaje de carga
-    if usar_datos_reales:
-        st.success(f"✅ Sistema híbrido BTS: {len(df_border):,} registros | México: {aduanas_mexico} aduanas | Canadá: {aduanas_canada} aduanas")
-        st.info("🔮 Se actualizará automáticamente cuando BTS publique datos reales de 2026")
-    else:
-        st.info(f"ℹ️ Modo simulación: {len(df_border):,} registros | México: {aduanas_mexico} aduanas | Canadá: {aduanas_canada} aduanas")
-    
-    # Convertir y filtrar
-    df_border['Fecha'] = pd.to_datetime(df_border['Fecha'])
-    
-    if 'Frontera' in df_border.columns:
-        df_border = df_border[df_border['Frontera'].isin(border_selected)].copy()
-        if df_border.empty:
-            st.warning(f"⚠️ No hay datos para: {border_label}")
-            return
-    
-    df_border = df_border[(df_border['Fecha'] >= fecha_inicio) & (df_border['Fecha'] <= fecha_fin)].copy()
-    
-    if df_border.empty:
-        st.warning(f"⚠️ No hay datos para el período seleccionado")
-        return
-    
-    dias_seleccionados = (fecha_fin - fecha_inicio).days + 1
-    
-    # Información de filtrado
-    total_registros = len(df_border)
-    total_cruces_filtrado = df_border['Cruces'].sum() if 'Cruces' in df_border.columns else 0
-    aduanas_en_datos = df_border['Puerto'].nunique() if 'Puerto' in df_border.columns else 0
-    
-    st.info(f"📊 **{periodo_texto}** | **{border_label}** | {fecha_inicio.strftime('%d/%m/%Y')} - {fecha_fin.strftime('%d/%m/%Y')} ({dias_seleccionados} días)")
-    st.caption(f"📍 Registros filtrados: {total_registros:,} | Aduanas: {aduanas_en_datos} | Total cruces: {total_cruces_filtrado:,}")
-    st.markdown("---")
-    
-    # KPI: Cruces Fronterizos
-    st.subheader("📊 Cruces Fronterizos Totales")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
+
+    # FILTROS EN 3 COLUMNAS
+    col1, col2, col3 = st.columns(3)
+
     with col1:
-        total_cruces = df_border['Cruces'].sum() if 'Cruces' in df_border.columns else 0
-        st.metric("Total Cruces", f"{total_cruces:,}")
-    
+        st.markdown("**📆 Año**")
+        year = st.selectbox("Selecciona año:", [2023, 2024, 2025, 2026], index=3, label_visibility="collapsed", key="mapa_year_filter")
+
     with col2:
-        total_trucks = df_border['Trucks'].sum() if 'Trucks' in df_border.columns else 0
-        pct_trucks = (total_trucks / total_cruces * 100) if total_cruces > 0 else 0
-        st.metric("🚛 Trucks", f"{total_trucks:,}")
-        st.caption(f"{pct_trucks:.1f}% del total")
-    
+        st.markdown("**🌎 Frontera**")
+        frontera = st.radio("Frontera", ["🇲🇽 México", "🇨🇦 Canadá", "🌎 Ambas"], index=2, horizontal=True, label_visibility="hidden", key="mapa_frontera_filter")
+
     with col3:
-        total_loaded = df_border['Truck Containers Loaded'].sum() if 'Truck Containers Loaded' in df_border.columns else 0
-        pct_loaded = (total_loaded / total_cruces * 100) if total_cruces > 0 else 0
-        st.metric("📦 Containers Loaded", f"{total_loaded:,}")
-        st.caption(f"{pct_loaded:.1f}% del total")
-    
-    with col4:
-        total_empty = df_border['Truck Containers Empty'].sum() if 'Truck Containers Empty' in df_border.columns else 0
-        pct_empty = (total_empty / total_cruces * 100) if total_cruces > 0 else 0
-        st.metric("📭 Containers Empty", f"{total_empty:,}")
-        st.caption(f"{pct_empty:.1f}% del total")
-    
-    st.markdown("---")
-    
-    # Gráfico: Cruces por Día
-    st.subheader("📈 Evolución Diaria de Cruces Fronterizos")
-    
-    # Agrupar datos por fecha
-    if 'Fecha' in df_border.columns:
-        df_diario = df_border.groupby('Fecha').agg({
-            'Cruces': 'sum',
-            'Trucks': 'sum',
-            'Truck Containers Loaded': 'sum',
-            'Truck Containers Empty': 'sum'
-        }).reset_index()
-        
-        df_diario = df_diario.sort_values('Fecha')
-        
-        # Crear gráfico con plotly
-        fig = go.Figure()
-        
-        # Línea principal: Total Cruces
-        fig.add_trace(go.Scatter(
-            x=df_diario['Fecha'],
-            y=df_diario['Cruces'],
-            name='Total Cruces',
-            mode='lines+markers',
-            line=dict(color='#1f77b4', width=3),
-            marker=dict(size=8),
-            hovertemplate='<b>%{x|%d/%m/%Y}</b><br>Cruces: %{y:,}<extra></extra>'
-        ))
-        
-        # Líneas secundarias (opcional, con menor opacidad)
-        fig.add_trace(go.Scatter(
-            x=df_diario['Fecha'],
-            y=df_diario['Trucks'],
-            name='Trucks',
-            mode='lines',
-            line=dict(color='#ff7f0e', width=2, dash='dot'),
-            hovertemplate='<b>%{x|%d/%m/%Y}</b><br>Trucks: %{y:,}<extra></extra>',
-            visible='legendonly'  # Oculto por defecto
-        ))
-        
-        fig.add_trace(go.Scatter(
-            x=df_diario['Fecha'],
-            y=df_diario['Truck Containers Loaded'],
-            name='Containers Loaded',
-            mode='lines',
-            line=dict(color='#2ca02c', width=2, dash='dot'),
-            hovertemplate='<b>%{x|%d/%m/%Y}</b><br>Loaded: %{y:,}<extra></extra>',
-            visible='legendonly'  # Oculto por defecto
-        ))
-        
-        fig.add_trace(go.Scatter(
-            x=df_diario['Fecha'],
-            y=df_diario['Truck Containers Empty'],
-            name='Containers Empty',
-            mode='lines',
-            line=dict(color='#d62728', width=2, dash='dot'),
-            hovertemplate='<b>%{x|%d/%m/%Y}</b><br>Empty: %{y:,}<extra></extra>',
-            visible='legendonly'  # Oculto por defecto
-        ))
-        
-        # Configurar layout
-        fig.update_layout(
-            xaxis_title="Fecha",
-            yaxis_title="Número de Cruces",
-            hovermode='x unified',
-            height=450,
-            showlegend=True,
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1
-            ),
-            xaxis=dict(
-                showgrid=True,
-                gridwidth=1,
-                gridcolor='rgba(128, 128, 128, 0.2)'
-            ),
-            yaxis=dict(
-                showgrid=True,
-                gridwidth=1,
-                gridcolor='rgba(128, 128, 128, 0.2)'
-            ),
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-        
-        # Estadísticas adicionales
-        col_stats1, col_stats2, col_stats3 = st.columns(3)
-        with col_stats1:
-            promedio_diario = df_diario['Cruces'].mean()
-            st.metric("📊 Promedio Diario", f"{promedio_diario:,.0f}")
-        with col_stats2:
-            max_dia = df_diario.loc[df_diario['Cruces'].idxmax()]
-            st.metric("📈 Día con Más Cruces", f"{max_dia['Cruces']:,.0f}")
-            st.caption(f"{max_dia['Fecha'].strftime('%d/%m/%Y')}")
-        with col_stats3:
-            min_dia = df_diario.loc[df_diario['Cruces'].idxmin()]
-            st.metric("📉 Día con Menos Cruces", f"{min_dia['Cruces']:,.0f}")
-            st.caption(f"{min_dia['Fecha'].strftime('%d/%m/%Y')}")
-    
+        st.markdown("**📅 Mes**")
+        mes = st.selectbox("Selecciona mes:", 
+            ["Todos", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"], 
+            index=0, label_visibility="collapsed", key="mapa_mes_filter")
+
     st.markdown("---")
 
+    # CARGAR DATOS DEL AÑO
+    def cargar_datos_csv(year):
+        """Carga datos BTS del año especificado sin caché"""
+        try:
+            archivo = Path(__file__).parent / "data" / f"border_crossings_{year}_historical.csv"
+            
+            if not archivo.exists():
+                st.error(f"❌ Archivo no encontrado: {archivo}")
+                return None
+            
+            # Lectura del CSV
+            df = pd.read_csv(archivo)
+            df['date'] = pd.to_datetime(df['date'])
+            df = df.rename(columns={
+                'date': 'Fecha',
+                'port_name': 'Puerto',
+                'value': 'Valor',
+                'measure': 'Tipo_Medida',
+                'border': 'Frontera_Original'
+            })
+            
+            # Filtrar solo camiones
+            df = df[df['Tipo_Medida'].isin(['Trucks', 'Truck Containers Loaded', 'Truck Containers Empty'])]
+            df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce').fillna(0).astype(int)
+            
+            # Crear columna Frontera
+            df['Frontera'] = df['Frontera_Original'].apply(
+                lambda x: 'México' if 'Mexico' in str(x) else 'Canadá'
+            )
+            
+            # Pivotar datos
+            df_pivot = df.pivot_table(
+                index=['Fecha', 'Puerto', 'Frontera'],
+                columns='Tipo_Medida',
+                values='Valor',
+                aggfunc='sum',
+                fill_value=0
+            ).reset_index()
+            
+            df_pivot.columns.name = None
+            
+            # Asegurar columnas
+            for col in ['Trucks', 'Truck Containers Loaded', 'Truck Containers Empty']:
+                if col not in df_pivot.columns:
+                    df_pivot[col] = 0
+            
+            # Total cruces
+            df_pivot['Cruces'] = (
+                df_pivot['Trucks'] + 
+                df_pivot['Truck Containers Loaded'] + 
+                df_pivot['Truck Containers Empty']
+            )
+            
+            return df_pivot.sort_values(['Fecha', 'Puerto'])
+            
+        except Exception as e:
+            st.error(f"❌ Error cargando {year}: {e}")
+            return None
 
-def page_alertas():
-    st.title("⚠️ Centro de Notificaciones Operativas")
-    st.markdown("---")
-    alertas_criticas = df_mapa[df_mapa["Saturacion"] > 80]
-    alertas_preventivas = df_mapa[(df_mapa["Saturacion"] > 60) & (df_mapa["Saturacion"] <= 80)]
+    df = cargar_datos_csv(year)
 
-    if not alertas_criticas.empty or not alertas_preventivas.empty:
-        col_a, col_b = st.columns(2)
-        
-        with col_a:
-            for _, row in alertas_criticas.iterrows():
-                st.error(f"**CRÍTICO:** Puerto de {row['Puerto']} al {row['Saturacion']}%")
-                # st.toast puede no estar disponible en todas las versiones; si falla, será ignorado
-                try:
-                    st.toast(f"¡Acción requerida en {row['Puerto']}!", icon='🔥')
-                except:
-                    pass
-        
-        with col_b:
-            for _, row in alertas_preventivas.iterrows():
-                st.warning(f"**PREVENTIVO:** {row['Puerto']} aumentando carga ({row['Saturacion']}%)")
+    if df is None or df.empty:
+        st.error(f"❌ No hay datos para el año {year}")
+        st.stop()
+
+    # APLICAR FILTRO DE FRONTERA
+    if frontera == "🇲🇽 México":
+        df = df[df['Frontera'] == 'México']
+        frontera_label = "México"
+    elif frontera == "🇨🇦 Canadá":
+        df = df[df['Frontera'] == 'Canadá']
+        frontera_label = "Canadá"
     else:
-        st.success("✅ Operación Fluida: No se detectan cuellos de botella en la red.")
+        frontera_label = "Ambas Fronteras"
 
+    # APLICAR FILTRO DE MES
+    if mes != "Todos":
+        mes_map = {
+            "Enero": 1, "Febrero": 2, "Marzo": 3, "Abril": 4,
+            "Mayo": 5, "Junio": 6, "Julio": 7, "Agosto": 8,
+            "Septiembre": 9, "Octubre": 10, "Noviembre": 11, "Diciembre": 12
+        }
+        mes_num = mes_map[mes]
+        df = df[df['Fecha'].dt.month == mes_num]
+        mes_label = mes
+    else:
+        mes_label = "Todos los Meses"
 
-def page_reportes():
-    st.title("📥 Reportes")
+    # MOSTRAR PERÍODO Y VALIDAR
+    year_base = year
+    year_fin = year
+
+    if df.empty:
+        st.warning("⚠️ No hay datos para los filtros seleccionados")
+        st.stop()
+
+    fecha_min = df['Fecha'].min()
+    fecha_max = df['Fecha'].max()
+    dias = (fecha_max - fecha_min).days + 1
+
+    st.info(f"📊 **{mes_label} {year}** | **{frontera_label}** | {fecha_min.strftime('%d/%m/%Y')} - {fecha_max.strftime('%d/%m/%Y')} ({dias} días)")
+
     st.markdown("---")
-    # Calculamos costos y mostramos tabla
-    df_local = df_mapa.copy()
-    df_local["Costo_Estimado_MXN"] = df_local["Operaciones"] * 5000 * tipo_cambio
-    st.subheader("📑 Datos de Operación")
-    st.dataframe(df_local[["Puerto", "Saturacion", "Costo_Estimado_MXN"]], use_container_width=True)
+
+    # MÉTRICAS
+    st.subheader("📊 Resumen de Cruces")
+    col1, col2, col3, col4 = st.columns(4)
+
+    total = df['Cruces'].sum()
+    trucks = df['Trucks'].sum()
+    loaded = df['Truck Containers Loaded'].sum()
+    empty = df['Truck Containers Empty'].sum()
+
+    with col1:
+        st.metric("Total Cruces", f"{total:,}")
+    with col2:
+        pct = (trucks / total * 100) if total > 0 else 0
+        st.metric("🚛 Trucks", f"{trucks:,}", f"{pct:.1f}%")
+    with col3:
+        pct = (loaded / total * 100) if total > 0 else 0
+        st.metric("📦 Loaded", f"{loaded:,}", f"{pct:.1f}%")
+    with col4:
+        pct = (empty / total * 100) if total > 0 else 0
+        st.metric("📭 Empty", f"{empty:,}", f"{pct:.1f}%")
 
     st.markdown("---")
-    pdf_data = crear_pdf(df_local, tipo_cambio)
-    st.download_button(
-        label="📄 Descargar PDF",
-        data=pdf_data,
-        file_name=f"FreightMetrics_Reporte_{dt.date.today()}.pdf",
-        mime="application/pdf"
+
+    # GRÁFICO
+    st.subheader("📈 Evolución Diaria")
+
+    df_dia = df.groupby('Fecha')[['Cruces', 'Trucks', 'Truck Containers Loaded', 'Truck Containers Empty']].sum().reset_index()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=df_dia['Fecha'], y=df_dia['Cruces'], 
+        name='Total Cruces', mode='lines+markers', line=dict(color='#1f77b4', width=3),
+        fill='tozeroy', fillcolor='rgba(31, 119, 180, 0.2)'))
+
+    fig.update_layout(
+        xaxis_title="Fecha", yaxis_title="Número de Cruces",
+        hovermode='x unified', height=400, template="plotly_white"
     )
 
-    # --- CONSULTA CENSUS ---
+    st.plotly_chart(fig, use_container_width=False)
+
     st.markdown("---")
-    st.subheader("🌐 Consultar Census (International Trade)")
-    dataset = st.selectbox("Dataset (timeseries/intltrade)", ["exports", "imports"], index=0)
-    get_param = st.text_input("get (campos, separados por coma)", "ALL_VAL_MO,CTY")
-    time_param = st.text_input("time (ej. 2019)", "")
 
-    # headers para llamadas a la API
-    try:
-        headers = {'X-API-KEY': api_key} if api_key else None
-    except Exception:
-        headers = None
+    # ESTADÍSTICAS
+    st.subheader("📊 Estadísticas")
+    col1, col2, col3, col4 = st.columns(4)
 
-    params = {}
-    if get_param:
-        params["get"] = get_param
-    if time_param:
-        params["time"] = time_param
+    with col1:
+        st.metric("Promedio Diario", f"{df_dia['Cruces'].mean():,.0f}")
+    with col2:
+        st.metric("Máximo Diario", f"{df_dia['Cruces'].max():,.0f}")
+    with col3:
+        st.metric("Mínimo Diario", f"{df_dia['Cruces'].min():,.0f}")
+    with col4:
+        st.metric("Desviación Std", f"{df_dia['Cruces'].std():,.0f}")
 
-    if st.button("Consultar Census"):
-        try:
-            with st.spinner("Consultando Census API..."):
-                resp = requests.get(f"http://127.0.0.1:8000/functions/v1/census/{dataset}", params=params, headers=headers, timeout=30)
-                resp.raise_for_status()
-                payload = resp.json()
-                if payload.get("status") == "ok":
-                    df_census = pd.DataFrame(payload.get("data", []))
-                    if df_census.empty:
-                        st.warning("La consulta no retornó filas.")
-                    else:
-                        st.subheader("Resultados Census")
-                        st.dataframe(df_census, use_container_width=True)
-
-                        # Intentar convertir columnas numéricas y plotear
-                        for col in df_census.columns:
-                            if df_census[col].dtype == object:
-                                # remover comas y convertir
-                                try:
-                                    df_census[col] = pd.to_numeric(df_census[col].astype(str).str.replace(",", ""), errors='coerce')
-                                except Exception:
-                                    pass
-
-                        numeric_cols = df_census.select_dtypes(include=["number"]).columns.tolist()
-                        if numeric_cols:
-                            st.subheader("Series numéricas")
-                            st.line_chart(df_census[numeric_cols])
-                else:
-                    st.error(f"Error: {payload.get('detail', 'respuesta no OK')}")
-        except Exception as e:
-            st.error(f"Fallo al consultar Census: {e}")
-
-    # --- CONSULTA BTS (data.bts.gov / Socrata) ---
     st.markdown("---")
-    st.subheader("🌍 Consultar BTS / Socrata")
-    bts_dataset = st.text_input("Dataset ID (ej. 9v9j-9z33)", "")
-    bts_domain = st.text_input("Dominio (por defecto data.bts.gov)", "data.bts.gov")
-    bts_qs = st.text_input("Query string (ej: $limit=100&$select=column1,column2)", "")
 
-    if st.button("Consultar BTS"):
-        if not bts_dataset:
-            st.error("Ingrese un dataset ID para consultar.")
-        else:
-            try:
-                with st.spinner("Consultando BTS / Socrata..."):
-                    # parseamos query string a dict
-                    from urllib.parse import parse_qs
-                    params_raw = parse_qs(bts_qs, keep_blank_values=True)
-                    params = {k: v[0] for k, v in params_raw.items()} if params_raw else {}
-                    resp = requests.get(f"http://127.0.0.1:8000/functions/v1/bts/{bts_dataset}", params={**params, "domain": bts_domain}, headers=headers, timeout=30)
-                    resp.raise_for_status()
-                    payload = resp.json()
-                    if payload.get("status") == "ok":
-                        df_bts = pd.DataFrame(payload.get("data", []))
-                        if df_bts.empty:
-                            st.warning("La consulta BTS no retornó filas.")
-                        else:
-                            st.subheader("Resultados BTS")
-                            st.dataframe(df_bts, use_container_width=True)
-                            # Mostrar primeras columnas numéricas
-                            numeric_cols = df_bts.select_dtypes(include=["number"]).columns.tolist()
-                            if numeric_cols:
-                                st.subheader("Series numéricas")
-                                st.line_chart(df_bts[numeric_cols])
-                    else:
-                        st.error(f"Error BTS: {payload.get('detail', 'respuesta no OK')}")
-            except Exception as e:
-                st.error(f"Fallo al consultar BTS: {e}")
+    # TABLA DE ADUANAS
+    st.subheader("🌐 Detalle por Aduana")
 
-    # --- CONSULTA SAT (páginas públicas) ---
+    df_aduanas = df.groupby('Puerto')[['Cruces', 'Trucks', 'Truck Containers Loaded', 'Truck Containers Empty']].sum().sort_values('Cruces', ascending=False).reset_index()
+    df_aduanas.columns = ['Aduana', 'Total Cruces', 'Trucks', 'Containers Loaded', 'Containers Empty']
+
+    st.dataframe(df_aduanas, use_container_width=False, hide_index=True)
+
     st.markdown("---")
-    st.subheader("🧾 Consultar SAT (extraer tabla / enlaces)")
-    sat_url = st.text_input("URL SAT o pública", "https://www.sat.gob.mx/portal/public/home")
-    if st.button("Consultar SAT"):
-        if not sat_url:
-            st.error("Ingresa una URL para consultar.")
-        else:
-            try:
-                with st.spinner("Consultando SAT..."):
-                    resp = requests.get("http://127.0.0.1:8000/functions/v1/sat/fetch", params={"url": sat_url}, headers=headers, timeout=30)
-                    resp.raise_for_status()
-                    payload = resp.json()
-                    if payload.get("status") == "ok":
-                        df_sat = pd.DataFrame(payload.get("data", []))
-                        if df_sat.empty:
-                            st.warning("No se encontraron tablas ni enlaces en la URL proporcionada.")
-                        else:
-                            st.subheader("Resultados SAT")
-                            st.dataframe(df_sat, use_container_width=True)
-                    else:
-                        st.error(f"Error SAT: {payload.get('detail', 'respuesta no OK')}")
-            except Exception as e:
-                st.error(f"Fallo al consultar SAT: {e}")
 
-    # --- CONSULTA BTS (data.bts.gov / Socrata) ---
-    st.markdown("---")
-    st.subheader("🌍 Consultar BTS / Socrata")
-    bts_dataset = st.text_input("Dataset ID (ej. 9v9j-9z33)", "")
-    bts_domain = st.text_input("Dominio (por defecto data.bts.gov)", "data.bts.gov")
-    bts_qs = st.text_input("Query string (ej: $limit=100&$select=column1,column2)", "")
-
-    if st.button("Consultar BTS"):
-        if not bts_dataset:
-            st.error("Ingrese un dataset ID para consultar.")
-        else:
-            try:
-                with st.spinner("Consultando BTS / Socrata..."):
-                    # parseamos query string a dict
-                    from urllib.parse import parse_qs
-                    params_raw = parse_qs(bts_qs, keep_blank_values=True)
-                    params = {k: v[0] for k, v in params_raw.items()} if params_raw else {}
-                    resp = requests.get(f"http://127.0.0.1:8000/functions/v1/bts/{bts_dataset}", params={**params, "domain": bts_domain}, timeout=30)
-                    resp.raise_for_status()
-                    payload = resp.json()
-                    if payload.get("status") == "ok":
-                        df_bts = pd.DataFrame(payload.get("data", []))
-                        if df_bts.empty:
-                            st.warning("La consulta BTS no retornó filas.")
-                        else:
-                            st.subheader("Resultados BTS")
-                            st.dataframe(df_bts, use_container_width=True)
-                            # Mostrar primeras columnas numéricas
-                            numeric_cols = df_bts.select_dtypes(include=["number"]).columns.tolist()
-                            if numeric_cols:
-                                st.subheader("Series numéricas")
-                                st.line_chart(df_bts[numeric_cols])
-                    else:
-                        st.error(f"Error BTS: {payload.get('detail', 'respuesta no OK')}")
-            except Exception as e:
-                st.error(f"Fallo al consultar BTS: {e}")
-
-    # --- CONSULTA SAT (páginas públicas) ---
-    st.markdown("---")
-    st.subheader("🧾 Consultar SAT (extraer tabla / enlaces)")
-    sat_url = st.text_input("URL SAT o pública", "https://www.sat.gob.mx/portal/public/home")
-    if st.button("Consultar SAT"):
-        if not sat_url:
-            st.error("Ingresa una URL para consultar.")
-        else:
-            try:
-                with st.spinner("Consultando SAT..."):
-                    resp = requests.get("http://127.0.0.1:8000/functions/v1/sat/fetch", params={"url": sat_url}, timeout=30)
-                    resp.raise_for_status()
-                    payload = resp.json()
-                    if payload.get("status") == "ok":
-                        df_sat = pd.DataFrame(payload.get("data", []))
-                        if df_sat.empty:
-                            st.warning("No se encontraron tablas ni enlaces en la URL proporcionada.")
-                        else:
-                            st.subheader("Resultados SAT")
-                            st.dataframe(df_sat, use_container_width=True)
-                    else:
-                        st.error(f"Error SAT: {payload.get('detail', 'respuesta no OK')}")
-            except Exception as e:
-                st.error(f"Fallo al consultar SAT: {e}")
+    st.success("✅ Datos actualizados - FreightMetrics")
 
 
 def page_monitoreo_aduanas():
     """Sistema de monitoreo de saturación, tiempos de cruce y alertas inteligentes"""
+    # Inicializar contador para evitar keys duplicados
+    if 'chart_counter_monitoreo_aduanas' not in st.session_state:
+        st.session_state.chart_counter_monitoreo_aduanas = 0
+    st.session_state.chart_counter_monitoreo_aduanas += 1
+    chart_id = st.session_state.chart_counter_monitoreo_aduanas
+    
     lang = st.session_state.get('language', 'es')
     
     # Títulos según idioma
@@ -3658,11 +3358,11 @@ def page_monitoreo_aduanas():
     btn_both_text = "🌎 Ambas Fronteras" if lang == 'es' else ("🌎 Both Borders" if lang == 'en' else "🌎 Les Deux Frontières")
     
     with col_mon_border1:
-        btn_mon_mexico = st.button(btn_mexico_text, use_container_width=True, key="btn_mon_border_mexico")
+        btn_mon_mexico = st.button(btn_mexico_text, use_container_width=True, key=f"btn_mon_border_mexico_{chart_id}")
     with col_mon_border2:
-        btn_mon_canada = st.button(btn_canada_text, use_container_width=True, key="btn_mon_border_canada")
+        btn_mon_canada = st.button(btn_canada_text, use_container_width=True, key=f"btn_mon_border_canada_{chart_id}")
     with col_mon_border3:
-        btn_mon_ambas = st.button(btn_both_text, use_container_width=True, key="btn_mon_border_ambas")
+        btn_mon_ambas = st.button(btn_both_text, use_container_width=True, key=f"btn_mon_border_ambas_{chart_id}")
     
     # Determinar frontera seleccionada
     if btn_mon_mexico:
@@ -3719,17 +3419,17 @@ def page_monitoreo_aduanas():
     update_api_help = "Consultar APIs externas y actualizar CSV" if lang == 'es' else ("Query external APIs and update CSV" if lang == 'en' else "Consulter APIs externes et mettre à jour CSV")
     
     with col_btn1:
-        btn_recargar = st.button(reload_text, help=reload_help, key="btn_recargar_mon")
+        btn_recargar = st.button(reload_text, help=reload_help, key=f"btn_recargar_mon_{chart_id}")
     with col_btn2:
-        btn_clear_cache = st.button(clear_cache_text, help=clear_cache_help, key="btn_clear_cache_mon")
+        btn_clear_cache = st.button(clear_cache_text, help=clear_cache_help, key=f"btn_clear_cache_mon_{chart_id}")
         if btn_clear_cache:
             st.cache_data.clear()
             st.success("✅ Caché limpiado. Recargando datos..." if lang == 'es' else "✅ Cache cleared. Reloading data...")
             st.rerun()
     with col_btn3:
-        usar_datos_reales = st.checkbox(real_data_text, value=True, help=real_data_help, key="check_real_mon")
+        usar_datos_reales = st.checkbox(real_data_text, value=True, help=real_data_help, key=f"check_real_mon_{chart_id}")
     with col_btn3:
-        btn_actualizar_apis = st.button(update_api_text, help=update_api_help, key="btn_api_mon")
+        btn_actualizar_apis = st.button(update_api_text, help=update_api_help, key=f"btn_api_mon_{chart_id}")
     with col_btn4:
         if 'cache_aduanas_fuente' in st.session_state:
             fuente = st.session_state['cache_aduanas_fuente']
@@ -4717,7 +4417,7 @@ def page_monitoreo_aduanas():
                 margin=dict(t=80, b=100)
             )
             
-            st.plotly_chart(fig_bts, use_container_width=True)
+            st.plotly_chart(fig_bts, use_container_width=True, key=f"fig_bts_{chart_id}")
             
             spacer(20)
             
@@ -4775,7 +4475,7 @@ def page_monitoreo_aduanas():
                     )
                 )
                 
-                st.plotly_chart(fig_pie, use_container_width=True)
+                st.plotly_chart(fig_pie, use_container_width=True, key=f"fig_pie_bts_{chart_id}")
             
             with col_pie2:
                 spacer(40)
@@ -4953,7 +4653,7 @@ def page_monitoreo_aduanas():
                 help=high_time_help
             )
         
-        if st.button(save_btn_text):
+        if st.button(save_btn_text, key=f"btn_save_alertas_{chart_id}"):
             sistema_alertas.umbrales['critico']['saturacion'] = nuevo_critico_sat
             sistema_alertas.umbrales['critico']['tiempo_espera'] = nuevo_critico_tiempo
             sistema_alertas.umbrales['alto']['saturacion'] = nuevo_alto_sat
@@ -4997,18 +4697,18 @@ def page_monitoreo_aduanas():
             select_customs_label,
             options=aduanas_disponibles,
             default=aduanas_disponibles,
-            key="aduanas_filtro"
+            key=f"aduanas_filtro_{chart_id}"
         )
     
     with col_f2:
         filtro_estado = st.selectbox(
             filter_status_label,
             options=status_options,
-            key="filtro_estado_aduanas"
+            key=f"filtro_estado_aduanas_{chart_id}"
         )
     
     with col_f3:
-        mostrar_horarios = st.checkbox(show_schedule_label, value=True, key="mostrar_horarios_check")
+        mostrar_horarios = st.checkbox(show_schedule_label, value=True, key=f"mostrar_horarios_check_{chart_id}")
     
     # Filtrar dataframe según aduanas seleccionadas
     if not aduanas_seleccionadas:
@@ -5060,7 +4760,8 @@ def page_monitoreo_aduanas():
             "Vista:",
             options=["Básica", "Con FAST", "Completa"],
             horizontal=True,
-            label_visibility="collapsed"
+            label_visibility="collapsed",
+            key=f"vista_detalle_{chart_id}"
         )
     
     # Seleccionar columnas según vista
@@ -5485,7 +5186,7 @@ def page_monitoreo_aduanas():
                     title='Tendencia de Alertas por Día',
                     labels={'fecha': 'Fecha', 'cantidad': 'Cantidad de Alertas'}
                 )
-                st.plotly_chart(fig_tendencia, use_container_width=True)
+                st.plotly_chart(fig_tendencia, use_container_width=True, key=f"fig_tendencia_{chart_id}")
                 
                 # Tabla de historial
                 st.dataframe(
@@ -5578,7 +5279,7 @@ def page_monitoreo_aduanas():
             "Filtrar por país:",
             options=['MX', 'US', 'MX/US'],
             default=['MX', 'US', 'MX/US'],
-            key="filtro_pais_festivos"
+            key=f"filtro_pais_festivos_{chart_id}"
         )
         
         df_festivos_filtrado = df_festivos[df_festivos['País'].isin(pais_filtro)]
@@ -5628,7 +5329,7 @@ def page_monitoreo_aduanas():
     aduana_seleccionada = st.selectbox(
         "Selecciona una aduana para ver horarios detallados:",
         options=list(horarios.keys()),
-        key="selector_aduana_horarios"
+        key=f"selector_aduana_horarios_{chart_id}"
     )
     
     if aduana_seleccionada:
@@ -5715,13 +5416,19 @@ def page_monitoreo_aduanas():
             labels={'Horas Abiertas': 'Horas'}
         )
         fig_disponibilidad.update_layout(height=350)
-        st.plotly_chart(fig_disponibilidad, use_container_width=True)
+        st.plotly_chart(fig_disponibilidad, use_container_width=True, key=f"fig_disponibilidad_{chart_id}")
     
     st.markdown("---")
     st.caption("⏰ Datos actualizados en tiempo real. Sistema monitorea cada 15 minutos | Última actualización: Hace 2 minutos")
 
 
 def page_fuerza_laboral():
+    # Inicializar contador para evitar keys duplicados
+    if 'chart_counter_fuerza_laboral' not in st.session_state:
+        st.session_state.chart_counter_fuerza_laboral = 0
+    st.session_state.chart_counter_fuerza_laboral += 1
+    chart_id = st.session_state.chart_counter_fuerza_laboral
+    
     # Título con diseño corporativo
     st.markdown("<h1 style='color: #11101D; font-weight: 700; margin-bottom: 0;'>👥 Segmentación de Empresas y Operadores</h1>", unsafe_allow_html=True)
     st.markdown("<p style='color: #4070F4; font-size: 1.1rem; font-weight: 500; margin-top: 5px; margin-bottom: 20px;'>Clasificación por tamaño de flota y capacidad operativa del sector autotransporte</p>", unsafe_allow_html=True)
@@ -5956,7 +5663,7 @@ def page_fuerza_laboral():
                                'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 'Puebla', 'Querétaro', 'Quintana Roo', 
                                'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 
                                'Veracruz', 'Yucatán', 'Zacatecas']
-        estados_filtro = st.multiselect("🗺️ Filtrar por Estados:", estados_disponibles, default=['Todos los estados'])
+        estados_filtro = st.multiselect("🗺️ Filtrar por Estados:", estados_disponibles, default=['Todos los estados'], key=f"estados_filtro_{chart_id}")
     with col_f3:
         top_n = st.slider("Top N estados:", min_value=5, max_value=32, value=10, step=1)
     
@@ -8656,6 +8363,12 @@ def page_mapa_autotransporte():
 def page_corredores_logisticos():
     """Análisis de corredores logísticos estratégicos con evaluación de riesgo y rentabilidad"""
     
+    # Inicializar contadores de keys para evitar duplicados
+    if 'chart_counter_corredores' not in st.session_state:
+        st.session_state.chart_counter_corredores = 0
+    st.session_state.chart_counter_corredores += 1
+    chart_id = st.session_state.chart_counter_corredores
+    
     # Título con diseño corporativo
     st.markdown("""
         <div style='background: linear-gradient(135deg, #11101D 0%, #4070F4 100%); 
@@ -8986,7 +8699,7 @@ def page_corredores_logisticos():
         )
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key=f'mapa_corredores_{chart_id}')
     
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -9073,7 +8786,7 @@ def page_corredores_logisticos():
             paper_bgcolor='rgba(0,0,0,0)',
             margin=dict(l=0, r=0, t=10, b=0)
         )
-        st.plotly_chart(fig_scatter, use_container_width=True)
+        st.plotly_chart(fig_scatter, use_container_width=True, key=f'scatter_distancia_tiempo_{chart_id}')
     
     with col_an2:
         st.markdown("<h4 style='color: #11101D; font-weight: 600;'>Rentabilidad por Corredor</h4>", unsafe_allow_html=True)
@@ -9099,7 +8812,7 @@ def page_corredores_logisticos():
             margin=dict(l=0, r=0, t=10, b=0),
             xaxis=dict(tickvals=[1, 2, 3], ticktext=['Baja', 'Media', 'Alta'])
         )
-        st.plotly_chart(fig_bar, use_container_width=True)
+        st.plotly_chart(fig_bar, use_container_width=True, key=f'bar_rentabilidad_{chart_id}')
     
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -9163,43 +8876,278 @@ def page_corredores_logisticos():
             """, unsafe_allow_html=True)
 
 
+def page_nearshoring():
+    """Análisis de tendencias de nearshoring y relocalización industrial"""
+    
+    # Obtener idioma actual
+    lang = st.session_state.language
+    
+    # Header de la página
+    page_header(
+        t('menu_nearshoring', lang),
+        "Análisis de tendencias de relocalización industrial y nearshoring" if lang == 'es' else 
+        "Nearshoring and industrial relocation trends analysis" if lang == 'en' else
+        "Analyse des tendances de relocalisation industrielle et de nearshoring",
+        "🌎"
+    )
+    
+    # Cargar datos históricos
+    @st.cache_data(ttl=600)
+    def cargar_datos_nearshoring():
+        """Carga y procesa datos para análisis de nearshoring"""
+        try:
+            # Cargar datos de cruces fronterizos multi-año
+            years = [2023, 2024, 2025]
+            all_data = []
+            
+            for year in years:
+                file_path = Path(__file__).parent / "data" / f"border_crossings_{year}_historical.csv"
+                if file_path.exists():
+                    df = pd.read_csv(file_path)
+                    df['year'] = year
+                    all_data.append(df)
+            
+            if all_data:
+                df_combined = pd.concat(all_data, ignore_index=True)
+                df_combined['date'] = pd.to_datetime(df_combined['date'])
+                df_combined['month'] = df_combined['date'].dt.month
+                df_combined['year_month'] = df_combined['date'].dt.strftime('%Y-%m')
+                return df_combined
+            else:
+                return pd.DataFrame()
+                
+        except Exception as e:
+            st.error(f"Error cargando datos: {e}")
+            return pd.DataFrame()
+    
+    # Cargar datos de aduanas mexicanas
+    @st.cache_data(ttl=600)
+    def cargar_datos_aduanas():
+        """Carga datos de contenedores en aduanas mexicanas"""
+        try:
+            file_path = Path(__file__).parent / "data" / "aduanas_latest.csv"
+            if file_path.exists():
+                df = pd.read_csv(file_path)
+                df['Fecha'] = pd.to_datetime(df['Fecha'])
+                return df
+            else:
+                return pd.DataFrame()
+        except Exception as e:
+            st.error(f"Error cargando datos de aduanas: {e}")
+            return pd.DataFrame()
+    
+    df_border = cargar_datos_nearshoring()
+    df_aduanas = cargar_datos_aduanas()
+    
+    if df_border.empty:
+        st.error("No se pudieron cargar los datos de cruces fronterizos")
+        return
+    
+    # ========== MÉTRICAS PRINCIPALES ==========
+    st.markdown("### 📊 Indicadores Clave de Nearshoring" if lang == 'es' else 
+                "### 📊 Key Nearshoring Indicators" if lang == 'en' else
+                "### 📊 Indicateurs Clés de Nearshoring")
+    
+    # Calcular métricas principales
+    current_year = 2025
+    prev_year = 2024
+    
+    # Contenedores totales (indicador clave de nearshoring)
+    containers_current = df_border[
+        (df_border['year'] == current_year) & 
+        (df_border['measure'].str.contains('Container', case=False))
+    ]['value'].sum()
+    
+    containers_prev = df_border[
+        (df_border['year'] == prev_year) & 
+        (df_border['measure'].str.contains('Container', case=False))
+    ]['value'].sum()
+    
+    containers_growth = ((containers_current - containers_prev) / containers_prev * 100) if containers_prev > 0 else 0
+    
+    # Tráfico total de camiones
+    trucks_current = df_border[
+        (df_border['year'] == current_year) & 
+        (df_border['measure'] == 'Trucks')
+    ]['value'].sum()
+    
+    trucks_prev = df_border[
+        (df_border['year'] == prev_year) & 
+        (df_border['measure'] == 'Trucks')
+    ]['value'].sum()
+    
+    trucks_growth = ((trucks_current - trucks_prev) / trucks_prev * 100) if trucks_prev > 0 else 0
+    
+    # Métricas de tarjetas
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        metric_card(
+            "Contenedores 2025" if lang == 'es' else "Containers 2025" if lang == 'en' else "Conteneurs 2025",
+            f"{containers_current:,.0f}",
+            "📦",
+            "#4070F4",
+            f"{containers_growth:+.1f}% vs 2024"
+        )
+    
+    with col2:
+        metric_card(
+            "Camiones 2025" if lang == 'es' else "Trucks 2025" if lang == 'en' else "Camions 2025",
+            f"{trucks_current:,.0f}",
+            "🚛",
+            "#29B5E8",
+            f"{trucks_growth:+.1f}% vs 2024"
+        )
+    
+    with col3:
+        # Calcular valor total de aduanas si disponible
+        total_valor = df_aduanas['Valor_USD'].sum() if not df_aduanas.empty else 0
+        metric_card(
+            "Valor Comercio (USD)" if lang == 'es' else "Trade Value (USD)" if lang == 'en' else "Valeur Commerce (USD)",
+            f"${total_valor:,.0f}M" if total_valor > 0 else "N/A",
+            "💰",
+            "#4CAF50"
+        )
+    
+    spacer(20)
+    
+    # ========== ANÁLISIS DE TENDENCIAS ==========
+    st.markdown("### 📈 Tendencias de Nearshoring" if lang == 'es' else 
+                "### 📈 Nearshoring Trends" if lang == 'en' else
+                "### 📈 Tendances de Nearshoring")
+    
+    # Análisis por año de contenedores
+    yearly_containers = df_border[
+        df_border['measure'].str.contains('Container', case=False)
+    ].groupby('year')['value'].sum().reset_index()
+    
+    # Gráfico de crecimiento de contenedores
+    fig_containers = px.line(
+        yearly_containers,
+        x='year',
+        y='value',
+        markers=True,
+        title="Crecimiento Anual de Contenedores" if lang == 'es' else 
+              "Annual Container Growth" if lang == 'en' else
+              "Croissance Annuelle des Conteneurs",
+        labels={'value': 'Contenedores', 'year': 'Año'}
+    )
+    fig_containers.update_layout(
+        height=400,
+        font=dict(color='#11101D', family='Inter'),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
+    )
+    fig_containers.update_traces(line_color='#4070F4', line_width=3)
+    
+    st.plotly_chart(fig_containers, use_container_width=True)
+    
+    spacer(20)
+    
+    # ========== ANÁLISIS POR FRONTERA ==========
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### 🌎 Frontera México-EEUU" if lang == 'es' else 
+                    "#### 🌎 US-Mexico Border" if lang == 'en' else
+                    "#### 🌎 Frontière Mexique-ÉU")
+        
+        # Contenedores México
+        mexico_containers = df_border[
+            (df_border['border'] == 'US-Mexico Border') & 
+            (df_border['measure'].str.contains('Container', case=False))
+        ].groupby('year')['value'].sum().reset_index()
+        
+        fig_mexico = px.bar(
+            mexico_containers,
+            x='year',
+            y='value',
+            color='year',
+            title="Contenedores México" if lang == 'es' else "Mexico Containers" if lang == 'en' else "Conteneurs Mexique",
+            labels={'value': 'Contenedores', 'year': 'Año'}
+        )
+        fig_mexico.update_layout(
+            height=300,
+            showlegend=False,
+            font=dict(color='#11101D', family='Inter'),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
+        st.plotly_chart(fig_mexico, use_container_width=True)
+    
+    with col2:
+        st.markdown("#### ❄️ Frontera Canadá-EEUU" if lang == 'es' else 
+                    "#### ❄️ US-Canada Border" if lang == 'en' else
+                    "#### ❄️ Frontière Canada-ÉU")
+        
+        # Contenedores Canadá
+        canada_containers = df_border[
+            (df_border['border'] == 'US-Canada Border') & 
+            (df_border['measure'].str.contains('Container', case=False))
+        ].groupby('year')['value'].sum().reset_index()
+        
+        fig_canada = px.bar(
+            canada_containers,
+            x='year',
+            y='value',
+            color='year',
+            title="Contenedores Canadá" if lang == 'es' else "Canada Containers" if lang == 'en' else "Conteneurs Canada",
+            labels={'value': 'Contenedores', 'year': 'Año'}
+        )
+        fig_canada.update_layout(
+            height=300,
+            showlegend=False,
+            font=dict(color='#11101D', family='Inter'),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
+        st.plotly_chart(fig_canada, use_container_width=True)
+    
+    spacer(20)
+    
+    # ========== CORREDORES DE MANUFACTURA ==========
+    st.markdown("### 🏭 Corredores de Manufactura Estratégicos" if lang == 'es' else 
+                "### 🏭 Strategic Manufacturing Corridors" if lang == 'en' else
+                "### 🏭 Couloirs de Fabrication Stratégiques")
+    st.info("📊 Análisis de nearshoring y corredores de manufactura (en desarrollo)")
+
+
+# --- PÁGINAS OPCIONALES (si están disponibles) ---
+try:
+    if MONITOREO_V2_AVAILABLE:
+        from monitoreo_v2 import page_monitoreo_v2
+except:
+    page_monitoreo_v2 = None
+
+try:
+    if INDICE_FM_AVAILABLE:
+        from indice_freightmetrics import page_indice_freightmetrics
+except:
+    page_indice_freightmetrics = None
+
+try:
+    if ORACLE_RATE_AVAILABLE:
+        from oracle_rate import page_oracle_rate
+except:
+    page_oracle_rate = None
+
+
 # --- RUTEADOR DEL MENÚ ---
 # Mapear la opción seleccionada (en cualquier idioma) a la función correspondiente
 menu_mapping = {
-    t('menu_dashboard', 'es'): page_inicio,
-    t('menu_dashboard', 'en'): page_inicio,
-    t('menu_dashboard', 'fr'): page_inicio,
-    
-    t('menu_monitoring', 'es'): page_monitoreo_v2 if MONITOREO_V2_AVAILABLE else page_monitoreo_aduanas,
-    t('menu_monitoring', 'en'): page_monitoreo_v2 if MONITOREO_V2_AVAILABLE else page_monitoreo_aduanas,
-    t('menu_monitoring', 'fr'): page_monitoreo_v2 if MONITOREO_V2_AVAILABLE else page_monitoreo_aduanas,
-    
-    t('menu_flows', 'es'): page_mapa,
-    t('menu_flows', 'en'): page_mapa,
-    t('menu_flows', 'fr'): page_mapa,
-    
-    t('menu_corridors', 'es'): page_corredores_logisticos,
-    t('menu_corridors', 'en'): page_corredores_logisticos,
-    t('menu_corridors', 'fr'): page_corredores_logisticos,
-    
-    t('menu_ports', 'es'): page_mapa_autotransporte,
-    t('menu_ports', 'en'): page_mapa_autotransporte,
-    t('menu_ports', 'fr'): page_mapa_autotransporte,
-    
-    t('menu_workforce', 'es'): page_fuerza_laboral,
-    t('menu_workforce', 'en'): page_fuerza_laboral,
-    t('menu_workforce', 'fr'): page_fuerza_laboral,
+    t('menu_dashboard', lang): page_inicio,
+    t('menu_monitoring', lang): page_monitoreo_v2 if MONITOREO_V2_AVAILABLE and page_monitoreo_v2 else page_monitoreo_aduanas,
+    t('menu_flows', lang): page_mapa,
+    t('menu_corridors', lang): page_corredores_logisticos,
+    t('menu_ports', lang): page_mapa_autotransporte,
+    t('menu_workforce', lang): page_fuerza_laboral,
+    t('menu_nearshoring', lang): page_nearshoring,
+    t('menu_indice', lang): page_indice_freightmetrics if INDICE_FM_AVAILABLE and page_indice_freightmetrics else None,
+    t('menu_oracle', lang): page_oracle_rate if ORACLE_RATE_AVAILABLE and page_oracle_rate else None,
 }
 
-# Ejecutar la página correspondiente
-if opcion in menu_mapping:
+# Ejecutar la página seleccionada
+if opcion and opcion in menu_mapping and menu_mapping[opcion]:
     menu_mapping[opcion]()
 else:
-    # Nearshoring u otra opción
-    st.title("🌎 " + t('menu_nearshoring'))
-    if lang == 'es':
-        st.info("Aquí verás las tendencias de relocalización.")
-    elif lang == 'en':
-        st.info("Here you will see relocation trends.")
-    else:
-        st.info("Ici vous verrez les tendances de relocalisation.")
+    page_inicio()  # Página por defecto

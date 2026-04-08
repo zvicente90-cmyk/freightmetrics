@@ -1,0 +1,393 @@
+port_name,measure,mes_label,tot_value,mes,value,delta
+Total,Total,Jan 2026,1300283,2026-01,0,1300283
+Total,Total,Feb 2026,1278256,2026-02,0,1278256
+Ysleta,Trucks,Jan 2026,53942,2026-01,53622,320
+Buffalo Niagara Falls,Trucks,Feb 2026,64340,2026-02,64636,-296
+Eagle Pass,Trucks,Jan 2026,35119,2026-01,35322,-203
+Laredo,Truck Containers Empty,Feb 2026,56377,2026-02,56563,-186
+Detroit,Trucks,Feb 2026,90794,2026-02,90952,-158
+Calexico East,Trucks,Jan 2026,37247,2026-01,37387,-140
+Buffalo Niagara Falls,Trucks,Jan 2026,62667,2026-01,62797,-130
+Hidalgo,Trucks,Jan 2026,63950,2026-01,63825,125
+Ysleta,Truck Containers Empty,Jan 2026,19862,2026-01,19744,118
+Laredo,Trucks,Jan 2026,225670,2026-01,225784,-114
+Detroit,Truck Containers Empty,Jan 2026,14701,2026-01,14593,108
+Port Huron,Trucks,Feb 2026,75193,2026-02,75085,108
+Blaine,Trucks,Feb 2026,24140,2026-02,24046,94
+Champlain Rouses Point,Trucks,Feb 2026,18885,2026-02,18792,93
+Ysleta,Trucks,Feb 2026,54043,2026-02,54129,-86
+Blaine,Trucks,Jan 2026,26143,2026-01,26066,77
+Otay Mesa,Truck Containers Empty,Jan 2026,19969,2026-01,19897,72
+Brownsville,Trucks,Jan 2026,28851,2026-01,28781,70
+Champlain Rouses Point,Trucks,Jan 2026,20139,2026-01,20209,-70
+Ysleta,Truck Containers Empty,Feb 2026,20407,2026-02,20476,-69
+Hidalgo,Truck Containers Empty,Jan 2026,21784,2026-01,21718,66
+Brownsville,Truck Containers Empty,Feb 2026,19627,2026-02,19687,-60
+Alexandria Bay,Trucks,Feb 2026,13043,2026-02,12984,59
+Nogales,Trucks,Jan 2026,38181,2026-01,38122,59
+Detroit,Trucks,Jan 2026,84522,2026-01,84467,55
+Calexico East,Truck Containers Empty,Jan 2026,17028,2026-01,16973,55
+Santa Teresa,Trucks,Feb 2026,14442,2026-02,14387,55
+Brownsville,Truck Containers Empty,Jan 2026,20903,2026-01,20957,-54
+Derby Line,Trucks,Feb 2026,5531,2026-02,5477,54
+Hidalgo,Trucks,Feb 2026,57219,2026-02,57272,-53
+Pembina,Trucks,Jan 2026,18472,2026-01,18420,52
+Santa Teresa,Trucks,Jan 2026,15450,2026-01,15499,-49
+Laredo,Trucks,Feb 2026,236216,2026-02,236170,46
+Otay Mesa,Truck Containers Empty,Feb 2026,19283,2026-02,19328,-45
+Eagle Pass,Truck Containers Empty,Feb 2026,16600,2026-02,16555,45
+Portal,Trucks,Feb 2026,7035,2026-02,6991,44
+Highgate Springs,Trucks,Feb 2026,7723,2026-02,7681,42
+Brownsville,Trucks,Feb 2026,27471,2026-02,27431,40
+Port Huron,Trucks,Jan 2026,71718,2026-01,71758,-40
+Pembina,Trucks,Feb 2026,18144,2026-02,18183,-39
+San Luis,Trucks,Feb 2026,5025,2026-02,4988,37
+Sweetgrass,Trucks,Feb 2026,11190,2026-02,11226,-36
+Otay Mesa,Trucks,Jan 2026,75617,2026-01,75650,-33
+Calexico East,Truck Containers Empty,Feb 2026,15972,2026-02,16005,-33
+Sault Sainte Marie,Trucks,Jan 2026,2164,2026-01,2132,32
+Jackman,Trucks,Feb 2026,6163,2026-02,6131,32
+El Paso,Trucks,Feb 2026,13879,2026-02,13849,30
+Sumas,Trucks,Jan 2026,9299,2026-01,9270,29
+Sault Sainte Marie,Trucks,Feb 2026,2163,2026-02,2135,28
+Progreso,Trucks,Feb 2026,7435,2026-02,7463,-28
+Lukeville,Trucks,Jan 2026,59,2026-01,31,28
+Calexico East,Trucks,Feb 2026,35461,2026-02,35433,28
+Blaine,Truck Containers Empty,Jan 2026,7454,2026-01,7426,28
+Champlain Rouses Point,Truck Containers Empty,Jan 2026,2457,2026-01,2430,27
+Del Bonita,Truck Containers Empty,Jan 2026,58,2026-01,31,27
+Alexandria Bay,Trucks,Jan 2026,12388,2026-01,12414,-26
+Limestone,Trucks,Jan 2026,88,2026-01,62,26
+Antler,Trucks,Jan 2026,88,2026-01,62,26
+Roseau,Truck Containers Empty,Jan 2026,88,2026-01,62,26
+Turner,Truck Containers Empty,Jan 2026,26,2026-01,0,26
+Fort Kent,Truck Containers Empty,Jan 2026,150,2026-01,124,26
+Antler,Truck Containers Empty,Jan 2026,88,2026-01,62,26
+Boundary,Trucks,Jan 2026,25,2026-01,0,25
+Warroad,Truck Containers Empty,Jan 2026,122,2026-01,97,25
+Tornillo,Trucks,Jan 2026,2668,2026-01,2643,25
+Kenneth G Ward,Trucks,Jan 2026,2038,2026-01,2013,25
+Carbury,Trucks,Jan 2026,118,2026-01,93,25
+Tecate,Truck Containers Empty,Feb 2026,1574,2026-02,1550,24
+Norton,Truck Containers Empty,Feb 2026,80,2026-02,56,24
+Westhope,Truck Containers Empty,Feb 2026,24,2026-02,0,24
+Northgate,Truck Containers Empty,Jan 2026,152,2026-01,129,23
+Laredo,Truck Containers Empty,Jan 2026,55186,2026-01,55209,-23
+Massena,Truck Containers Empty,Jan 2026,209,2026-01,186,23
+Limestone,Truck Containers Empty,Jan 2026,61,2026-01,38,23
+San Luis,Truck Containers Empty,Feb 2026,1077,2026-02,1054,23
+Northgate,Trucks,Jan 2026,178,2026-01,155,23
+Eagle Pass,Trucks,Feb 2026,27588,2026-02,27565,23
+Naco,Truck Containers Empty,Feb 2026,107,2026-02,84,23
+Port Huron,Truck Containers Empty,Feb 2026,5961,2026-02,5939,22
+Raymond,Trucks,Feb 2026,1110,2026-02,1088,22
+Calais,Trucks,Jan 2026,3480,2026-01,3458,22
+Buffalo Niagara Falls,Truck Containers Empty,Jan 2026,13817,2026-01,13839,-22
+Westhope,Trucks,Jan 2026,146,2026-01,124,22
+Frontier,Truck Containers Empty,Jan 2026,1644,2026-01,1622,22
+Raymond,Truck Containers Empty,Jan 2026,115,2026-01,93,22
+Naco,Trucks,Jan 2026,208,2026-01,186,22
+Del Bonita,Trucks,Jan 2026,83,2026-01,62,21
+Walhalla,Truck Containers Empty,Jan 2026,145,2026-01,124,21
+Trout River,Truck Containers Empty,Jan 2026,274,2026-01,253,21
+Porthill,Trucks,Jan 2026,242,2026-01,221,21
+Porthill,Truck Containers Empty,Jan 2026,52,2026-01,31,21
+Buffalo Niagara Falls,Truck Containers Empty,Feb 2026,12606,2026-02,12627,-21
+Hannah,Trucks,Feb 2026,21,2026-02,0,21
+Madawaska,Truck Containers Empty,Jan 2026,831,2026-01,811,20
+Progreso,Truck Containers Empty,Jan 2026,4944,2026-01,4924,20
+Del Rio,Trucks,Jan 2026,7304,2026-01,7284,20
+Jackman,Truck Containers Empty,Feb 2026,2946,2026-02,2926,20
+Sumas,Truck Containers Empty,Feb 2026,2676,2026-02,2656,20
+Walhalla,Trucks,Jan 2026,268,2026-01,248,20
+Hansboro,Trucks,Jan 2026,20,2026-01,0,20
+Alcan,Truck Containers Empty,Feb 2026,272,2026-02,252,20
+Metaline Falls,Trucks,Jan 2026,517,2026-01,497,20
+Antler,Trucks,Feb 2026,84,2026-02,65,19
+Skagway,Truck Containers Empty,Jan 2026,143,2026-01,124,19
+Alexandria Bay,Truck Containers Empty,Feb 2026,1514,2026-02,1495,19
+Skagway,Trucks,Feb 2026,131,2026-02,112,19
+Westhope,Truck Containers Empty,Jan 2026,19,2026-01,0,19
+Sherwood,Trucks,Jan 2026,236,2026-01,217,19
+Trout River,Trucks,Jan 2026,828,2026-01,809,19
+Beecher Falls,Trucks,Feb 2026,677,2026-02,658,19
+Dalton Cache,Trucks,Feb 2026,47,2026-02,28,19
+Lancaster,Trucks,Feb 2026,194,2026-02,175,19
+Pinecreek,Trucks,Feb 2026,19,2026-02,0,19
+Porthill,Trucks,Feb 2026,247,2026-02,228,19
+Baudette,Trucks,Jan 2026,298,2026-01,279,19
+Presidio,Trucks,Jan 2026,748,2026-01,729,19
+Noonan,Trucks,Jan 2026,80,2026-01,62,18
+Lancaster,Trucks,Jan 2026,173,2026-01,155,18
+Sumas,Truck Containers Empty,Jan 2026,2755,2026-01,2737,18
+Roosville,Truck Containers Empty,Jan 2026,18,2026-01,0,18
+Baudette,Truck Containers Empty,Feb 2026,214,2026-02,196,18
+International Falls,Trucks,Feb 2026,1165,2026-02,1147,18
+Metaline Falls,Truck Containers Empty,Feb 2026,478,2026-02,460,18
+Derby Line,Truck Containers Empty,Jan 2026,694,2026-01,676,18
+Eastport,Truck Containers Empty,Jan 2026,909,2026-01,891,18
+Noonan,Truck Containers Empty,Jan 2026,80,2026-01,62,18
+Raymond,Truck Containers Empty,Feb 2026,164,2026-02,146,18
+Douglas,Truck Containers Empty,Feb 2026,859,2026-02,841,18
+Dunseith,Trucks,Feb 2026,1935,2026-02,1917,18
+Frontier,Trucks,Feb 2026,2236,2026-02,2218,18
+Neche,Trucks,Feb 2026,356,2026-02,338,18
+Ogdensburg,Truck Containers Empty,Feb 2026,273,2026-02,255,18
+Columbus,Trucks,Jan 2026,730,2026-01,713,17
+Del Bonita,Truck Containers Empty,Feb 2026,45,2026-02,28,17
+Oroville,Truck Containers Empty,Feb 2026,680,2026-02,663,17
+Westhope,Trucks,Feb 2026,101,2026-02,84,17
+Point Roberts,Trucks,Feb 2026,511,2026-02,494,17
+Norton,Trucks,Jan 2026,389,2026-01,372,17
+Raymond,Trucks,Jan 2026,1085,2026-01,1068,17
+Van Buren,Trucks,Feb 2026,1216,2026-02,1199,17
+Wildhorse,Truck Containers Empty,Feb 2026,17,2026-02,0,17
+Warroad,Trucks,Jan 2026,587,2026-01,570,17
+Fort Kent,Truck Containers Empty,Feb 2026,269,2026-02,252,17
+Massena,Truck Containers Empty,Feb 2026,219,2026-02,202,17
+Limestone,Trucks,Feb 2026,84,2026-02,67,17
+Wildhorse,Trucks,Jan 2026,79,2026-01,62,17
+Highgate Springs,Trucks,Jan 2026,7738,2026-01,7721,17
+Presidio,Truck Containers Empty,Feb 2026,268,2026-02,252,16
+Madawaska,Trucks,Jan 2026,1084,2026-01,1068,16
+Baudette,Trucks,Feb 2026,250,2026-02,234,16
+Beecher Falls,Truck Containers Empty,Feb 2026,359,2026-02,343,16
+Bridgewater,Trucks,Feb 2026,330,2026-02,314,16
+Calais,Truck Containers Empty,Feb 2026,609,2026-02,593,16
+Point Roberts,Trucks,Jan 2026,539,2026-01,523,16
+Dalton Cache,Truck Containers Empty,Feb 2026,44,2026-02,28,16
+Ogdensburg,Trucks,Jan 2026,2110,2026-01,2094,16
+Lancaster,Truck Containers Empty,Feb 2026,156,2026-02,140,16
+Houlton,Truck Containers Empty,Jan 2026,538,2026-01,522,16
+San Luis,Truck Containers Empty,Jan 2026,1036,2026-01,1020,16
+Tornillo,Truck Containers Empty,Jan 2026,897,2026-01,881,16
+Tecate,Trucks,Jan 2026,4323,2026-01,4307,16
+Sweetgrass,Truck Containers Empty,Jan 2026,1888,2026-01,1872,16
+Alcan,Trucks,Jan 2026,650,2026-01,634,16
+Beecher Falls,Trucks,Jan 2026,608,2026-01,592,16
+Beecher Falls,Truck Containers Empty,Jan 2026,357,2026-01,341,16
+Alexandria Bay,Truck Containers Empty,Jan 2026,1508,2026-01,1493,15
+Bridgewater,Trucks,Jan 2026,263,2026-01,248,15
+Alcan,Truck Containers Empty,Jan 2026,246,2026-01,231,15
+Pinecreek,Trucks,Jan 2026,15,2026-01,0,15
+Kenneth G Ward,Truck Containers Empty,Jan 2026,1886,2026-01,1871,15
+Roosville,Trucks,Jan 2026,765,2026-01,750,15
+San Luis,Trucks,Jan 2026,4542,2026-01,4557,-15
+Highgate Springs,Truck Containers Empty,Jan 2026,1012,2026-01,997,15
+Roma,Truck Containers Empty,Jan 2026,939,2026-01,924,15
+El Paso,Truck Containers Empty,Jan 2026,7946,2026-01,7931,15
+Douglas,Truck Containers Empty,Jan 2026,944,2026-01,929,15
+Oroville,Trucks,Jan 2026,1668,2026-01,1653,15
+Metaline Falls,Truck Containers Empty,Jan 2026,475,2026-01,460,15
+International Falls,Truck Containers Empty,Feb 2026,225,2026-02,210,15
+Fort Kent,Trucks,Feb 2026,309,2026-02,294,15
+Fortuna,Truck Containers Empty,Jan 2026,139,2026-01,124,15
+Fort Fairfield,Trucks,Jan 2026,356,2026-01,341,15
+Piegan,Truck Containers Empty,Feb 2026,15,2026-02,0,15
+Columbus,Truck Containers Empty,Jan 2026,139,2026-01,124,15
+Neche,Trucks,Jan 2026,406,2026-01,391,15
+Richford,Truck Containers Empty,Feb 2026,193,2026-02,178,15
+Sault Sainte Marie,Truck Containers Empty,Feb 2026,512,2026-02,497,15
+Roosville,Truck Containers Empty,Feb 2026,15,2026-02,0,15
+Point Roberts,Truck Containers Empty,Jan 2026,281,2026-01,267,14
+Richford,Truck Containers Empty,Jan 2026,169,2026-01,155,14
+Alcan,Trucks,Feb 2026,554,2026-02,540,14
+Van Buren,Truck Containers Empty,Jan 2026,521,2026-01,507,14
+Tecate,Trucks,Feb 2026,3848,2026-02,3862,-14
+Trout River,Truck Containers Empty,Feb 2026,335,2026-02,321,14
+Sault Sainte Marie,Truck Containers Empty,Jan 2026,474,2026-01,460,14
+Wildhorse,Trucks,Feb 2026,42,2026-02,28,14
+Houlton,Trucks,Jan 2026,6301,2026-01,6287,14
+Antler,Truck Containers Empty,Feb 2026,84,2026-02,70,14
+Fort Fairfield,Trucks,Feb 2026,462,2026-02,448,14
+Houlton,Trucks,Feb 2026,6233,2026-02,6247,-14
+Nogales,Trucks,Feb 2026,36960,2026-02,36946,14
+Boundary,Trucks,Feb 2026,28,2026-02,14,14
+Portal,Trucks,Jan 2026,7167,2026-01,7153,14
+Dunseith,Truck Containers Empty,Feb 2026,126,2026-02,112,14
+Hidalgo,Truck Containers Empty,Feb 2026,18482,2026-02,18496,-14
+Norton,Trucks,Feb 2026,392,2026-02,378,14
+Richford,Trucks,Feb 2026,308,2026-02,294,14
+Oroville,Truck Containers Empty,Jan 2026,645,2026-01,632,13
+Vanceboro,Trucks,Feb 2026,13,2026-02,0,13
+Fort Fairfield,Truck Containers Empty,Jan 2026,44,2026-01,31,13
+Metaline Falls,Trucks,Feb 2026,519,2026-02,506,13
+Eastport,Trucks,Jan 2026,3613,2026-01,3600,13
+Trout River,Trucks,Feb 2026,827,2026-02,814,13
+Highgate Springs,Truck Containers Empty,Feb 2026,1035,2026-02,1022,13
+Tornillo,Truck Containers Empty,Feb 2026,796,2026-02,783,13
+Tecate,Truck Containers Empty,Jan 2026,1862,2026-01,1849,13
+Sweetgrass,Truck Containers Empty,Feb 2026,1563,2026-02,1550,13
+Rio Grande City,Trucks,Jan 2026,1712,2026-01,1699,13
+Vanceboro,Trucks,Jan 2026,13,2026-01,0,13
+Wildhorse,Truck Containers Empty,Jan 2026,13,2026-01,0,13
+Del Rio,Trucks,Feb 2026,7566,2026-02,7553,13
+Turner,Trucks,Feb 2026,13,2026-02,0,13
+Van Buren,Trucks,Jan 2026,1175,2026-01,1163,12
+Vanceboro,Truck Containers Empty,Jan 2026,12,2026-01,0,12
+Columbus,Trucks,Feb 2026,473,2026-02,461,12
+Piegan,Truck Containers Empty,Jan 2026,12,2026-01,0,12
+Carbury,Trucks,Feb 2026,68,2026-02,56,12
+Madawaska,Trucks,Feb 2026,1184,2026-02,1172,12
+Laurier,Trucks,Feb 2026,320,2026-02,308,12
+Pembina,Truck Containers Empty,Feb 2026,2502,2026-02,2514,-12
+Eastport,Truck Containers Empty,Feb 2026,739,2026-02,727,12
+Houlton,Truck Containers Empty,Feb 2026,584,2026-02,572,12
+Laurier,Trucks,Jan 2026,311,2026-01,299,12
+Roma,Truck Containers Empty,Feb 2026,1013,2026-02,1001,12
+Naco,Trucks,Feb 2026,180,2026-02,168,12
+Presidio,Trucks,Feb 2026,758,2026-02,746,12
+Otay Mesa,Trucks,Feb 2026,74440,2026-02,74452,-12
+Vanceboro,Truck Containers Empty,Feb 2026,12,2026-02,0,12
+Derby Line,Trucks,Jan 2026,5639,2026-01,5651,-12
+Warroad,Trucks,Feb 2026,548,2026-02,536,12
+Roseau,Trucks,Jan 2026,166,2026-01,155,11
+International Falls,Trucks,Jan 2026,1192,2026-01,1181,11
+Port Huron,Truck Containers Empty,Jan 2026,6121,2026-01,6110,11
+Bridgewater,Truck Containers Empty,Jan 2026,135,2026-01,124,11
+Van Buren,Truck Containers Empty,Feb 2026,403,2026-02,392,11
+Sweetgrass,Trucks,Jan 2026,11994,2026-01,12005,-11
+Grand Portage,Truck Containers Empty,Feb 2026,263,2026-02,252,11
+Norton,Truck Containers Empty,Jan 2026,73,2026-01,62,11
+Progreso,Truck Containers Empty,Feb 2026,4899,2026-02,4910,-11
+Dunseith,Trucks,Jan 2026,2394,2026-01,2383,11
+Dunseith,Truck Containers Empty,Jan 2026,166,2026-01,155,11
+Rio Grande City,Trucks,Feb 2026,1884,2026-02,1873,11
+Dalton Cache,Trucks,Jan 2026,73,2026-01,62,11
+Walhalla,Trucks,Feb 2026,226,2026-02,215,11
+Madawaska,Truck Containers Empty,Feb 2026,885,2026-02,874,11
+Grand Portage,Truck Containers Empty,Jan 2026,228,2026-01,217,11
+Nogales,Truck Containers Empty,Feb 2026,8510,2026-02,8499,11
+Douglas,Trucks,Feb 2026,2107,2026-02,2096,11
+Sarles,Trucks,Jan 2026,159,2026-01,148,11
+Derby Line,Truck Containers Empty,Feb 2026,722,2026-02,711,11
+Turner,Trucks,Jan 2026,42,2026-01,31,11
+Del Bonita,Trucks,Feb 2026,66,2026-02,56,10
+Ogdensburg,Trucks,Feb 2026,2023,2026-02,2013,10
+Oroville,Trucks,Feb 2026,1785,2026-02,1775,10
+Neche,Truck Containers Empty,Jan 2026,72,2026-01,62,10
+Sherwood,Truck Containers Empty,Feb 2026,150,2026-02,140,10
+Point Roberts,Truck Containers Empty,Feb 2026,254,2026-02,244,10
+Port Angeles,Trucks,Feb 2026,10,2026-02,0,10
+Rio Grande City,Truck Containers Empty,Feb 2026,201,2026-02,191,10
+Del Rio,Truck Containers Empty,Jan 2026,2682,2026-01,2672,10
+Grand Portage,Trucks,Feb 2026,713,2026-02,703,10
+Grand Portage,Trucks,Jan 2026,739,2026-01,729,10
+Fortuna,Trucks,Jan 2026,227,2026-01,217,10
+Presidio,Truck Containers Empty,Jan 2026,258,2026-01,248,10
+Roma,Trucks,Jan 2026,4265,2026-01,4255,10
+Blaine,Truck Containers Empty,Feb 2026,6650,2026-02,6660,-10
+Calais,Trucks,Feb 2026,3210,2026-02,3200,10
+Richford,Trucks,Jan 2026,315,2026-01,305,10
+Frontier,Truck Containers Empty,Feb 2026,1515,2026-02,1505,10
+Hansboro,Trucks,Feb 2026,38,2026-02,28,10
+Naco,Truck Containers Empty,Jan 2026,103,2026-01,93,10
+Limestone,Truck Containers Empty,Feb 2026,66,2026-02,56,10
+Calais,Truck Containers Empty,Jan 2026,834,2026-01,824,10
+Morgan,Trucks,Feb 2026,9,2026-02,0,9
+Roma,Trucks,Feb 2026,4258,2026-02,4249,9
+Massena,Trucks,Jan 2026,1248,2026-01,1239,9
+Detroit,Truck Containers Empty,Feb 2026,13983,2026-02,13992,-9
+International Falls,Truck Containers Empty,Jan 2026,195,2026-01,186,9
+Baudette,Truck Containers Empty,Jan 2026,284,2026-01,275,9
+Northgate,Truck Containers Empty,Feb 2026,149,2026-02,140,9
+Scobey,Trucks,Feb 2026,9,2026-02,0,9
+Danville,Trucks,Jan 2026,9,2026-01,0,9
+Morgan,Trucks,Jan 2026,9,2026-01,0,9
+Santa Teresa,Truck Containers Empty,Jan 2026,6900,2026-01,6909,-9
+Sherwood,Trucks,Feb 2026,287,2026-02,278,9
+Sumas,Trucks,Feb 2026,9218,2026-02,9209,9
+Skagway,Trucks,Jan 2026,163,2026-01,155,8
+Whitlash,Truck Containers Empty,Feb 2026,8,2026-02,0,8
+Sherwood,Truck Containers Empty,Jan 2026,158,2026-01,150,8
+Tornillo,Trucks,Feb 2026,2530,2026-02,2522,8
+Whitlash,Trucks,Feb 2026,8,2026-02,0,8
+Roosville,Trucks,Feb 2026,662,2026-02,654,8
+Piegan,Trucks,Feb 2026,148,2026-02,140,8
+Ogdensburg,Truck Containers Empty,Jan 2026,254,2026-01,246,8
+El Paso,Trucks,Jan 2026,14489,2026-01,14481,8
+Sarles,Trucks,Feb 2026,119,2026-02,112,7
+Roseau,Trucks,Feb 2026,147,2026-02,140,7
+Scobey,Truck Containers Empty,Feb 2026,7,2026-02,0,7
+Sarles,Truck Containers Empty,Feb 2026,7,2026-02,0,7
+Northgate,Trucks,Feb 2026,175,2026-02,168,7
+Eastport,Trucks,Feb 2026,3600,2026-02,3607,-7
+Kenneth G Ward,Trucks,Feb 2026,2050,2026-02,2043,7
+Fortuna,Truck Containers Empty,Feb 2026,147,2026-02,140,7
+Fortuna,Trucks,Feb 2026,175,2026-02,168,7
+Pembina,Truck Containers Empty,Jan 2026,2602,2026-01,2595,7
+Fort Kent,Trucks,Jan 2026,193,2026-01,186,7
+Kenneth G Ward,Truck Containers Empty,Feb 2026,1905,2026-02,1898,7
+Roseau,Truck Containers Empty,Feb 2026,63,2026-02,56,7
+St John,Truck Containers Empty,Jan 2026,7,2026-01,0,7
+Sarles,Truck Containers Empty,Jan 2026,7,2026-01,0,7
+Jackman,Trucks,Jan 2026,6097,2026-01,6104,-7
+Jackman,Truck Containers Empty,Jan 2026,3132,2026-01,3125,7
+Del Rio,Truck Containers Empty,Feb 2026,2763,2026-02,2756,7
+Rio Grande City,Truck Containers Empty,Jan 2026,158,2026-01,151,7
+St John,Trucks,Jan 2026,7,2026-01,0,7
+Boundary,Truck Containers Empty,Feb 2026,6,2026-02,0,6
+Maida,Trucks,Feb 2026,6,2026-02,0,6
+Carbury,Truck Containers Empty,Jan 2026,6,2026-01,0,6
+Walhalla,Truck Containers Empty,Feb 2026,143,2026-02,137,6
+Eagle Pass,Truck Containers Empty,Jan 2026,24586,2026-01,24580,6
+Bridgewater,Truck Containers Empty,Feb 2026,202,2026-02,196,6
+St John,Truck Containers Empty,Feb 2026,6,2026-02,0,6
+St John,Trucks,Feb 2026,6,2026-02,0,6
+Douglas,Trucks,Jan 2026,2071,2026-01,2065,6
+Ferry,Trucks,Jan 2026,6,2026-01,0,6
+Warroad,Truck Containers Empty,Feb 2026,117,2026-02,112,5
+Opheim,Truck Containers Empty,Jan 2026,5,2026-01,0,5
+Opheim,Trucks,Jan 2026,5,2026-01,0,5
+Santa Teresa,Truck Containers Empty,Feb 2026,6111,2026-02,6106,5
+Neche,Truck Containers Empty,Feb 2026,85,2026-02,80,5
+Piegan,Trucks,Jan 2026,129,2026-01,124,5
+Hansboro,Truck Containers Empty,Jan 2026,5,2026-01,0,5
+Skagway,Truck Containers Empty,Feb 2026,117,2026-02,112,5
+Columbus,Truck Containers Empty,Feb 2026,145,2026-02,140,5
+Portal,Truck Containers Empty,Jan 2026,1403,2026-01,1398,5
+Turner,Truck Containers Empty,Feb 2026,5,2026-02,0,5
+Porthill,Truck Containers Empty,Feb 2026,33,2026-02,28,5
+Fort Fairfield,Truck Containers Empty,Feb 2026,57,2026-02,52,5
+Hansboro,Truck Containers Empty,Feb 2026,5,2026-02,0,5
+Maida,Trucks,Jan 2026,4,2026-01,0,4
+Lancaster,Truck Containers Empty,Jan 2026,128,2026-01,124,4
+Champlain Rouses Point,Truck Containers Empty,Feb 2026,2303,2026-02,2299,4
+Carbury,Truck Containers Empty,Feb 2026,4,2026-02,0,4
+Scobey,Trucks,Jan 2026,4,2026-01,0,4
+Scobey,Truck Containers Empty,Jan 2026,4,2026-01,0,4
+Boundary,Truck Containers Empty,Jan 2026,4,2026-01,0,4
+Frontier,Trucks,Jan 2026,2409,2026-01,2405,4
+Portal,Truck Containers Empty,Feb 2026,1212,2026-02,1208,4
+Danville,Truck Containers Empty,Jan 2026,4,2026-01,0,4
+Massena,Trucks,Feb 2026,1180,2026-02,1176,4
+Maida,Truck Containers Empty,Jan 2026,4,2026-01,0,4
+Hannah,Trucks,Jan 2026,3,2026-01,0,3
+Laurier,Truck Containers Empty,Jan 2026,34,2026-01,31,3
+Progreso,Trucks,Jan 2026,7107,2026-01,7104,3
+Danville,Trucks,Feb 2026,3,2026-02,0,3
+Danville,Truck Containers Empty,Feb 2026,3,2026-02,0,3
+Dalton Cache,Truck Containers Empty,Jan 2026,65,2026-01,62,3
+Noonan,Trucks,Feb 2026,87,2026-02,84,3
+Pinecreek,Truck Containers Empty,Feb 2026,3,2026-02,0,3
+Noonan,Truck Containers Empty,Feb 2026,87,2026-02,84,3
+Lukeville,Trucks,Feb 2026,59,2026-02,56,3
+Laurier,Truck Containers Empty,Feb 2026,59,2026-02,56,3
+Port Angeles,Truck Containers Empty,Feb 2026,2,2026-02,0,2
+El Paso,Truck Containers Empty,Feb 2026,7325,2026-02,7327,-2
+Morgan,Truck Containers Empty,Jan 2026,2,2026-01,0,2
+Maida,Truck Containers Empty,Feb 2026,2,2026-02,0,2
+Ferry,Trucks,Feb 2026,1,2026-02,0,1
+Ferry,Truck Containers Empty,Feb 2026,1,2026-02,0,1
+Port Angeles,Trucks,Jan 2026,1,2026-01,0,1
+Morgan,Truck Containers Empty,Feb 2026,1,2026-02,0,1
+Hannah,Truck Containers Empty,Feb 2026,1,2026-02,0,1
+Ferry,Truck Containers Empty,Jan 2026,1,2026-01,0,1
+Opheim,Trucks,Feb 2026,1,2026-02,0,1
+Opheim,Truck Containers Empty,Feb 2026,1,2026-02,0,1
+Nogales,Truck Containers Empty,Jan 2026,8122,2026-01,8123,-1
+Whitlash,Trucks,Jan 2026,0,2026-01,0,0
+Pinecreek,Truck Containers Empty,Jan 2026,0,2026-01,0,0
+Port Angeles,Truck Containers Empty,Jan 2026,0,2026-01,0,0
+Whitlash,Truck Containers Empty,Jan 2026,0,2026-01,0,0
+Hannah,Truck Containers Empty,Jan 2026,0,2026-01,0,0

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Dashboard</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f6;
+        }
+
+        /* Estilos del Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 260px;
+            background-color: #11101d;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar .logo-details {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+        }
+
+        .sidebar .logo-details i {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+
+        .sidebar .logo-name {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            margin-top: 20px;
+        }
+
+        .sidebar ul li {
+            list-style: none;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #1d1b31;
+            color: #4070f4;
+        }
+
+        .sidebar ul li a i {
+            font-size: 20px;
+            min-width: 45px;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo-details">
+            <i class='bx bxs-bolt-circle'></i>
+            <span class="logo-name">Analítica Pro</span>
+        </div>
+        <ul class="nav-list">
+            <li>
+                <a href="#">
+                    <i class='bx bx-grid-alt'></i>
+                    <span class="links_name">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class='bx bx-globe'></i>
+                    <span class="links_name">Nearshoring</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class='bx bx-transfer-alt'></i>
+                    <span class="links_name">Flujos de Carga</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class='bx bx-group'></i>
+                    <span class="links_name">Fuerza Laboral</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <section class="main-content">
+        <h1>Bienvenido al Panel de Gestión</h1>
+        <p>Selecciona una opción del menú para comenzar.</p>
+    </section>
+
+</body>
+</html>
