@@ -1976,7 +1976,7 @@ def obtener_datos_mapeados():
     return pd.DataFrame(lista_final)
 
 # --- DATOS DE FUERZA LABORAL ---
-# Datos actualizados: Total Permisionarios ~198,500 | Parque Vehicular ~630,000 unidades | Déficit ~56,000 operadores (CANACAR/IRU)
+# Datos actualizados: Total Permisionarios ~198,500 | Parque Vehicular ~630,000 unidades | Déficit ~99,000 operadores acumulado 2024 (IRU)
 def obtener_datos_fuerza_laboral():
     segmentacion = {
         'Segmento': ['Hombre-Camión', 'Pequeña', 'Mediana', 'Grande'],
@@ -2926,10 +2926,10 @@ def page_inicio():
     with col_fl3:
         metric_card(
             title="Déficit Operadores",
-            value="56,000",
+            value="99,000",
             icon="⚠️",
             color="#EF553B",
-            delta="Vacantes CANACAR e IRU"
+            delta="Acumulado 2024 (IRU)"
         )
 
     spacer(30)
@@ -3066,8 +3066,8 @@ def page_inicio():
     with col_ins1:
         info_card(
             title="⚠️ Déficit Crítico de Operadores",
-            content="""El sector enfrenta un déficit de **56,000 operadores**, equivalente al **8.9%** 
-            del parque vehicular. Se requiere inversión urgente en capacitación y atracción de talento.""",
+            content="""El sector enfrenta un déficit de **99,000 operadores**, equivalente al **15.7%** 
+            del parque vehicular (acumulado 2024 según IRU). Se requiere inversión urgente en capacitación y atracción de talento.""",
             icon="⚠️",
             color="#FFA726"
         )
@@ -5481,8 +5481,8 @@ def page_fuerza_laboral():
                         box-shadow: 0 2px 10px rgba(0,0,0,0.08);
                         margin: 10px 0;'>
                 <p style='color: #EF553B; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Déficit de Operadores</p>
-                <h2 style='color: #EF553B; font-size: 2.2rem; font-weight: 700; margin: 10px 0 5px 0;'>~56,000</h2>
-                <p style='color: #666; font-size: 0.85rem; margin: 0;'>⚠️ Vacantes según CANACAR e IRU</p>
+                <h2 style='color: #EF553B; font-size: 2.2rem; font-weight: 700; margin: 10px 0 5px 0;'>~99,000</h2>
+                <p style='color: #666; font-size: 0.85rem; margin: 0;'>⚠️ Acumulado 2024 según IRU</p>
             </div>
         """, unsafe_allow_html=True)
     
@@ -5493,13 +5493,13 @@ def page_fuerza_laboral():
         'Segmento': ['Hombre-Camión', 'Pequeña', 'Mediana', 'Grande'],
         'Rango Unidades': ['1 - 5', '6 - 30', '31 - 100', '101+'],
         'Número de Empresas': [163200, 29800, 4500, 1000],  # Total: ~198,500
-        'Total Operadores': [196000, 227000, 125000, 82000],  # Total: ~630,000 (considerando déficit de 56k)
+        'Total Operadores': [196000, 227000, 125000, 82000],  # Total: ~630,000 (déficit 99k según IRU 2024)
         'Participación Mercado': ['82.2%', '15.0%', '2.3%', '0.5%']
     }
 
     df_segmentos = pd.DataFrame(segmentacion)
     
-    # Nota: Datos basados en ~198,500 permisionarios federales (SICT)
+    # Nota: Datos basados en ~198,500 permisionarios federales (SICT) | Déficit: 99,000 operadores acumulado 2024 (IRU)
 
     # 2. VISUALIZACIÓN CON GRÁFICOS MEJORADOS
     # col1, col2 = st.columns([1, 1])
@@ -5987,7 +5987,7 @@ def page_fuerza_laboral():
                 <ul style='color: #11101D; font-size: 0.9rem; line-height: 1.8; margin: 0; padding-left: 20px;'>
                     <li><strong>Hombre-Camión:</strong> Solo 72% de utilización de flota</li>
                     <li><strong>Región Sur:</strong> Menor productividad económica ($0.738 MDP/op)</li>
-                    <li><strong>Déficit:</strong> 56,000 operadores faltantes en el sector</li>
+                    <li><strong>Déficit:</strong> 99,000 operadores faltantes en el sector (IRU 2024)</li>
                     <li><strong>Eficiencia:</strong> Oportunidad de mejora en empresas pequeñas</li>
                 </ul>
             </div>
@@ -6013,7 +6013,7 @@ def page_fuerza_laboral():
     st.markdown("<p style='color: #666; font-size: 1rem; margin-bottom: 20px;'>Análisis de vacantes, competitividad salarial y condiciones por entidad</p>", unsafe_allow_html=True)
     
     # Base de datos estratégica de los 32 estados (Métricas 2025/26)
-    # Déficit total nacional: ~56,000 operadores (CANACAR, IRU)
+    # Déficit total nacional: ~99,000 operadores acumulado 2024 (IRU)
     data_laboral = {
         'Estado': [
             'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
