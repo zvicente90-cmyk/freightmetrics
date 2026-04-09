@@ -6068,155 +6068,36 @@ def page_fuerza_laboral():
     
     df_laboral = pd.DataFrame(data_laboral)
     
-    # Agregar columna calculada de tasa de déficit
-    df_laboral['Tasa_Deficit_%'] = ((df_laboral['Deficit_Operadores'] / df_laboral['Vacantes_Activas']) * 100).round(1)
+
     
-    # Filtro de estado con diseño corporativo
-    st.markdown("""
-        <div style='background-color: white; 
-                    padding: 12px 20px; 
-                    border-radius: 10px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                    margin: 15px 0;'>
-            <p style='color: #4070F4; font-size: 0.9rem; font-weight: 600; margin: 0;'>🔍 Análisis por Estado</p>
-        </div>
-    """, unsafe_allow_html=True)
+    # Comparativa salarial
+    st.markdown("<h3 style='color: #11101D; font-weight: 600;'>📊 Brecha Salarial: Nacional vs Cruce Internacional</h3>", unsafe_allow_html=True)
     
-    estado_sel = st.selectbox("Selecciona Estado para análisis de talento:", df_laboral['Estado'])
-    res = df_laboral[df_laboral['Estado'] == estado_sel].iloc[0]
+    # Gráfico de barras comparativo con colores corporativos
+    df_melt = df_laboral.melt(id_vars='Estado', value_vars=['Sueldo_Promedio_MX', 'Sueldo_Promedio_MC'], 
+                             var_name='Tipo_Operacion', value_name='Sueldo')
     
-    # Métricas clave con diseño corporativo (4 columnas para incluir déficit)
-    col_ml1, col_ml2, col_ml3, col_ml4 = st.columns(4)
-    
-    with col_ml1:
-        st.markdown(f"""
-            <div style='background-color: white; 
-                        border-left: 5px solid #29B5E8;
-                        padding: 20px; 
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        margin: 10px 0;'>
-                <p style='color: #29B5E8; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Vacantes Activas</p>
-                <h2 style='color: #11101D; font-size: 2.2rem; font-weight: 700; margin: 10px 0 5px 0;'>{res['Vacantes_Activas']:,}</h2>
-                <p style='color: #666; font-size: 0.85rem; margin: 0;'>Oportunidades laborales</p>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    with col_ml2:
-        st.markdown(f"""
-            <div style='background-color: white; 
-                        border-left: 5px solid #EF553B;
-                        padding: 20px; 
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        margin: 10px 0;'>
-                <p style='color: #EF553B; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Déficit de Operadores</p>
-                <h2 style='color: #EF553B; font-size: 2.2rem; font-weight: 700; margin: 10px 0 5px 0;'>{res['Deficit_Operadores']:,}</h2>
-                <p style='color: #666; font-size: 0.85rem; margin: 0;'>Tasa: {res['Tasa_Deficit_%']:.1f}% del total</p>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    with col_ml3:
-        st.markdown(f"""
-            <div style='background-color: white; 
-                        border-left: 5px solid #4070F4;
-                        padding: 20px; 
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        margin: 10px 0;'>
-                <p style='color: #4070F4; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Sueldo Promedio MC</p>
-                <h2 style='color: #11101D; font-size: 2.2rem; font-weight: 700; margin: 10px 0 5px 0;'>${res['Sueldo_Promedio_MC']:,}</h2>
-                <p style='color: #666; font-size: 0.85rem; margin: 0;'>MXN - Nivel Experto</p>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    with col_ml4:
-        st.markdown(f"""
-            <div style='background-color: white; 
-                        border-left: 5px solid #11101D;
-                        padding: 20px; 
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        margin: 10px 0;'>
-                <p style='color: #11101D; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Sueldo Promedio MX</p>
-                <h2 style='color: #11101D; font-size: 2.2rem; font-weight: 700; margin: 10px 0 5px 0;'>${res['Sueldo_Promedio_MX']:,}</h2>
-                <p style='color: #666; font-size: 0.85rem; margin: 0;'>MXN - Nivel Base</p>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Comparativa salarial y áreas de oportunidad
-    col_sal1, col_sal2 = st.columns([2, 1])
-    
-    with col_sal1:
-        st.markdown("<h3 style='color: #11101D; font-weight: 600;'>📊 Brecha Salarial: Nacional vs Cruce Internacional</h3>", unsafe_allow_html=True)
-        
-        # Gráfico de barras comparativo con colores corporativos
-        df_melt = df_laboral.melt(id_vars='Estado', value_vars=['Sueldo_Promedio_MX', 'Sueldo_Promedio_MC'], 
-                                 var_name='Tipo_Operacion', value_name='Sueldo')
-        
-        fig_salary = px.bar(
-            df_melt, 
-            x='Estado', 
-            y='Sueldo', 
-            color='Tipo_Operacion', 
-            barmode='group',
-            color_discrete_map={'Sueldo_Promedio_MX': '#29B5E8', 'Sueldo_Promedio_MC': '#4070F4'},
-            labels={'Sueldo': 'Sueldo Promedio (MXN)', 'Tipo_Operacion': 'Tipo de Operación'},
-            title='Comparativa de Sueldos por Estado'
-        )
-        fig_salary.update_layout(
-            height=400,
-            title_font_color='#11101D',
-            title_font_size=16,
-            title_font_family='Inter',
-            font=dict(color='#11101D', family='Inter'),
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis_tickangle=-45
-        )
-        st.plotly_chart(fig_salary, use_container_width=True)
-    
-    with col_sal2:
-        st.markdown("<h3 style='color: #11101D; font-weight: 600;'>🎯 Ficha Técnica</h3>", unsafe_allow_html=True)
-        
-        st.markdown(f"""
-            <div style='background-color: #E8F5E9; 
-                        border-left: 5px solid #29B5E8;
-                        padding: 15px; 
-                        border-radius: 8px;
-                        margin: 10px 0;'>
-                <p style='color: #11101D; font-size: 0.85rem; font-weight: 700; margin: 0 0 5px 0;'>Principal Oportunidad</p>
-                <p style='color: #11101D; font-size: 0.95rem; margin: 0;'>{res['Area_Oportunidad']}</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown(f"""
-            <div style='background-color: #E3F2FD; 
-                        border-left: 5px solid #4070F4;
-                        padding: 15px; 
-                        border-radius: 8px;
-                        margin: 10px 0;'>
-                <p style='color: #11101D; font-size: 0.85rem; font-weight: 700; margin: 0 0 5px 0;'>Condiciones Predominantes</p>
-                <p style='color: #11101D; font-size: 0.95rem; margin: 0;'>{res['Condiciones']}</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("""
-            <div style='background-color: #FFF8F0; 
-                        border-left: 5px solid #EF553B;
-                        padding: 15px; 
-                        border-radius: 8px;
-                        margin: 10px 0;'>
-                <p style='color: #11101D; font-size: 0.85rem; font-weight: 700; margin: 0 0 10px 0;'>Competencias Requeridas</p>
-                <ul style='color: #11101D; font-size: 0.85rem; margin: 0; padding-left: 20px; line-height: 1.6;'>
-                    <li>Licencia Federal B/E/BE</li>
-                    <li>Certificación R-S (Seguridad)</li>
-                    <li>Bitácora de Horas (NOM-087)</li>
-                </ul>
-            </div>
-        """, unsafe_allow_html=True)
+    fig_salary = px.bar(
+        df_melt, 
+        x='Estado', 
+        y='Sueldo', 
+        color='Tipo_Operacion', 
+        barmode='group',
+        color_discrete_map={'Sueldo_Promedio_MX': '#29B5E8', 'Sueldo_Promedio_MC': '#4070F4'},
+        labels={'Sueldo': 'Sueldo Promedio (MXN)', 'Tipo_Operacion': 'Tipo de Operación'},
+        title='Comparativa de Sueldos por Estado'
+    )
+    fig_salary.update_layout(
+        height=400,
+        title_font_color='#11101D',
+        title_font_size=16,
+        title_font_family='Inter',
+        font=dict(color='#11101D', family='Inter'),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        xaxis_tickangle=-45
+    )
+    st.plotly_chart(fig_salary, use_container_width=True)
     
     st.markdown("---")
     
