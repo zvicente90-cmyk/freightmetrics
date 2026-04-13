@@ -250,8 +250,6 @@ def page_dashboard():
             <p style='color: #666; margin: 0; font-size: 0.85rem;'>Unidades en operación</p>
         </div>
         """, unsafe_allow_html=True)
-        </div>
-        """, unsafe_allow_html=True)
     
     with fl_col3:
         st.markdown("""
