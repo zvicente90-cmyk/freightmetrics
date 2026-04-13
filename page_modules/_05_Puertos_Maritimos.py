@@ -9,6 +9,8 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
+import folium
+from streamlit_folium import st_folium
 from datetime import datetime
 from pathlib import Path
 
@@ -410,33 +412,134 @@ def page_puertos_maritimos():
         )
     
     else:  # Mapa
-        section_header("🗺️ Mapa Geográfico de Puertos")
+        section_header("🗺️ Mapa de Tráfico Marítimo - OpenSeaMap")
         
-        fig_map = px.scatter_mapbox(
-            df_puertos,
-            lat='Latitud',
-            lon='Longitud',
-            hover_name='Puerto',
-            hover_data={
-                'TEU_Mes': ':.0f',
-                'Saturación': ':.1f',
-                'Estado': True,
-                'Región': True,
-                'Latitud': ':.4f',
-                'Longitud': ':.4f'
-            },
-            color='Saturación',
-            size='TEU_Mes',
-            color_continuous_scale='RdYlGn_r',
-            zoom=3,
-            center={'lat': 21, 'lon': -105},
-            title='📍 Ubicación Geográfica y Estado de Puertos',
-            size_max=40,
-            mapbox_style='open-street-map'
+        # Crear mapa con Folium centrado en puertos mexicanos
+        mapa = folium.Map(
+            location=[21, -105],
+            zoom_start=5,
+            tiles='OpenStreetMap'
         )
         
-        fig_map.update_layout(height=600, coloraxis_colorbar=dict(title="Saturación (%)"))
-        st.plotly_chart(fig_map, use_container_width=True, config={'responsive': True})
+        # Agregar capa de OpenSeaMap (información marítima en tiempo real)
+        folium.TileLayer(
+            tiles='https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+            attr='OpenSeaMap',
+            overlay=True,
+            control=True,
+            name='Información Marítima',
+            max_zoom=18
+        ).add_to(mapa)
+        
+        # Agregar Control de capas
+        folium.LayerControl(collapsed=False).add_to(mapa)
+        
+        # Mapeo de colores por estado
+        color_estados = {
+            'Operativo': 'green',
+            'Alerta': 'orange',
+            'Crítico': 'red',
+            'Mantenimiento': 'gray'
+        }
+        
+        # Agregar marcadores para cada puerto
+        for idx, puerto in df_puertos.iterrows():
+            estado = puerto['Estado']
+            color = color_estados.get(estado, 'blue')
+            
+            # Crear popup con información del puerto
+            popup_text = f"""
+            <div style='font-family: Arial; width: 250px;'>
+                <h4 style='margin: 5px 0;'>{puerto['Puerto']}</h4>
+                <table style='width: 100%; border-collapse: collapse;'>
+                    <tr><td><b>Región:</b></td><td>{puerto['Región']}</td></tr>
+                    <tr><td><b>Estado:</b></td><td><span style='color: {color};'>●</span> {estado}</td></tr>
+                    <tr><td><b>TEU/Mes:</b></td><td>{puerto['TEU_Mes']:,.0f}</td></tr>
+                    <tr><td><b>Saturación:</b></td><td>{puerto['Saturación']:.1f}%</td></tr>
+                    <tr><td><b>Operaciones:</b></td><td>{puerto['Operaciones']:,.0f}</td></tr>
+                    <tr><td><b>Tiempo Espera:</b></td><td>{puerto['Tiempo_Promedio_Espera']:.1f}h</td></tr>
+                </table>
+            </div>
+            """
+            
+            # Icono personalizado
+            icon = folium.Icon(color=color, icon='ship', prefix='fa')
+            
+            folium.Marker(
+                location=[puerto['Latitud'], puerto['Longitud']],
+                popup=folium.Popup(popup_text, max_width=300),
+                tooltip=f"{puerto['Puerto']} - {estado}",
+                icon=icon
+            ).add_to(mapa)
+        
+        # Agregar círculos de saturación (tamaño proporcional)
+        for idx, puerto in df_puertos.iterrows():
+            # Radio basado en saturación (5km por cada 10% de saturación)
+            radio_km = (puerto['Saturación'] / 10) * 5
+            
+            # Color según saturación
+            if puerto['Saturación'] < 50:
+                color_circulo = 'green'
+            elif puerto['Saturación'] < 75:
+                color_circulo = 'orange'
+            else:
+                color_circulo = 'red'
+            
+            folium.Circle(
+                location=[puerto['Latitud'], puerto['Longitud']],
+                radius=radio_km * 1000,  # Convertir a metros
+                color=color_circulo,
+                fill=True,
+                fillColor=color_circulo,
+                fillOpacity=0.2,
+                weight=2,
+                popup=f"{puerto['Puerto']} - Saturación: {puerto['Saturación']:.1f}%"
+            ).add_to(mapa)
+        
+        # Mostrar mapa en Streamlit
+        st_folium(mapa, width=1400, height=700)
+        
+        # Información de capas
+        st.markdown("### 📊 Información de Capas del Mapa")
+        col_info1, col_info2, col_info3 = st.columns(3)
+        
+        with col_info1:
+            st.markdown("""
+            **🟢 Marcadores por Estado:**
+            - 🟢 Verde = Operativo
+            - 🟠 Naranja = Alerta
+            - 🔴 Rojo = Crítico
+            - ⚫ Gris = Mantenimiento
+            """)
+        
+        with col_info2:
+            st.markdown("""
+            **🌊 Capas Disponibles:**
+            - OpenStreetMap (Base)
+            - OpenSeaMap (Tráfico marino)
+            - Información de puertos
+            """)
+        
+        with col_info3:
+            st.markdown("""
+            **📍 Datos del Círculo:**
+            - Tamaño = Índice de saturación
+            - Color = Nivel de congestión
+            - Haz clic para detalles
+            """)
+        
+        # Tabla de resumen de puertos
+        st.markdown("### 📋 Resumen de Puertos Monitoreados")
+        
+        df_resumen = df_puertos[['Puerto', 'Región', 'Estado', 'TEU_Mes', 'Saturación', 'Tiempo_Promedio_Espera']].copy()
+        df_resumen.columns = ['Puerto', 'Región', 'Estado', 'TEU/Mes', 'Saturación (%)', 'Espera (h)']
+        df_resumen = df_resumen.sort_values('Saturación (%)', ascending=False)
+        
+        st.dataframe(
+            df_resumen.style.highlight_max(subset=['Saturación (%)'], color='#ffcccc')
+                           .highlight_min(subset=['Espera (h)'], color='#ccffcc'),
+            use_container_width=True
+        )
     
     st.markdown("---")
     
