@@ -493,6 +493,14 @@ def page_monitoreo_aduanas():
     # Header
     st.title("🚛 Monitoreo de Aduanas en Tiempo Real")
     
+    # Definir distribución teórica de tráfico por hora (constante para toda la página)
+    distribucion_teorica = {
+        0: 1.5, 1: 1.0, 2: 0.8, 3: 0.8, 4: 1.2, 5: 2.0,
+        6: 3.5, 7: 4.5, 8: 5.5, 9: 5.8, 10: 6.0, 11: 6.2,
+        12: 5.8, 13: 5.5, 14: 6.0, 15: 6.2, 16: 6.5, 17: 5.8,
+        18: 5.0, 19: 4.5, 20: 3.8, 21: 3.0, 22: 2.5, 23: 2.0
+    }
+    
     # ========================================================================
     # CARGAR DATOS SIMULADOS
     # ========================================================================
