@@ -250,7 +250,7 @@ def page_puertos_maritimos():
                 hovermode='x unified',
                 xaxis_tickangle=-45
             )
-            st.plotly_chart(fig_bar, use_container_width=True)
+            st.plotly_chart(fig_bar, use_container_width=True, config={'responsive': True})
         
         # Gráfico de gauge: Saturación
         with viz_col2:
@@ -275,7 +275,7 @@ def page_puertos_maritimos():
                 }
             )])
             fig_gauge.update_layout(height=400)
-            st.plotly_chart(fig_gauge, use_container_width=True)
+            st.plotly_chart(fig_gauge, use_container_width=True, config={'responsive': True})
         
         # Matriz de saturación
         section_header("🔥 Matriz de Saturación por Puerto")
@@ -297,7 +297,7 @@ def page_puertos_maritimos():
             xaxis_tickangle=-45,
             coloraxis_colorbar=dict(title="Saturación (%)")
         )
-        st.plotly_chart(fig_heatmap, use_container_width=True)
+        st.plotly_chart(fig_heatmap, use_container_width=True, config={'responsive': True})
         
         # Tendencias mensuales
         section_header("📈 Tendencias Mensuales de Throughput")
@@ -313,7 +313,7 @@ def page_puertos_maritimos():
             markers=True
         )
         fig_trend.update_layout(height=400, hovermode='x unified')
-        st.plotly_chart(fig_trend, use_container_width=True)
+        st.plotly_chart(fig_trend, use_container_width=True, config={'responsive': True})
         
         # Distribución y scatter
         section_header("⚙️ Análisis de Operaciones")
@@ -328,7 +328,7 @@ def page_puertos_maritimos():
                 hole=0.4
             )
             fig_pie.update_layout(height=400)
-            st.plotly_chart(fig_pie, use_container_width=True)
+            st.plotly_chart(fig_pie, use_container_width=True, config={'responsive': True})
         
         with col_op2:
             fig_scatter = px.scatter(
@@ -343,7 +343,7 @@ def page_puertos_maritimos():
                 size_max=50
             )
             fig_scatter.update_layout(height=400, hovermode='closest')
-            st.plotly_chart(fig_scatter, use_container_width=True)
+            st.plotly_chart(fig_scatter, use_container_width=True, config={'responsive': True})
         
         # Tiempos de espera
         section_header("⏱️ Tiempos Promedio de Espera")
@@ -363,7 +363,7 @@ def page_puertos_maritimos():
         )
         fig_espera.update_traces(textposition='outside')
         fig_espera.update_layout(height=350, xaxis_tickangle=-45)
-        st.plotly_chart(fig_espera, use_container_width=True)
+        st.plotly_chart(fig_espera, use_container_width=True, config={'responsive': True})
     
     elif vista == "Tabla":
         section_header("📋 Tabla Completa de Puertos")
@@ -436,7 +436,7 @@ def page_puertos_maritimos():
         )
         
         fig_map.update_layout(height=600, coloraxis_colorbar=dict(title="Saturación (%)"))
-        st.plotly_chart(fig_map, use_container_width=True)
+        st.plotly_chart(fig_map, use_container_width=True, config={'responsive': True})
     
     st.markdown("---")
     

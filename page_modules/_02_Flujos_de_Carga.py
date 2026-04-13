@@ -530,7 +530,7 @@ def page_flujos_de_carga():
             hovermode='x unified',
             barmode='group' if year == 2026 else 'overlay'
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, config={'responsive': True})
         
     else:
         # Gráfico diario
@@ -561,7 +561,7 @@ def page_flujos_de_carga():
             template="plotly_white",
             hovermode='x unified'
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, config={'responsive': True})
     
     st.markdown("---")
     
@@ -659,7 +659,7 @@ def page_flujos_de_carga():
         )
         fig_top.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
         fig_top.update_layout(height=350, showlegend=False, xaxis_title='Total Cruces')
-        st.plotly_chart(fig_top, use_container_width=True)
+        st.plotly_chart(fig_top, use_container_width=True, config={'responsive': True})
     
     with col2:
         # Distribución de tipos de cruces (Trucks vs Containers)
@@ -684,7 +684,7 @@ def page_flujos_de_carga():
             }
         )
         fig_dist.update_traces(textposition='inside', textinfo='label+percent')
-        st.plotly_chart(fig_dist, use_container_width=True)
+        st.plotly_chart(fig_dist, use_container_width=True, config={'responsive': True})
     
     st.success("✅ Datos actualizados - FreightMetrics")
 

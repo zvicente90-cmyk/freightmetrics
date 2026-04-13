@@ -434,7 +434,7 @@ def page_dashboard():
             hovermode='x unified', template='plotly_white', height=350,
             font=dict(size=10, color='#2c3e50')
         )
-        st.plotly_chart(fig_trend, use_container_width=True)
+        st.plotly_chart(fig_trend, use_container_width=True, config={'responsive': True})
     
     # Gráfico 2: Comercio Bilateral México-USA
     with col_g2:
@@ -459,7 +459,7 @@ def page_dashboard():
             height=350, showlegend=False, font=dict(size=10, color='#2c3e50'),
             plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)'
         )
-        st.plotly_chart(fig_comercio, use_container_width=True)
+        st.plotly_chart(fig_comercio, use_container_width=True, config={'responsive': True})
     
     # Gráfico 3: Estado Operativo
     spacer(10)
@@ -484,7 +484,7 @@ def page_dashboard():
             height=300, showlegend=False, font=dict(size=10, color='#2c3e50'),
             plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)'
         )
-        st.plotly_chart(fig_dist, use_container_width=True)
+        st.plotly_chart(fig_dist, use_container_width=True, config={'responsive': True})
     
     # Gráfico 4: Crecimiento comparativo
     with col_g4:
@@ -510,7 +510,7 @@ def page_dashboard():
             height=300, showlegend=False, font=dict(size=10, color='#2c3e50'),
             plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)'
         )
-        st.plotly_chart(fig_crec, use_container_width=True)
+        st.plotly_chart(fig_crec, use_container_width=True, config={'responsive': True})
     
     st.markdown("")
     st.markdown("---")

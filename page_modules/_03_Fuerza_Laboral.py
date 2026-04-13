@@ -142,7 +142,7 @@ def page_fuerza_laboral():
             template='plotly_white'
         )
         
-        st.plotly_chart(fig_seg, use_container_width=True)
+        st.plotly_chart(fig_seg, use_container_width=True, config={'responsive': True})
     
     with col_seg2:
         st.markdown("**Análisis Clave** " + ("" if lang != 'es' else "(ES)") + ("" if lang != 'en' else "(EN)"))
@@ -252,7 +252,7 @@ def page_fuerza_laboral():
             showlegend=True
         )
         
-        st.plotly_chart(fig_scatter, use_container_width=True)
+        st.plotly_chart(fig_scatter, use_container_width=True, config={'responsive': True})
     
     with col_map2:
         # Ranking de regiones por parque vehicular
@@ -279,7 +279,7 @@ def page_fuerza_laboral():
             template='plotly_white'
         )
         
-        st.plotly_chart(fig_bar, use_container_width=True)
+        st.plotly_chart(fig_bar, use_container_width=True, config={'responsive': True})
     
     st.markdown("---")
     
@@ -330,7 +330,7 @@ def page_fuerza_laboral():
             showlegend=True
         )
         
-        st.plotly_chart(fig_stack, use_container_width=True)
+        st.plotly_chart(fig_stack, use_container_width=True, config={'responsive': True})
     
     with col_cap2:
         # Tabla de capacidad

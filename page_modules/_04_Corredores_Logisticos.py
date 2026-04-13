@@ -533,7 +533,7 @@ def page_corredores_logisticos():
         
         fig.data[i].visible = visible
     
-    st.plotly_chart(fig, use_container_width=True, key=f'mapa_corredores_{chart_id}')
+    st.plotly_chart(fig, use_container_width=True, config={'responsive': True}, key=f'mapa_corredores_{chart_id}')
     
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -620,7 +620,7 @@ def page_corredores_logisticos():
             paper_bgcolor='rgba(0,0,0,0)',
             margin=dict(l=0, r=0, t=10, b=0)
         )
-        st.plotly_chart(fig_scatter, use_container_width=True, key=f'scatter_distancia_tiempo_{chart_id}')
+        st.plotly_chart(fig_scatter, use_container_width=True, config={'responsive': True}, key=f'scatter_distancia_tiempo_{chart_id}')
     
     with col_an2:
         st.markdown("<h4 style='color: #11101D; font-weight: 600;'>Rentabilidad por Corredor</h4>", unsafe_allow_html=True)
@@ -646,7 +646,7 @@ def page_corredores_logisticos():
             margin=dict(l=0, r=0, t=10, b=0),
             xaxis=dict(tickvals=[1, 2, 3], ticktext=['Baja', 'Media', 'Alta'])
         )
-        st.plotly_chart(fig_bar, use_container_width=True, key=f'bar_rentabilidad_{chart_id}')
+        st.plotly_chart(fig_bar, use_container_width=True, config={'responsive': True}, key=f'bar_rentabilidad_{chart_id}')
     
     st.markdown("<br>", unsafe_allow_html=True)
     

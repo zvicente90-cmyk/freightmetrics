@@ -405,7 +405,7 @@ def mostrar_distribucion_trafico_horaria():
         borderwidth=2
     )
     
-    st.plotly_chart(fig_horas, use_container_width=True)
+    st.plotly_chart(fig_horas, use_container_width=True, config={'responsive': True})
     
     # CONTEXTO TEMPORAL - DEBAJO DEL GRÁFICO
     st.markdown("**⏰ Contexto Temporal**")
@@ -1099,7 +1099,7 @@ def page_monitoreo_aduanas():
         annotation_position="right"
     )
     
-    st.plotly_chart(fig_volumen, use_container_width=True)
+    st.plotly_chart(fig_volumen, use_container_width=True, config={'responsive': True})
     
     # Métricas de comparación
     col_v1, col_v2, col_v3, col_v4 = st.columns(4)
@@ -1240,7 +1240,7 @@ def page_monitoreo_aduanas():
             xaxis_tickangle=-45
         )
         
-        st.plotly_chart(fig_bars, use_container_width=True)
+        st.plotly_chart(fig_bars, use_container_width=True, config={'responsive': True})
     
     with col2:
         # Gráfico de pie
@@ -1260,7 +1260,7 @@ def page_monitoreo_aduanas():
             height=400
         )
         
-        st.plotly_chart(fig_pie, use_container_width=True)
+        st.plotly_chart(fig_pie, use_container_width=True, config={'responsive': True})
     
     # ========================================================================
     # ESTADÍSTICAS FINALES
