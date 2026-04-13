@@ -505,6 +505,11 @@ def page_monitoreo_aduanas():
     # CARGAR DATOS SIMULADOS
     # ========================================================================
     
+    # Obtener hora actual UNA SOLA VEZ para usar en toda la función
+    fecha_hoy = datetime.now()
+    hora_actual = fecha_hoy.hour
+    minuto_actual = fecha_hoy.minute
+    
     with st.spinner("Cargando datos simulados de 2026..."):
         # Generar datos simulados limpios
         np.random.seed(42)
@@ -587,9 +592,7 @@ def page_monitoreo_aduanas():
             'Del Bonita': 450
         }
         
-        # Crear DataFrame
-        hora_actual = datetime.now().hour
-        minuto_actual = datetime.now().minute
+        # Crear DataFrame (usar las variables ya definidas de hora_actual y minuto_actual)
         
         data = []
         for puerto in puertos:
