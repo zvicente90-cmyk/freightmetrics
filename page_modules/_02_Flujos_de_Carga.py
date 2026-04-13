@@ -589,7 +589,7 @@ def page_flujos_de_carga():
             min_val = df[col].min()
             
             # Aplicar color a cada columna
-            styler = styler.applymap(
+            styler = styler.map(
                 lambda v, max_v=max_val, min_v=min_val: color_by_value(v, max_v, min_v),
                 subset=[col]
             )

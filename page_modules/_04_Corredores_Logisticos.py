@@ -580,7 +580,7 @@ def page_corredores_logisticos():
     styled_df = df_display.style.format({
         'Distancia (km)': '{:,.0f}',
         'Tiempo (hrs)': '{:.0f}'
-    }).applymap(color_riesgo_tabla, subset=['Riesgo']).applymap(color_rentabilidad, subset=['Rentabilidad'])
+    }).map(color_riesgo_tabla, subset=['Riesgo']).map(color_rentabilidad, subset=['Rentabilidad'])
     
     st.dataframe(styled_df, use_container_width=True, height=350)
     

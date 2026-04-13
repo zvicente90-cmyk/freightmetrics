@@ -387,7 +387,7 @@ def page_puertos_maritimos():
             else:
                 return 'background-color: #C8E6C9'
         
-        styled_table = df_tabla.style.applymap(
+        styled_table = df_tabla.style.map(
             color_estado, subset=['Estado']
         ).format({
             'Saturación (%)': '{:.1f}',
