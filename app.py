@@ -9,13 +9,13 @@ import numpy as np
 from datetime import datetime, timedelta
 import datetime as dt
 import math
-from fpdf import FPDF
 import base64
 import os
 from dotenv import load_dotenv, set_key, find_dotenv
 import json
 from pathlib import Path
 import pytz
+# from fpdf import FPDF  # Comentado temporalmente - no disponible en Streamlit Cloud
 
 # Importar páginas separadas del directorio pages/
 try:
@@ -667,42 +667,42 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- FUNCIÓN PARA CREAR EL PDF ---
-def crear_pdf(dataframe, tipo_cambio):
-    pdf = FPDF()
-    pdf.add_page()
-    
-    # Título del Reporte
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(190, 10, "FREIGHTMETRICS - REPORTE OPERATIVO", 0, 1, 'C')
-    pdf.ln(10)
-    
-    # Fecha y Tipo de Cambio
-    pdf.set_font("Arial", '', 10)
-    pdf.cell(190, 10, f"Fecha de emision: {dt.date.today()}", 0, 1, 'L')
-    pdf.cell(190, 10, f"Tipo de Cambio aplicado: ${tipo_cambio:.2f} MXN/USD", 0, 1, 'L')
-    pdf.ln(5)
-    
-    # Tabla de Datos
-    pdf.set_font("Arial", 'B', 10)
-    pdf.cell(40, 10, "Puerto", 1)
-    pdf.cell(40, 10, "Saturacion (%)", 1)
-    pdf.cell(60, 10, "Costo Est. (MXN)", 1)
-    pdf.ln()
-    
-    pdf.set_font("Arial", '', 10)
-    for index, row in dataframe.iterrows():
-        pdf.cell(40, 10, str(row['Puerto']), 1)
-        pdf.cell(40, 10, f"{row['Saturacion']}%", 1)
-        pdf.cell(60, 10, f"${row['Costo_Estimado_MXN']:,.2f}", 1)
-        pdf.ln()
-    
-    # Nota de Alerta
-    pdf.ln(10)
-    pdf.set_font("Arial", 'I', 8)
-    pdf.multi_cell(180, 5, "Nota: Este reporte es generado automaticamente. Los niveles superiores al 80% requieren accion inmediata del departamento de trafico.")
-    
-    return pdf.output(dest='S').encode('latin-1') # Retorna el PDF como datos
+# --- FUNCIÓN PARA CREAR EL PDF (Comentada - No disponible en Streamlit Cloud) ---
+# def crear_pdf(dataframe, tipo_cambio):
+#     pdf = FPDF()
+#     pdf.add_page()
+#     
+#     # Título del Reporte
+#     pdf.set_font("Arial", 'B', 16)
+#     pdf.cell(190, 10, "FREIGHTMETRICS - REPORTE OPERATIVO", 0, 1, 'C')
+#     pdf.ln(10)
+#     
+#     # Fecha y Tipo de Cambio
+#     pdf.set_font("Arial", '', 10)
+#     pdf.cell(190, 10, f"Fecha de emision: {dt.date.today()}", 0, 1, 'L')
+#     pdf.cell(190, 10, f"Tipo de Cambio aplicado: ${tipo_cambio:.2f} MXN/USD", 0, 1, 'L')
+#     pdf.ln(5)
+#     
+#     # Tabla de Datos
+#     pdf.set_font("Arial", 'B', 10)
+#     pdf.cell(40, 10, "Puerto", 1)
+#     pdf.cell(40, 10, "Saturacion (%)", 1)
+#     pdf.cell(60, 10, "Costo Est. (MXN)", 1)
+#     pdf.ln()
+#     
+#     pdf.set_font("Arial", '', 10)
+#     for index, row in dataframe.iterrows():
+#         pdf.cell(40, 10, str(row['Puerto']), 1)
+#         pdf.cell(40, 10, f"{row['Saturacion']}%", 1)
+#         pdf.cell(60, 10, f"${row['Costo_Estimado_MXN']:,.2f}", 1)
+#         pdf.ln()
+#     
+#     # Nota de Alerta
+#     pdf.ln(10)
+#     pdf.set_font("Arial", 'I', 8)
+#     pdf.multi_cell(180, 5, "Nota: Este reporte es generado automaticamente. Los niveles superiores al 80% requieren accion inmediata del departamento de trafico.")
+#     
+#     return pdf.output(dest='S').encode('latin-1') # Retorna el PDF como datos
 
 st.set_page_config(page_title="FreightMetrics Pro", layout="wide")
 
