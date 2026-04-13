@@ -193,7 +193,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #003d7a;'>
             <h4 style='margin: 0 0 10px 0; color: #003d7a;'>✅ Normal</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #003d7a;'>7</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Operación fluida</p>
+            <p style='color: #003d7a; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Operación fluida</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -201,8 +201,8 @@ def page_dashboard():
         st.markdown("""
         <div style='background: #fff8f0; padding: 20px; border-radius: 10px; border-left: 4px solid #0052a3;'>
             <h4 style='margin: 0 0 10px 0; color: #0052a3;'>⚠️ Alerta</h4>
-            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #ff9800;'>5</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Requieren atención</p>
+            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0052a3;'>5</p>
+            <p style='color: #0052a3; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Requieren atención</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -210,8 +210,8 @@ def page_dashboard():
         st.markdown("""
         <div style='background: #ffe8e8; padding: 20px; border-radius: 10px; border-left: 4px solid #1976d2;'>
             <h4 style='margin: 0 0 10px 0; color: #1976d2;'>🔴 Crítico</h4>
-            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #e74c3c;'>2</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Intervención inmediata</p>
+            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #1976d2;'>2</p>
+            <p style='color: #1976d2; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Intervención inmediata</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -220,7 +220,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #0066cc;'>
             <h4 style='margin: 0 0 10px 0; color: #0066cc;'>⏱️ Espera Prom</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0066cc;'>47 min</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Tiempo procesamiento</p>
+            <p style='color: #0066cc; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Tiempo procesamiento</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -238,7 +238,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #003d7a;'>
             <h4 style='margin: 0 0 10px 0; color: #003d7a;'>🏢 Permisionarios</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #003d7a;'>198.5K</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Empresas federales</p>
+            <p style='color: #003d7a; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Empresas federales</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -247,7 +247,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #0052a3;'>
             <h4 style='margin: 0 0 10px 0; color: #0052a3;'>🚛 Parque Vehicular</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0052a3;'>630K</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Unidades en operación</p>
+            <p style='color: #0052a3; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Unidades en operación</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -255,8 +255,8 @@ def page_dashboard():
         st.markdown("""
         <div style='background: #fff8f0; padding: 20px; border-radius: 10px; border-left: 4px solid #1976d2;'>
             <h4 style='margin: 0 0 10px 0; color: #1976d2;'>⚠️ Déficit Operadores</h4>
-            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #ff9800;'>99K</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Falta 15.7% del total</p>
+            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #1976d2;'>99K</p>
+            <p style='color: #1976d2; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Falta 15.7% del total</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -265,7 +265,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #0066cc;'>
             <h4 style='margin: 0 0 10px 0; color: #0066cc;'>📊 Ratio Op/Unidad</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0066cc;'>1.09</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Operadores por vehículo</p>
+            <p style='color: #0066cc; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Operadores por vehículo</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -283,7 +283,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #003d7a;'>
             <h4 style='margin: 0 0 10px 0; color: #003d7a;'>🌐 Total Activos</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #003d7a;'>12</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Corredores estratégicos</p>
+            <p style='color: #003d7a; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Corredores estratégicos</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -292,7 +292,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #0052a3;'>
             <h4 style='margin: 0 0 10px 0; color: #0052a3;'>💰 Rentabilidad Prom</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0052a3;'>7 de 12</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Alta rentabilidad (58%)</p>
+            <p style='color: #0052a3; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Alta rentabilidad (58%)</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -300,8 +300,8 @@ def page_dashboard():
         st.markdown("""
         <div style='background: #fff8f0; padding: 20px; border-radius: 10px; border-left: 4px solid #1976d2;'>
             <h4 style='margin: 0 0 10px 0; color: #1976d2;'>⚡ Riesgo Prom</h4>
-            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #ff9800;'>5 de 12</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Bajo riesgo (42%)</p>
+            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #1976d2;'>5 de 12</p>
+            <p style='color: #1976d2; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Bajo riesgo (42%)</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -310,7 +310,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #0066cc;'>
             <h4 style='margin: 0 0 10px 0; color: #0066cc;'>📏 Distancia Prom</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0066cc;'>1,542 km</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Ruta promedio</p>
+            <p style='color: #0066cc; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Ruta promedio</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -328,7 +328,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #003d7a;'>
             <h4 style='margin: 0 0 10px 0; color: #003d7a;'>💵 IED Q3 2025</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #003d7a;'>$40.9B</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Máximo histórico</p>
+            <p style='color: #003d7a; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Máximo histórico</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -337,7 +337,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #0052a3;'>
             <h4 style='margin: 0 0 10px 0; color: #0052a3;'>🔄 Reinversión</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0052a3;'>67.8%</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>$27.7B USD</p>
+            <p style='color: #0052a3; margin: 0; font-size: 0.85rem; opacity: 0.8;'>$27.7B USD</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -345,8 +345,8 @@ def page_dashboard():
         st.markdown("""
         <div style='background: #fff8f0; padding: 20px; border-radius: 10px; border-left: 4px solid #1976d2;'>
             <h4 style='margin: 0 0 10px 0; color: #1976d2;'>🏭 Manufactura (37%)</h4>
-            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #ff9800;'>$15.1B</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Automotriz + Partes</p>
+            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #1976d2;'>$15.1B</p>
+            <p style='color: #1976d2; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Automotriz + Partes</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -355,7 +355,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #0066cc;'>
             <h4 style='margin: 0 0 10px 0; color: #0066cc;'>✅ Inauguraciones</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0066cc;'>Máximo</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Proyectos operativos</p>
+            <p style='color: #0066cc; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Proyectos operativos</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -374,7 +374,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #003d7a;'>
             <h4 style='margin: 0 0 10px 0; color: #003d7a;'>💱 Intercambio Total</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #003d7a;'>$872.8B</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>+3.9% vs 2024</p>
+            <p style='color: #003d7a; margin: 0; font-size: 0.85rem; opacity: 0.8;'>+3.9% vs 2024</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -383,7 +383,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #0052a3;'>
             <h4 style='margin: 0 0 10px 0; color: #0052a3;'>📤 Exportaciones MX</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0052a3;'>$534.9B</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>+5.8% anual</p>
+            <p style='color: #0052a3; margin: 0; font-size: 0.85rem; opacity: 0.8;'>+5.8% anual</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -391,8 +391,8 @@ def page_dashboard():
         st.markdown("""
         <div style='background: #fff8f0; padding: 20px; border-radius: 10px; border-left: 4px solid #1976d2;'>
             <h4 style='margin: 0 0 10px 0; color: #1976d2;'>📥 Importaciones USA</h4>
-            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #ff9800;'>$338.0B</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Mercado #1 de USA</p>
+            <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #1976d2;'>$338.0B</p>
+            <p style='color: #1976d2; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Mercado #1 de USA</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -401,7 +401,7 @@ def page_dashboard():
         <div style='background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 4px solid #0066cc;'>
             <h4 style='margin: 0 0 10px 0; color: #0066cc;'>📊 Balanza Comercial</h4>
             <p style='font-size: 1.8rem; font-weight: 800; margin: 10px 0; color: #0066cc;'>$196.9B</p>
-            <p style='color: #666; margin: 0; font-size: 0.85rem;'>Superávit MX</p>
+            <p style='color: #0066cc; margin: 0; font-size: 0.85rem; opacity: 0.8;'>Superávit MX</p>
         </div>
         """, unsafe_allow_html=True)
     
