@@ -1,186 +1,6 @@
 [
   {
     "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "El Paso",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Frontier",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 93.0,
-    "tiempo_espera": 104.0,
-    "mensaje": "Saturación: 93.0% | Espera: 104 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Hidalgo",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Highgate Springs",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Houlton",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Jackman",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Kenneth G Ward",
-    "nivel": "🟠 ALTO",
-    "saturacion": 78.0,
-    "tiempo_espera": 67.0,
-    "mensaje": "Saturación: 78.0% | Espera: 67 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Laredo",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Nogales",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Ogdensburg",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Oroville",
-    "nivel": "🟠 ALTO",
-    "saturacion": 83.0,
-    "tiempo_espera": 74.0,
-    "mensaje": "Saturación: 83.0% | Espera: 74 min",
-    "icono": "🟠"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Otay Mesa",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Pembina",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Port Huron",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Portal",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Progreso",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Rio Grande City",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Roma",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "San Luis",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
-    "aduana": "Santa Teresa",
-    "nivel": "🔴 CRÍTICO",
-    "saturacion": 98.0,
-    "tiempo_espera": 119.0,
-    "mensaje": "Saturación: 98.0% | Espera: 119 min",
-    "icono": "🔴"
-  },
-  {
-    "timestamp": "2026-02-05T11:10:52.308505",
     "aduana": "Sumas",
     "nivel": "🔴 CRÍTICO",
     "saturacion": 98.0,
@@ -898,5 +718,185 @@
     "tiempo_espera": 119.0,
     "mensaje": "Saturación: 98.0% | Espera: 119 min",
     "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Buffalo Niagara Falls",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 86.0,
+    "tiempo_espera": 83.0,
+    "mensaje": "Saturación: 86.0% | Espera: 83 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Detroit",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 91.0,
+    "tiempo_espera": 98.0,
+    "mensaje": "Saturación: 91.0% | Espera: 98 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Detroit",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95.0,
+    "tiempo_espera": 110.0,
+    "mensaje": "Saturación: 95.0% | Espera: 110 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Hidalgo",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Laredo",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Laredo",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Nogales",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 85.0,
+    "tiempo_espera": 80.0,
+    "mensaje": "Saturación: 85.0% | Espera: 80 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Otay Mesa",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Port Huron",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:16:50.820489",
+    "aduana": "Ysleta",
+    "nivel": "🟠 ALTO",
+    "saturacion": 83.0,
+    "tiempo_espera": 74.0,
+    "mensaje": "Saturación: 83.0% | Espera: 74 min",
+    "icono": "🟠"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Buffalo Niagara Falls",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 86.0,
+    "tiempo_espera": 83.0,
+    "mensaje": "Saturación: 86.0% | Espera: 83 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Detroit",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 91.0,
+    "tiempo_espera": 98.0,
+    "mensaje": "Saturación: 91.0% | Espera: 98 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Detroit",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 95.0,
+    "tiempo_espera": 110.0,
+    "mensaje": "Saturación: 95.0% | Espera: 110 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Hidalgo",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Laredo",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Laredo",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Nogales",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 85.0,
+    "tiempo_espera": 80.0,
+    "mensaje": "Saturación: 85.0% | Espera: 80 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Otay Mesa",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Port Huron",
+    "nivel": "🔴 CRÍTICO",
+    "saturacion": 98.0,
+    "tiempo_espera": 119.0,
+    "mensaje": "Saturación: 98.0% | Espera: 119 min",
+    "icono": "🔴"
+  },
+  {
+    "timestamp": "2026-04-10T19:17:00.118824",
+    "aduana": "Ysleta",
+    "nivel": "🟠 ALTO",
+    "saturacion": 83.0,
+    "tiempo_espera": 74.0,
+    "mensaje": "Saturación: 83.0% | Espera: 74 min",
+    "icono": "🟠"
   }
 ]
