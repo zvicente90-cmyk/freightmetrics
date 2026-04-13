@@ -418,9 +418,9 @@ def page_flujos_de_carga():
             for idx, row in df_mes_completo.iterrows():
                 tipo = row.get('Tipo', 'REAL' if row['Mes'] <= 2 else 'PROYECTADO')
                 if tipo == 'REAL':
-                    colors_dynamicos.append('rgba(76, 175, 80, 0.85)')  # Verde
+                    colors_dynamicos.append('rgba(0, 82, 163, 0.85)')  # Azul medio
                 else:
-                    colors_dynamicos.append('rgba(255, 152, 0, 0.65)')  # Naranja
+                    colors_dynamicos.append('rgba(25, 118, 210, 0.65)')  # Azul tech
         else:
             # =============== MODO NON-2026: Colores dinámicos normales ===============
             max_cruces = df_mes_completo['Cruces'].max() if df_mes_completo['Cruces'].max() > 0 else 1
@@ -428,13 +428,13 @@ def page_flujos_de_carga():
             for valor in df_mes_completo['Cruces']:
                 intensidad = valor / max_cruces if valor > 0 else 0.2
                 if intensidad < 0.3:
-                    colors_dynamicos.append('rgba(100, 150, 200, 0.6)')
+                    colors_dynamicos.append('rgba(0, 61, 122, 0.6)')
                 elif intensidad < 0.6:
-                    colors_dynamicos.append('rgba(70, 200, 200, 0.7)')
+                    colors_dynamicos.append('rgba(0, 82, 163, 0.7)')
                 elif intensidad < 0.8:
-                    colors_dynamicos.append('rgba(100, 150, 255, 0.8)')
+                    colors_dynamicos.append('rgba(25, 118, 210, 0.8)')
                 else:
-                    colors_dynamicos.append('rgba(255, 100, 100, 0.9)')
+                    colors_dynamicos.append('rgba(0, 102, 204, 0.9)')
         
         section_header(f"📊 Total Cruces Mensuales - Año {year}")
         

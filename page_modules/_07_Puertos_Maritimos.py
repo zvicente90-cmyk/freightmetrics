@@ -16,15 +16,15 @@ def page_puertos_maritimos():
     
     # ============ HEADER PRINCIPAL ============
     st.markdown("""
-        <div style='background: linear-gradient(135deg, #1A3A52 0%, #0F2438 100%); 
+        <div style='background: linear-gradient(135deg, #003d7a 0%, #0052a3 100%); 
                     color: white; 
                     padding: 50px 60px; 
                     border-radius: 20px; 
                     margin-bottom: 40px;
                     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-                    border: 2px solid #4A7C9E;'>
+                    border: 2px solid #0066cc;'>
             <h1 style='color: #FFFFFF; margin: 0; font-size: 3.5rem; font-weight: 800; letter-spacing: -1px;'>⚓ Puertos Marítimos de México</h1>
-            <p style='color: #B0C4DE; font-size: 1.25rem; font-weight: 600; margin: 20px 0 0 0; line-height: 1.4;'>
+            <p style='color: #f0f7ff; font-size: 1.25rem; font-weight: 600; margin: 20px 0 0 0; line-height: 1.4;'>
                 Análisis de 16 puertos principales administrados por las ASIPONA
             </p>
         </div>
@@ -32,12 +32,12 @@ def page_puertos_maritimos():
     
     # ============ DESCRIPCIÓN GENERAL ============
     st.markdown("""
-        <div style='background: linear-gradient(135deg, rgba(74, 124, 158, 0.15) 0%, rgba(100, 150, 180, 0.08) 100%); 
+        <div style='background: linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(25, 118, 210, 0.08) 100%); 
                     padding: 35px 40px; 
                     border-radius: 15px; 
-                    border-left: 6px solid #4A7C9E;
+                    border-left: 6px solid #0066cc;
                     margin-bottom: 50px;'>
-            <p style='color: #2C3E50; font-size: 1.05rem; margin: 0; line-height: 1.8; font-weight: 500;'>
+            <p style='color: #003d7a; font-size: 1.05rem; margin: 0; line-height: 1.8; font-weight: 500;'>
                 México cuenta con <strong>117 puertos y terminales</strong>, pero la actividad comercial de altura se concentra en 
                 <strong>16 puertos principales</strong>. Estos puertos son estratégicos para el comercio internacional, 
                 conectando a México con Asia, Europa, Sudamérica y Estados Unidos.

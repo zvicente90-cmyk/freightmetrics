@@ -53,7 +53,7 @@ def page_fuerza_laboral():
     
     # Título con estilo corporativo
     st.markdown(f"<h1 style='color: #11101D; font-weight: 700; margin-bottom: 0;'>{titulo}</h1>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color: #4070F4; font-size: 1.1rem; font-weight: 500; margin-top: 5px;'>{subtitulo}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color: #0052a3; font-size: 1.1rem; font-weight: 500; margin-top: 5px;'>{subtitulo}</p>", unsafe_allow_html=True)
     
     st.markdown("---")
     
@@ -131,7 +131,7 @@ def page_fuerza_laboral():
             text=col_label,
             title=sec2_title,
             labels={'Segmento': 'Segmento' if lang == 'es' else 'Segment' if lang == 'en' else 'Segment'},
-            color_discrete_sequence=['#EF553B', '#FFA726', '#4070F4', '#4CAF50']
+            color_discrete_sequence=['#003d7a', '#0052a3', '#1976d2', '#0066cc']
         )
         
         fig_seg.update_traces(texttemplate='%{text:,.0f}', textposition='outside')

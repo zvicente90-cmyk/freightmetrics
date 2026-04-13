@@ -13,7 +13,7 @@ from modules.config import t
 try:
     from modules.session_init import metric_card, page_header, spacer
 except ImportError:
-    def metric_card(title, value, icon="📊", color="#4070F4", delta=None, delta_color="normal"):
+    def metric_card(title, value, icon="📊", color="#1976d2", delta=None, delta_color="normal"):
         st.metric(title, value, delta=delta, delta_color=delta_color)
     def page_header(title, subtitle="", icon="📊"):
         st.title(f"{icon} {title}")
@@ -119,7 +119,7 @@ def page_nearshoring():
             "Reinversión" if lang == 'es' else "Reinvestment" if lang == 'en' else "Réinvestissement",
             f"{reinversion_pct:.1f}%",
             "🔄",
-            "#4CAF50",
+            "#0052a3",
             f"${(ied_q3_2025 * reinversion_pct / 100):,.0f}M" if lang == 'es' else f"${(ied_q3_2025 * reinversion_pct / 100):,.0f}M"
         )
     
@@ -128,7 +128,7 @@ def page_nearshoring():
             "Nuevas Inversiones" if lang == 'es' else "New Investments" if lang == 'en' else "Nouveaux Investissements",
             f"{nuevas_inversiones_pct:.1f}%",
             "🆕",
-            "#FF9800",
+            "#0066cc",
             f"${(ied_q3_2025 * nuevas_inversiones_pct / 100):,.0f}M" if lang == 'es' else f"${(ied_q3_2025 * nuevas_inversiones_pct / 100):,.0f}M"
         )
     
@@ -137,7 +137,7 @@ def page_nearshoring():
             "Sector Manufactura" if lang == 'es' else "Manufacturing Sector" if lang == 'en' else "Secteur de la Fabrication",
             f"{manufactura_pct:.1f}%",
             "🏭",
-            "#E91E63",
+            "#1976d2",
             f"${(ied_q3_2025 * manufactura_pct / 100):,.0f}M" if lang == 'es' else f"${(ied_q3_2025 * manufactura_pct / 100):,.0f}M"
         )
     
@@ -181,7 +181,7 @@ def page_nearshoring():
             "Contenedores 2025" if lang == 'es' else "Containers 2025" if lang == 'en' else "Conteneurs 2025",
             f"{containers_current:,.0f}",
             "📦",
-            "#4070F4",
+            "#1976d2",
             f"{containers_growth:+.1f}% vs 2024"
         )
     
@@ -190,7 +190,7 @@ def page_nearshoring():
             "Camiones 2025" if lang == 'es' else "Trucks 2025" if lang == 'en' else "Camions 2025",
             f"{trucks_current:,.0f}",
             "🚛",
-            "#29B5E8",
+            "#0066cc",
             f"{trucks_growth:+.1f}% vs 2024"
         )
     
@@ -201,7 +201,7 @@ def page_nearshoring():
             "Valor Comercio (USD)" if lang == 'es' else "Trade Value (USD)" if lang == 'en' else "Valeur Commerce (USD)",
             f"${total_valor:,.0f}M" if total_valor > 0 else "N/A",
             "💰",
-            "#4CAF50"
+            "#0052a3"
         )
     
     spacer(20)
@@ -238,7 +238,7 @@ def page_nearshoring():
             names='Tipo',
             title="Composición de IED" if lang == 'es' else "FDI Composition" if lang == 'en' else "Composition d'IDE",
             labels={'Valor': '%'},
-            color_discrete_sequence=['#4CAF50', '#FF9800', '#9C27B0']
+            color_discrete_sequence=['#0052a3', '#0066cc', '#1976d2']
         )
         fig_composicion.update_layout(
             height=350,
@@ -272,7 +272,7 @@ def page_nearshoring():
             title="Industria Líder" if lang == 'es' else "Leading Industry" if lang == 'en' else "Industrie Leader",
             labels={'Porcentaje': '%'},
             color='Porcentaje',
-            color_continuous_scale=['#FF9800', '#E91E63']
+            color_continuous_scale=['#0052a3', '#1976d2']
         )
         fig_sectores.update_layout(
             height=350,

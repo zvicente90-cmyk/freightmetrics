@@ -360,7 +360,7 @@ def mostrar_distribucion_trafico_horaria():
     porcentajes = [distribucion_teorica[h] for h in horas]
     
     # Marcar la hora actual
-    colores = ['#4CAF50' if h == hora_actual_grafico else '#E0E0E0' if h < hora_actual_grafico else '#BDBDBD' for h in horas]
+    colores = ['#0052a3' if h == hora_actual_grafico else '#E0E0E0' if h < hora_actual_grafico else '#BDBDBD' for h in horas]
     
     fig_horas = go.Figure(data=[go.Bar(
         x=horas,

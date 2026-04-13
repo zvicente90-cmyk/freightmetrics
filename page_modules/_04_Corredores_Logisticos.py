@@ -20,14 +20,14 @@ def page_corredores_logisticos():
     
     # Título con diseño corporativo
     st.markdown("""
-        <div style='background: linear-gradient(135deg, #11101D 0%, #4070F4 100%); 
+        <div style='background: linear-gradient(135deg, #003d7a 0%, #0052a3 100%); 
                     color: white; 
                     padding: 30px 40px; 
                     border-radius: 15px; 
                     margin-bottom: 30px;
-                    box-shadow: 0 8px 20px rgba(17, 16, 29, 0.3);'>
+                    box-shadow: 0 8px 20px rgba(0, 61, 122, 0.3);'>
             <h1 style='color: white; margin: 0; font-size: 2.5rem; font-weight: 700;'>🛣️ Corredores Logísticos Estratégicos</h1>
-            <p style='color: #29B5E8; font-size: 1.2rem; font-weight: 500; margin-top: 10px; margin-bottom: 0;'>Análisis de rutas críticas, riesgo operativo y rentabilidad</p>
+            <p style='color: #0066cc; font-size: 1.2rem; font-weight: 500; margin-top: 10px; margin-bottom: 0;'>Análisis de rutas críticas, riesgo operativo y rentabilidad</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -84,27 +84,27 @@ def page_corredores_logisticos():
     
     # ============ MÉTRICAS PRINCIPALES ============
     st.markdown("""
-        <div style='background: linear-gradient(135deg, #1E2A47 0%, #16374E 100%); 
+        <div style='background: linear-gradient(135deg, #003d7a 0%, #0052a3 100%); 
                     color: white; 
                     padding: 15px 20px; 
                     border-radius: 10px; 
                     margin: 20px 0;
-                    box-shadow: 0 4px 12px rgba(41, 181, 232, 0.2);
-                    border: 1px solid #29B5E8;'>
-            <h3 style='color: #29B5E8; margin: 0; font-size: 1.3rem; font-weight: 600;'>📊 Resumen Ejecutivo de Corredores</h3>
+                    box-shadow: 0 4px 12px rgba(0, 61, 122, 0.2);
+                    border: 1px solid #0066cc;'>
+            <h3 style='color: #0066cc; margin: 0; font-size: 1.3rem; font-weight: 600;'>📊 Resumen Ejecutivo de Corredores</h3>
         </div>
     """, unsafe_allow_html=True)
     
     col_m1, col_m2, col_m3, col_m4 = st.columns(4)
     with col_m1:
         st.markdown(f"""
-            <div style='background-color: rgba(41, 181, 232, 0.15); 
-                        border-left: 5px solid #29B5E8;
+            <div style='background-color: rgba(0, 102, 204, 0.15); 
+                        border-left: 5px solid #0066cc;
                         padding: 20px; 
                         border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(41, 181, 232, 0.1);
+                        box-shadow: 0 2px 10px rgba(0, 102, 204, 0.1);
                         margin: 10px 0;'>
-                <p style='color: #29B5E8; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Total Corredores</p>
+                <p style='color: #0066cc; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Total Corredores</p>
                 <h2 style='color: #FFFFFF; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{total_corredores}</h2>
                 <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>🛣️ Rutas estratégicas</p>
             </div>
@@ -124,26 +124,26 @@ def page_corredores_logisticos():
         """, unsafe_allow_html=True)
     with col_m3:
         st.markdown(f"""
-            <div style='background-color: rgba(255, 165, 0, 0.15); 
-                        border-left: 5px solid #FFA500;
+            <div style='background-color: rgba(25, 118, 210, 0.15); 
+                        border-left: 5px solid #1976d2;
                         padding: 20px; 
                         border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(255, 165, 0, 0.1);
+                        box-shadow: 0 2px 10px rgba(25, 118, 210, 0.1);
                         margin: 10px 0;'>
-                <p style='color: #FFA500; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Alta Rentabilidad</p>
-                <h2 style='color: #FFA500; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{corredores_alta_rentabilidad}</h2>
+                <p style='color: #1976d2; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Alta Rentabilidad</p>
+                <h2 style='color: #1976d2; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{corredores_alta_rentabilidad}</h2>
                 <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>💰 Rutas premium</p>
             </div>
         """, unsafe_allow_html=True)
     with col_m4:
         st.markdown(f"""
-            <div style='background-color: rgba(255, 165, 0, 0.15); 
-                        border-left: 5px solid #FFA500;
+            <div style='background-color: rgba(0, 82, 163, 0.15); 
+                        border-left: 5px solid #0052a3;
                         padding: 20px; 
                         border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(255, 165, 0, 0.1);
+                        box-shadow: 0 2px 10px rgba(0, 82, 163, 0.1);
                         margin: 10px 0;'>
-                <p style='color: #FFA500; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Distancia Promedio</p>
+                <p style='color: #0052a3; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Distancia Promedio</p>
                 <h2 style='color: #FFFFFF; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{distancia_promedio:,.0f}</h2>
                 <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>📏 Kilómetros</p>
             </div>
@@ -177,14 +177,14 @@ def page_corredores_logisticos():
     
     # ============ MAPA DE RUTAS ============
     st.markdown("""
-        <div style='background: linear-gradient(135deg, #1E2A47 0%, #16374E 100%); 
+        <div style='background: linear-gradient(135deg, #003d7a 0%, #0052a3 100%); 
                     color: white; 
                     padding: 15px 20px; 
                     border-radius: 10px; 
                     margin: 20px 0;
-                    box-shadow: 0 4px 12px rgba(41, 181, 232, 0.2);
-                    border: 1px solid #29B5E8;'>
-            <h3 style='color: #29B5E8; margin: 0; font-size: 1.3rem; font-weight: 600;'>🗺️ Mapa Interactivo de Corredores</h3>
+                    box-shadow: 0 4px 12px rgba(0, 61, 122, 0.2);
+                    border: 1px solid #0066cc;'>
+            <h3 style='color: #0066cc; margin: 0; font-size: 1.3rem; font-weight: 600;'>🗺️ Mapa Interactivo de Corredores</h3>
         </div>
     """, unsafe_allow_html=True)
     

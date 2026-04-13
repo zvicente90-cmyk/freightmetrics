@@ -264,13 +264,13 @@ def page_puertos_maritimos():
                 delta={'reference': 65, 'suffix': '%', 'position': 'top'},
                 gauge={
                     'axis': {'range': [0, 100]},
-                    'bar': {'color': "darkblue"},
+                    'bar': {'color': "#0052a3"},
                     'steps': [
-                        {'range': [0, 50], 'color': "lightgray"},
-                        {'range': [50, 80], 'color': "gray"},
+                        {'range': [0, 50], 'color': "#f0f7ff"},
+                        {'range': [50, 80], 'color': "#1976d2"},
                     ],
                     'threshold': {
-                        'line': {'color': "red", 'width': 4},
+                        'line': {'color': "#0066cc", 'width': 4},
                         'thickness': 0.75,
                         'value': 80
                     }
