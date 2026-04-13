@@ -11,13 +11,13 @@ YEARS = [2023, 2024, 2025, 2026]
 
 MONTHS = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Setembre", "Octubre", "Noviembre", "Diciembre"
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ]
 
 MONTHS_MAP = {
     'Enero': 1, 'Febrero': 2, 'Marzo': 3, 'Abril': 4,
     'Mayo': 5, 'Junio': 6, 'Julio': 7, 'Agosto': 8,
-    'Setembre': 9, 'Octubre': 10, 'Noviembre': 11, 'Diciembre': 12
+    'Septiembre': 9, 'Octubre': 10, 'Noviembre': 11, 'Diciembre': 12
 }
 
 MONTHS_ENGLISH = {

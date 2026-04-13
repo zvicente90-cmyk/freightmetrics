@@ -262,7 +262,7 @@ def page_flujos_de_carga():
                 'Eagle Pass': 'México', 'Calexico East': 'México', 'Ysleta': 'México', 
                 'Hidalgo': 'México', 'Pharr': 'México',
             }
-            real_2026_raw = pd.read_csv(Path(__file__).parent.parent / "data" / "Border_ crossing_ene_feb_2026.csv")
+            real_2026_raw = pd.read_csv(Path(__file__).parent.parent / "data" / "Border_crossing_ene_feb_2026.csv")
             real_2026_raw['Frontera'] = real_2026_raw['Port Name'].map(puerto_a_frontera)
             
             frontera_norm = frontera.replace('🇲🇽 ', '').replace('🇨🇦 ', '').replace('🌎 ', '')
