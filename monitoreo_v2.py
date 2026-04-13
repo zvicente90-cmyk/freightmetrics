@@ -849,6 +849,10 @@ def page_monitoreo_v2():
     st.markdown("---")
     st.subheader("📊 Distribución de Tráfico por Hora")
     
+    # Obtener hora actual actualizada (para que muestre la hora correcta en tiempo real)
+    hora_actual_grafico = datetime.now().hour
+    minuto_actual_grafico = datetime.now().minute
+    
     # Mostrar patrón esperado vs real
     distribucion_teorica = {
         0: 1.5, 1: 1.0, 2: 0.8, 3: 0.8, 4: 1.2, 5: 2.0,
@@ -862,7 +866,7 @@ def page_monitoreo_v2():
     porcentajes = [distribucion_teorica[h] for h in horas]
     
     # Marcar la hora actual
-    colores = ['#4CAF50' if h == hora_actual else '#E0E0E0' if h < hora_actual else '#BDBDBD' for h in horas]
+    colores = ['#4CAF50' if h == hora_actual_grafico else '#E0E0E0' if h < hora_actual_grafico else '#BDBDBD' for h in horas]
     
     fig_horas = go.Figure(data=[go.Bar(
         x=horas,
@@ -874,7 +878,7 @@ def page_monitoreo_v2():
     )])
     
     fig_horas.update_layout(
-        title=f"Distribución de Tráfico por Hora (Hora Actual: {hora_actual:02d}:{minuto_actual:02d})",
+        title=f"Distribución de Tráfico por Hora (Hora Actual: {hora_actual_grafico:02d}:{minuto_actual_grafico:02d})",
         xaxis_title="Hora del Día",
         yaxis_title="% del Tráfico Diario",
         height=350,
@@ -893,9 +897,9 @@ def page_monitoreo_v2():
     
     # Agregar anotación de hora actual
     fig_horas.add_annotation(
-        x=hora_actual,
-        y=distribucion_teorica[hora_actual] + 1,
-        text=f"<b>AHORA</b><br>{hora_actual:02d}:{minuto_actual:02d}",
+        x=hora_actual_grafico,
+        y=distribucion_teorica[hora_actual_grafico] + 1,
+        text=f"<b>AHORA</b><br>{hora_actual_grafico:02d}:{minuto_actual_grafico:02d}",
         showarrow=True,
         arrowhead=2,
         arrowsize=1,
@@ -915,15 +919,15 @@ def page_monitoreo_v2():
     col_t1, col_t2, col_t3 = st.columns(3)
     
     # Determinar fase del día
-    if 0 <= hora_actual < 6:
+    if 0 <= hora_actual_grafico < 6:
         fase = "🌙 Madrugada"
         desc = "Tráfico mínimo (1-2% por hora)"
         color = "#424242"
-    elif 6 <= hora_actual < 12:
+    elif 6 <= hora_actual_grafico < 12:
         fase = "🌅 Mañana"
         desc = "Incremento progresivo (3.5-6.2%)"
         color = "#FF9800"
-    elif 12 <= hora_actual < 18:
+    elif 12 <= hora_actual_grafico < 18:
         fase = "☀️ Tarde"
         desc = "Hora pico principal (5.5-6.5%)"
         color = "#FFC107"
@@ -946,7 +950,7 @@ def page_monitoreo_v2():
     
     with col_t2:
         # Progreso del día
-        progreso = (hora_actual * 60 + minuto_actual) / (24 * 60) * 100
+        progreso = (hora_actual_grafico * 60 + minuto_actual_grafico) / (24 * 60) * 100
         st.markdown(f"""
             <div style='background-color: #F5F5F5; 
                         padding: 15px; 
@@ -960,8 +964,8 @@ def page_monitoreo_v2():
     
     with col_t3:
         # Tiempo restante de hora pico
-        if hora_actual < 20:
-            horas_restantes = 20 - hora_actual
+        if hora_actual_grafico < 20:
+            horas_restantes = 20 - hora_actual_grafico
             st.markdown(f"""
                 <div style='background-color: #E3F2FD; 
                             border-left: 5px solid #2196F3; 
