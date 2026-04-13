@@ -262,16 +262,30 @@ def page_flujos_de_carga():
                 'Eagle Pass': 'México', 'Calexico East': 'México', 'Ysleta': 'México', 
                 'Hidalgo': 'México', 'Pharr': 'México',
             }
-            real_2026_raw = pd.read_csv(Path(__file__).parent.parent / "data" / "Border_crossing_ene_feb_2026.csv")
-            real_2026_raw['Frontera'] = real_2026_raw['Port Name'].map(puerto_a_frontera)
             
-            frontera_norm = frontera.replace('🇲🇽 ', '').replace('🇨🇦 ', '').replace('🌎 ', '')
-            if frontera_norm != 'Ambas':
-                real_2026_raw = real_2026_raw[real_2026_raw['Frontera'] == frontera_norm]
+            # Intentar cargar archivo con ambos nombres (con y sin espacio)
+            data_dir = Path(__file__).parent.parent / "data"
+            archivo_nombres = [
+                data_dir / "Border_crossing_ene_feb_2026.csv",  # Sin espacio
+                data_dir / "Border_ crossing_ene_feb_2026.csv"  # Con espacio
+            ]
             
-            # Extraer totales reales para Ene y Feb
-            for month in [1, 2]:
-                total_row = real_2026_raw[real_2026_raw['Port Name'].str.lower() == 'total']
+            real_2026_raw = None
+            for archivo in archivo_nombres:
+                if archivo.exists():
+                    real_2026_raw = pd.read_csv(archivo)
+                    break
+            
+            if real_2026_raw is not None:
+                real_2026_raw['Frontera'] = real_2026_raw['Port Name'].map(puerto_a_frontera)
+                
+                frontera_norm = frontera.replace('🇲🇽 ', '').replace('🇨🇦 ', '').replace('🌎 ', '')
+                if frontera_norm != 'Ambas':
+                    real_2026_raw = real_2026_raw[real_2026_raw['Frontera'] == frontera_norm]
+                
+                # Extraer totales reales para Ene y Feb
+                for month in [1, 2]:
+                    total_row = real_2026_raw[real_2026_raw['Port Name'].str.lower() == 'total']
                 if len(total_row) > 0:
                     if month == 1:
                         val = int(str(total_row.iloc[0]['Jan 2026']).replace(',', ''))
