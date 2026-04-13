@@ -12,6 +12,7 @@ import numpy as np
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from pathlib import Path
+import time
 
 
 # ============================================================================
@@ -330,6 +331,156 @@ def aduana_esta_abierta(nombre_aduana):
         return True, "8:00 AM - 8:00 PM"
     else:
         return False, "8:00 AM - 8:00 PM"
+
+
+# ============================================================================
+# FRAGMENTO: GRÁFICO DE DISTRIBUCIÓN HORARIA (Se actualiza independientemente)
+# ============================================================================
+
+@st.fragment(run_every=60)  # Se actualiza cada 60 segundos
+def mostrar_distribucion_trafico_horaria():
+    """Fragmento que muestra la distribución de tráfico por hora - se actualiza automáticamente"""
+    
+    st.subheader("📊 Distribución de Tráfico por Hora")
+    
+    # Obtener hora actual en tiempo real
+    hora_actual_grafico = datetime.now().hour
+    minuto_actual_grafico = datetime.now().minute
+    
+    # Mostrar patrón esperado vs real
+    distribucion_teorica = {
+        0: 1.5, 1: 1.0, 2: 0.8, 3: 0.8, 4: 1.2, 5: 2.0,
+        6: 3.5, 7: 4.5, 8: 5.5, 9: 5.8, 10: 6.0, 11: 6.2,
+        12: 5.8, 13: 5.5, 14: 6.0, 15: 6.2, 16: 6.5, 17: 5.8,
+        18: 5.0, 19: 4.5, 20: 3.8, 21: 3.0, 22: 2.5, 23: 2.0
+    }
+    
+    # Gráfico de distribución horaria - ANCHO COMPLETO
+    horas = list(range(24))
+    porcentajes = [distribucion_teorica[h] for h in horas]
+    
+    # Marcar la hora actual
+    colores = ['#4CAF50' if h == hora_actual_grafico else '#E0E0E0' if h < hora_actual_grafico else '#BDBDBD' for h in horas]
+    
+    fig_horas = go.Figure(data=[go.Bar(
+        x=horas,
+        y=porcentajes,
+        marker_color=colores,
+        text=[f"{p}%" for p in porcentajes],
+        textposition='outside',
+        hovertemplate='<b>Hora %{x}:00</b><br>Tráfico: %{y}%<extra></extra>'
+    )])
+    
+    fig_horas.update_layout(
+        title=f"Distribución de Tráfico por Hora (Hora Actual: {hora_actual_grafico:02d}:{minuto_actual_grafico:02d})",
+        xaxis_title="Hora del Día",
+        yaxis_title="% del Tráfico Diario",
+        height=350,
+        showlegend=False,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#11101D'),
+        xaxis=dict(
+            tickmode='linear',
+            tick0=0,
+            dtick=2,
+            gridcolor='#E0E0E0'
+        ),
+        yaxis=dict(gridcolor='#E0E0E0')
+    )
+    
+    # Agregar anotación de hora actual
+    fig_horas.add_annotation(
+        x=hora_actual_grafico,
+        y=distribucion_teorica[hora_actual_grafico] + 1,
+        text=f"<b>AHORA</b><br>{hora_actual_grafico:02d}:{minuto_actual_grafico:02d}",
+        showarrow=True,
+        arrowhead=2,
+        arrowsize=1,
+        arrowwidth=2,
+        arrowcolor="#4CAF50",
+        font=dict(size=12, color="#4CAF50", family="Arial Black"),
+        bgcolor="white",
+        bordercolor="#4CAF50",
+        borderwidth=2
+    )
+    
+    st.plotly_chart(fig_horas, use_container_width=True)
+    
+    # CONTEXTO TEMPORAL - DEBAJO DEL GRÁFICO
+    st.markdown("**⏰ Contexto Temporal**")
+    
+    col_t1, col_t2, col_t3 = st.columns(3)
+    
+    # Determinar fase del día
+    if 0 <= hora_actual_grafico < 6:
+        fase = "🌙 Madrugada"
+        desc = "Tráfico mínimo (1-2% por hora)"
+        color = "#424242"
+    elif 6 <= hora_actual_grafico < 12:
+        fase = "🌅 Mañana"
+        desc = "Incremento progresivo (3.5-6.2%)"
+        color = "#FF9800"
+    elif 12 <= hora_actual_grafico < 18:
+        fase = "☀️ Tarde"
+        desc = "Hora pico principal (5.5-6.5%)"
+        color = "#FFC107"
+    else:
+        fase = "🌆 Noche"
+        desc = "Descenso gradual (2-5%)"
+        color = "#9C27B0"
+    
+    with col_t1:
+        st.markdown(f"""
+            <div style='background-color: {color}20; 
+                        border-left: 5px solid {color}; 
+                        padding: 15px; 
+                        border-radius: 8px;
+                        margin: 10px 0;'>
+                <h4 style='color: {color}; margin: 0 0 8px 0;'>{fase}</h4>
+                <p style='color: #333; margin: 0; font-size: 0.9rem;'>{desc}</p>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col_t2:
+        # Progreso del día
+        progreso = (hora_actual_grafico * 60 + minuto_actual_grafico) / (24 * 60) * 100
+        st.markdown(f"""
+            <div style='background-color: #F5F5F5; 
+                        padding: 15px; 
+                        border-radius: 8px;
+                        margin: 10px 0;'>
+                <h4 style='color: #11101D; margin: 0 0 8px 0;'>📊 Progreso del Día</h4>
+                <p style='color: #333; margin: 0; font-size: 0.9rem;'>Completado: {progreso:.1f}%</p>
+            </div>
+        """, unsafe_allow_html=True)
+        st.progress(progreso / 100)
+    
+    with col_t3:
+        # Tiempo restante de hora pico
+        if hora_actual_grafico < 20:
+            horas_restantes = 20 - hora_actual_grafico
+            st.markdown(f"""
+                <div style='background-color: #E3F2FD; 
+                            border-left: 5px solid #2196F3; 
+                            padding: 15px; 
+                            border-radius: 8px;
+                            margin: 10px 0;'>
+                    <h4 style='color: #1976D2; margin: 0 0 8px 0;'>⏱️ Hora Pico</h4>
+                    <p style='color: #333; margin: 0; font-size: 0.9rem;'>{horas_restantes}h restantes</p>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+                <div style='background-color: #E8F5E9; 
+                            border-left: 5px solid #4CAF50; 
+                            padding: 15px; 
+                            border-radius: 8px;
+                            margin: 10px 0;'>
+                    <h4 style='color: #388E3C; margin: 0 0 8px 0;'>✅ Hora Pico</h4>
+                    <p style='color: #333; margin: 0; font-size: 0.9rem;'>Finalizada</p>
+                </div>
+            """, unsafe_allow_html=True)
 
 
 # ============================================================================
@@ -847,146 +998,9 @@ def page_monitoreo_aduanas():
     # ========================================================================
     
     st.markdown("---")
-    st.subheader("📊 Distribución de Tráfico por Hora")
     
-    # Obtener hora actual actualizada (para que muestre la hora correcta en tiempo real)
-    hora_actual_grafico = datetime.now().hour
-    minuto_actual_grafico = datetime.now().minute
-    
-    # Mostrar patrón esperado vs real
-    distribucion_teorica = {
-        0: 1.5, 1: 1.0, 2: 0.8, 3: 0.8, 4: 1.2, 5: 2.0,
-        6: 3.5, 7: 4.5, 8: 5.5, 9: 5.8, 10: 6.0, 11: 6.2,
-        12: 5.8, 13: 5.5, 14: 6.0, 15: 6.2, 16: 6.5, 17: 5.8,
-        18: 5.0, 19: 4.5, 20: 3.8, 21: 3.0, 22: 2.5, 23: 2.0
-    }
-    
-    # Gráfico de distribución horaria - ANCHO COMPLETO
-    horas = list(range(24))
-    porcentajes = [distribucion_teorica[h] for h in horas]
-    
-    # Marcar la hora actual
-    colores = ['#4CAF50' if h == hora_actual_grafico else '#E0E0E0' if h < hora_actual_grafico else '#BDBDBD' for h in horas]
-    
-    fig_horas = go.Figure(data=[go.Bar(
-        x=horas,
-        y=porcentajes,
-        marker_color=colores,
-        text=[f"{p}%" for p in porcentajes],
-        textposition='outside',
-        hovertemplate='<b>Hora %{x}:00</b><br>Tráfico: %{y}%<extra></extra>'
-    )])
-    
-    fig_horas.update_layout(
-        title=f"Distribución de Tráfico por Hora (Hora Actual: {hora_actual_grafico:02d}:{minuto_actual_grafico:02d})",
-        xaxis_title="Hora del Día",
-        yaxis_title="% del Tráfico Diario",
-        height=350,
-        showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='#11101D'),
-        xaxis=dict(
-            tickmode='linear',
-            tick0=0,
-            dtick=2,
-            gridcolor='#E0E0E0'
-        ),
-        yaxis=dict(gridcolor='#E0E0E0')
-    )
-    
-    # Agregar anotación de hora actual
-    fig_horas.add_annotation(
-        x=hora_actual_grafico,
-        y=distribucion_teorica[hora_actual_grafico] + 1,
-        text=f"<b>AHORA</b><br>{hora_actual_grafico:02d}:{minuto_actual_grafico:02d}",
-        showarrow=True,
-        arrowhead=2,
-        arrowsize=1,
-        arrowwidth=2,
-        arrowcolor="#4CAF50",
-        font=dict(size=12, color="#4CAF50", family="Arial Black"),
-        bgcolor="white",
-        bordercolor="#4CAF50",
-        borderwidth=2
-    )
-    
-    st.plotly_chart(fig_horas, use_container_width=True)
-    
-    # CONTEXTO TEMPORAL - DEBAJO DEL GRÁFICO
-    st.markdown("**⏰ Contexto Temporal**")
-    
-    col_t1, col_t2, col_t3 = st.columns(3)
-    
-    # Determinar fase del día
-    if 0 <= hora_actual_grafico < 6:
-        fase = "🌙 Madrugada"
-        desc = "Tráfico mínimo (1-2% por hora)"
-        color = "#424242"
-    elif 6 <= hora_actual_grafico < 12:
-        fase = "🌅 Mañana"
-        desc = "Incremento progresivo (3.5-6.2%)"
-        color = "#FF9800"
-    elif 12 <= hora_actual_grafico < 18:
-        fase = "☀️ Tarde"
-        desc = "Hora pico principal (5.5-6.5%)"
-        color = "#FFC107"
-    else:
-        fase = "🌆 Noche"
-        desc = "Descenso gradual (2-5%)"
-        color = "#9C27B0"
-    
-    with col_t1:
-        st.markdown(f"""
-            <div style='background-color: {color}20; 
-                        border-left: 5px solid {color}; 
-                        padding: 15px; 
-                        border-radius: 8px;
-                        margin: 10px 0;'>
-                <h4 style='color: {color}; margin: 0 0 8px 0;'>{fase}</h4>
-                <p style='color: #333; margin: 0; font-size: 0.9rem;'>{desc}</p>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    with col_t2:
-        # Progreso del día
-        progreso = (hora_actual_grafico * 60 + minuto_actual_grafico) / (24 * 60) * 100
-        st.markdown(f"""
-            <div style='background-color: #F5F5F5; 
-                        padding: 15px; 
-                        border-radius: 8px;
-                        margin: 10px 0;'>
-                <h4 style='color: #11101D; margin: 0 0 8px 0;'>📊 Progreso del Día</h4>
-                <p style='color: #333; margin: 0; font-size: 0.9rem;'>Completado: {progreso:.1f}%</p>
-            </div>
-        """, unsafe_allow_html=True)
-        st.progress(progreso / 100)
-    
-    with col_t3:
-        # Tiempo restante de hora pico
-        if hora_actual_grafico < 20:
-            horas_restantes = 20 - hora_actual_grafico
-            st.markdown(f"""
-                <div style='background-color: #E3F2FD; 
-                            border-left: 5px solid #2196F3; 
-                            padding: 15px; 
-                            border-radius: 8px;
-                            margin: 10px 0;'>
-                    <h4 style='color: #1976D2; margin: 0 0 8px 0;'>⏱️ Hora Pico</h4>
-                    <p style='color: #333; margin: 0; font-size: 0.9rem;'>{horas_restantes}h restantes</p>
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-                <div style='background-color: #E8F5E9; 
-                            border-left: 5px solid #4CAF50; 
-                            padding: 15px; 
-                            border-radius: 8px;
-                            margin: 10px 0;'>
-                    <h4 style='color: #388E3C; margin: 0 0 8px 0;'>✅ Hora Pico</h4>
-                    <p style='color: #333; margin: 0; font-size: 0.9rem;'>Finalizada</p>
-                </div>
-            """, unsafe_allow_html=True)
+    # Llamar al fragmento que muestra el gráfico (se actualiza cada 60 segundos)
+    mostrar_distribucion_trafico_horaria()
     
     # ========================================================================
     # GRÁFICA DE CRUCES REALES POR HORA
