@@ -13,7 +13,15 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from pathlib import Path
 import time
+import pytz
 from page_modules.tarjeta_kpi import tarjeta_kpi_color, COLORES
+
+# Zona horaria de México (Centro)
+TZ_MEXICO = pytz.timezone('America/Mexico_City')
+
+def obtener_hora_actual():
+    """Obtiene la hora actual en zona horaria de México"""
+    return datetime.now(TZ_MEXICO)
 
 
 # ============================================================================
@@ -269,8 +277,8 @@ def obtener_estadisticas_comparativas(df_aduanas):
 
 def aduana_esta_abierta(nombre_aduana):
     """Verifica si una aduana está abierta según horarios reales"""
-    hora_actual = datetime.now().hour
-    dia_semana = datetime.now().weekday()  # 0=Lunes, 6=Domingo
+    hora_actual = obtener_hora_actual().hour
+    dia_semana = obtener_hora_actual().weekday()  # 0=Lunes, 6=Domingo
     
     # Aduanas 24/7 (siempre abiertas)
     aduanas_24_7 = [
@@ -345,8 +353,8 @@ def mostrar_distribucion_trafico_horaria():
     st.subheader("📊 Distribución de Tráfico por Hora")
     
     # Obtener hora actual en tiempo real
-    hora_actual_grafico = datetime.now().hour
-    minuto_actual_grafico = datetime.now().minute
+    hora_actual_grafico = obtener_hora_actual().hour
+    minuto_actual_grafico = obtener_hora_actual().minute
     
     # Mostrar patrón esperado vs real
     distribucion_teorica = {
@@ -520,7 +528,7 @@ def page_monitoreo_aduanas():
     # ========================================================================
     
     # Obtener hora actual UNA SOLA VEZ para usar en toda la función
-    fecha_hoy = datetime.now()
+    fecha_hoy = obtener_hora_actual()
     hora_actual = fecha_hoy.hour
     minuto_actual = fecha_hoy.minute
     
@@ -649,7 +657,7 @@ def page_monitoreo_aduanas():
         df_aduanas = pd.DataFrame(data)
     
     # Calcular porcentaje del día transcurrido
-    fecha_hoy = datetime.now()
+    fecha_hoy = obtener_hora_actual()
     porcentaje_dia = ((hora_actual * 60 + minuto_actual) / (24 * 60)) * 100
     
     # Información consolidada en una sola línea
@@ -1586,5 +1594,5 @@ def page_monitoreo_aduanas():
     # Footer
     st.markdown("---")
     st.caption("💡 **Nota**: Datos en tiempo real actualizados según hora del sistema. Los cruces acumulados representan el tráfico procesado hasta el momento actual.")
-    st.caption(f"📊 Última actualización: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | 🔄 Proyección diaria: {proyeccion_total:,} cruces | ⏱️ Progreso del día: {porcentaje_dia:.1f}%")
+    st.caption(f"📊 Última actualización: {obtener_hora_actual().strftime('%Y-%m-%d %H:%M:%S')} | 🔄 Proyección diaria: {proyeccion_total:,} cruces | ⏱️ Progreso del día: {porcentaje_dia:.1f}%")
 

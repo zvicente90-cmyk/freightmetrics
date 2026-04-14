@@ -51,8 +51,15 @@ def page_dashboard():
     import plotly.graph_objects as go
     import plotly.express as px
     from datetime import datetime
+    import pytz
     
-    # ============================================================
+    # Zona horaria de México (Centro)
+    TZ_MEXICO = pytz.timezone('America/Mexico_City')
+    
+    def obtener_hora_actual():
+        """Obtiene la hora actual en zona horaria de México"""
+        return datetime.now(TZ_MEXICO)
+    
     # CSS GLOBAL PROFESIONAL - MEJORA TODOS LOS COMPONENTES
     # COMENTADO: Los estilos CSS de [data-testid] interfieren con tarjetas inline
     # ============================================================
@@ -868,7 +875,7 @@ def page_dashboard():
     </div>
     """, unsafe_allow_html=True)
     
-    st.success("✅ Dashboard Integral Sincronizado - Última actualización: " + datetime.now().strftime("%H:%M:%S"))
+    st.success("✅ Dashboard Integral Sincronizado - Última actualización: " + obtener_hora_actual().strftime("%H:%M:%S"))
 
 
 

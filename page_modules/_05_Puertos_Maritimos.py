@@ -13,12 +13,20 @@ import folium
 from streamlit_folium import st_folium
 from datetime import datetime
 from pathlib import Path
+import pytz
 
 from modules.constants import (
     MONTHS_MAP, COLOR_PALETTE, SATURATION_LEVELS, WAIT_TIME_LEVELS
 )
 from modules.session_init import page_header, section_header, spacer
 from page_modules.tarjeta_kpi import tarjeta_kpi_color, COLORES
+
+# Zona horaria de México (Centro)
+TZ_MEXICO = pytz.timezone('America/Mexico_City')
+
+def obtener_hora_actual():
+    """Obtiene la hora actual en zona horaria de México"""
+    return datetime.now(TZ_MEXICO)
 
 
 # Constantes Locales de Puertos Mexicanos
@@ -428,7 +436,7 @@ def page_puertos_maritimos():
         st.download_button(
             label="📥 Descargar Tabla (CSV)",
             data=csv,
-            file_name=f"puertos_maritimos_{datetime.now().strftime('%Y%m%d')}.csv",
+            file_name=f"puertos_maritimos_{obtener_hora_actual().strftime('%Y%m%d')}.csv",
             mime="text/csv"
         )
     
