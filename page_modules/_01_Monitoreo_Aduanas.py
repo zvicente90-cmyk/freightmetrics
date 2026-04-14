@@ -13,6 +13,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from pathlib import Path
 import time
+from page_modules.tarjeta_kpi import tarjeta_kpi_color, COLORES
 
 
 # ============================================================================
@@ -432,13 +433,13 @@ def mostrar_distribucion_trafico_horaria():
     
     with col_t1:
         st.markdown(f"""
-            <div style='background-color: {color}20; 
+            <div style="background-color: {color}20; 
                         border-left: 5px solid {color}; 
                         padding: 15px; 
                         border-radius: 8px;
-                        margin: 10px 0;'>
-                <h4 style='color: {color}; margin: 0 0 8px 0;'>{fase}</h4>
-                <p style='color: #333; margin: 0; font-size: 0.9rem;'>{desc}</p>
+                        margin: 10px 0;">
+                <h4 style="color: {color}; margin: 0 0 8px 0;">{fase}</h4>
+                <p style="color: #333; margin: 0; font-size: 0.9rem;">{desc}</p>
             </div>
         """, unsafe_allow_html=True)
     
@@ -446,12 +447,12 @@ def mostrar_distribucion_trafico_horaria():
         # Progreso del día
         progreso = (hora_actual_grafico * 60 + minuto_actual_grafico) / (24 * 60) * 100
         st.markdown(f"""
-            <div style='background-color: #F5F5F5; 
+            <div style="background-color: #F5F5F5; 
                         padding: 15px; 
                         border-radius: 8px;
-                        margin: 10px 0;'>
-                <h4 style='color: #11101D; margin: 0 0 8px 0;'>📊 Progreso del Día</h4>
-                <p style='color: #333; margin: 0; font-size: 0.9rem;'>Completado: {progreso:.1f}%</p>
+                        margin: 10px 0;">
+                <h4 style="color: #11101D; margin: 0 0 8px 0;">📊 Progreso del Día</h4>
+                <p style="color: #333; margin: 0; font-size: 0.9rem;">Completado: {progreso:.1f}%</p>
             </div>
         """, unsafe_allow_html=True)
         st.progress(progreso / 100)
@@ -461,24 +462,24 @@ def mostrar_distribucion_trafico_horaria():
         if hora_actual_grafico < 20:
             horas_restantes = 20 - hora_actual_grafico
             st.markdown(f"""
-                <div style='background-color: #E3F2FD; 
+                <div style="background-color: #E3F2FD; 
                             border-left: 5px solid #2196F3; 
                             padding: 15px; 
                             border-radius: 8px;
-                            margin: 10px 0;'>
-                    <h4 style='color: #1976D2; margin: 0 0 8px 0;'>⏱️ Hora Pico</h4>
-                    <p style='color: #333; margin: 0; font-size: 0.9rem;'>{horas_restantes}h restantes</p>
+                            margin: 10px 0;">
+                    <h4 style="color: #1976D2; margin: 0 0 8px 0;">⏱️ Hora Pico</h4>
+                    <p style="color: #333; margin: 0; font-size: 0.9rem;">{horas_restantes}h restantes</p>
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown(f"""
-                <div style='background-color: #E8F5E9; 
+                <div style="background-color: #E8F5E9; 
                             border-left: 5px solid #4CAF50; 
                             padding: 15px; 
                             border-radius: 8px;
-                            margin: 10px 0;'>
-                    <h4 style='color: #388E3C; margin: 0 0 8px 0;'>✅ Hora Pico</h4>
-                    <p style='color: #333; margin: 0; font-size: 0.9rem;'>Finalizada</p>
+                            margin: 10px 0;">
+                    <h4 style="color: #388E3C; margin: 0 0 8px 0;">✅ Hora Pico</h4>
+                    <p style="color: #333; margin: 0; font-size: 0.9rem;">Finalizada</p>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -492,6 +493,19 @@ def page_monitoreo_aduanas():
     
     # Header
     st.title("🚛 Monitoreo de Aduanas en Tiempo Real")
+    
+    # ============================================================
+    # Estilos CSS LOCALES para esta página
+    # ============================================================
+    st.markdown("""
+    <style>
+        /* Mejorar todas las métricas en esta página */
+        [data-testid="metric-container"] {
+            background: linear-gradient(135deg, rgba(0, 61, 122, 0.15) 0%, rgba(0, 82, 163, 0.10) 100%) !important;
+            border-left: 5px solid #0066cc !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
     
     # Definir distribución teórica de tráfico por hora (constante para toda la página)
     distribucion_teorica = {
@@ -678,32 +692,66 @@ def page_monitoreo_aduanas():
         df_filtrado = df_filtrado[df_filtrado['Abierta'] == False]
     
     # ========================================================================
-    # KPIs PRINCIPALES
+    # KPIs PRINCIPALES - CON ESTILOS PROFESIONALES INLINE
     # ========================================================================
     
     st.markdown("---")
     st.subheader("📊 Indicadores Principales")
     
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4 = st.columns(4, gap="medium")
+    
+    total_aduanas = len(df_filtrado)
+    abiertas = len(df_filtrado[df_filtrado['Abierta'] == True])
+    saturacion_prom = df_filtrado[df_filtrado['Abierta'] == True]['Saturación'].mean()
+    espera_prom = df_filtrado[df_filtrado['Abierta'] == True]['Tiempo_Espera'].mean()
+    
+    # Estilos compartidos
+    estilo_tarjeta = """
+        background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%);
+        border: 2px solid #0066cc;
+        border-radius: 14px;
+        padding: 24px 20px;
+        box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15);
+        text-align: center;
+    """
     
     with col1:
-        total_aduanas = len(df_filtrado)
-        st.metric("Total Aduanas", total_aduanas)
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%); border: 2px solid #0066cc; border-radius: 14px; padding: 24px 20px; box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15); text-align: center;">
+            <div style="color: #0052a3; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">📍 Total Aduanas</div>
+            <div style="color: #0066cc; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); margin: 8px 0;">{total_aduanas}</div>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
-        abiertas = len(df_filtrado[df_filtrado['Abierta'] == True])
-        st.metric("Abiertas", abiertas, delta=f"{(abiertas/total_aduanas*100):.0f}%")
+        delta_pct = (abiertas/total_aduanas*100) if total_aduanas > 0 else 0
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%); border: 2px solid #0066cc; border-radius: 14px; padding: 24px 20px; box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15); text-align: center;">
+            <div style="color: #0052a3; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">🟢 Abiertas</div>
+            <div style="color: #0066cc; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); margin: 8px 0;">{abiertas}</div>
+            <div style="color: #1976d2; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">↑ {delta_pct:.0f}%</div>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col3:
-        saturacion_prom = df_filtrado[df_filtrado['Abierta'] == True]['Saturación'].mean()
-        st.metric("Saturación Promedio", f"{saturacion_prom:.0f}%")
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%); border: 2px solid #0066cc; border-radius: 14px; padding: 24px 20px; box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15); text-align: center;">
+            <div style="color: #0052a3; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">📊 Saturación</div>
+            <div style="color: #0066cc; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); margin: 8px 0;">{saturacion_prom:.0f}%</div>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col4:
-        espera_prom = df_filtrado[df_filtrado['Abierta'] == True]['Tiempo_Espera'].mean()
-        st.metric("Espera Promedio", f"{espera_prom:.0f} min")
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%); border: 2px solid #0066cc; border-radius: 14px; padding: 24px 20px; box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15); text-align: center;">
+            <div style="color: #0052a3; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">⏱️ Espera Prom.</div>
+            <div style="color: #0066cc; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); margin: 8px 0;">{espera_prom:.0f}</div>
+            <div style="color: #1976d2; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">minutos</div>
+        </div>
+        """, unsafe_allow_html=True)
     
     # ========================================================================
-    # ESTADÍSTICAS COMPARATIVAS
+    # ESTADÍSTICAS COMPARATIVAS - CON TARJETAS PERSONALIZADAS
     # ========================================================================
     
     st.markdown("---")
@@ -716,23 +764,49 @@ def page_monitoreo_aduanas():
         
         with col_c1:
             st.markdown("""
-                <div style='background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%); 
+                <div style="background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%); 
                             color: white; 
                             padding: 20px; 
                             border-radius: 12px;
-                            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);'>
-                    <h3 style='color: white; margin: 0 0 15px 0; font-size: 1.3rem;'>🇲🇽 Frontera México</h3>
+                            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);">
+                    <h3 style="color: white; margin: 0 0 15px 0; font-size: 1.3rem;">🇲🇽 Frontera México</h3>
                 </div>
             """, unsafe_allow_html=True)
             
             mx = stats.get('México', {})
             col_mx1, col_mx2 = st.columns(2)
+            
+            # Tarjetas personalizadas para México
             with col_mx1:
-                st.metric("Aduanas Activas", mx.get('total_aduanas', 0))
-                st.metric("Saturación Avg", f"{mx.get('saturacion_promedio', 0):.1f}%")
+                st.markdown(f"""
+                <div style="border-color: #4CAF50; background: linear-gradient(135deg, rgba(76, 175, 80, 0.12) 0%, rgba(56, 142, 60, 0.08) 100%); box-shadow: 0 0 20px rgba(76, 175, 80, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #4CAF50; padding: 24px 20px; text-align: center;">
+                    <div style="color: #2E7D32; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">✅ Aduanas Activas</div>
+                    <div style="color: #388E3C; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(76, 175, 80, 0.3); margin: 8px 0;">{mx.get('total_aduanas', 0)}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.markdown(f"""
+                <div style="border-color: #4CAF50; background: linear-gradient(135deg, rgba(76, 175, 80, 0.12) 0%, rgba(56, 142, 60, 0.08) 100%); box-shadow: 0 0 20px rgba(76, 175, 80, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #4CAF50; padding: 24px 20px; text-align: center;">
+                    <div style="color: #2E7D32; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">📊 Saturación Prom.</div>
+                    <div style="color: #388E3C; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(76, 175, 80, 0.3); margin: 8px 0;">{mx.get('saturacion_promedio', 0):.1f}%</div>
+                </div>
+                """, unsafe_allow_html=True)
+            
             with col_mx2:
-                st.metric("Espera Avg", f"{mx.get('tiempo_espera_promedio', 0):.0f} min")
-                st.metric("Cruces Totales", f"{mx.get('cruces_totales', 0):,}")
+                st.markdown(f"""
+                <div style="border-color: #4CAF50; background: linear-gradient(135deg, rgba(76, 175, 80, 0.12) 0%, rgba(56, 142, 60, 0.08) 100%); box-shadow: 0 0 20px rgba(76, 175, 80, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #4CAF50; padding: 24px 20px; text-align: center;">
+                    <div style="color: #2E7D32; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">⏱️ Espera Prom.</div>
+                    <div style="color: #388E3C; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(76, 175, 80, 0.3); margin: 8px 0;">{mx.get('tiempo_espera_promedio', 0):.0f}</div>
+                    <div style="color: #388E3C; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">minutos</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.markdown(f"""
+                <div style="border-color: #4CAF50; background: linear-gradient(135deg, rgba(76, 175, 80, 0.12) 0%, rgba(56, 142, 60, 0.08) 100%); box-shadow: 0 0 20px rgba(76, 175, 80, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #4CAF50; padding: 24px 20px; text-align: center;">
+                    <div style="color: #2E7D32; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">🚚 Cruces Totales</div>
+                    <div style="color: #388E3C; font-size: 2.2rem; font-weight: 900; text-shadow: 0 2px 8px rgba(76, 175, 80, 0.3); margin: 8px 0;">{mx.get('cruces_totales', 0):,}</div>
+                </div>
+                """, unsafe_allow_html=True)
             
             if 'top_3_saturadas' in mx:
                 st.markdown("**🔴 Top 3 Más Saturadas:**")
@@ -746,23 +820,49 @@ def page_monitoreo_aduanas():
         
         with col_c2:
             st.markdown("""
-                <div style='background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); 
+                <div style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); 
                             color: white; 
                             padding: 20px; 
                             border-radius: 12px;
-                            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);'>
-                    <h3 style='color: white; margin: 0 0 15px 0; font-size: 1.3rem;'>🇨🇦 Frontera Canadá</h3>
+                            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);">
+                    <h3 style="color: white; margin: 0 0 15px 0; font-size: 1.3rem;">🇨🇦 Frontera Canadá</h3>
                 </div>
             """, unsafe_allow_html=True)
             
             ca = stats.get('Canadá', {})
             col_ca1, col_ca2 = st.columns(2)
+            
+            # Tarjetas personalizadas para Canadá
             with col_ca1:
-                st.metric("Aduanas Activas", ca.get('total_aduanas', 0))
-                st.metric("Saturación Avg", f"{ca.get('saturacion_promedio', 0):.1f}%")
+                st.markdown(f"""
+                <div style="border-color: #2196F3; background: linear-gradient(135deg, rgba(33, 150, 243, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%); box-shadow: 0 0 20px rgba(33, 150, 243, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #2196F3; padding: 24px 20px; text-align: center;">
+                    <div style="color: #0D47A1; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">✅ Aduanas Activas</div>
+                    <div style="color: #1565C0; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(33, 150, 243, 0.3); margin: 8px 0;">{ca.get('total_aduanas', 0)}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.markdown(f"""
+                <div style="border-color: #2196F3; background: linear-gradient(135deg, rgba(33, 150, 243, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%); box-shadow: 0 0 20px rgba(33, 150, 243, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #2196F3; padding: 24px 20px; text-align: center;">
+                    <div style="color: #0D47A1; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">📊 Saturación Prom.</div>
+                    <div style="color: #1565C0; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(33, 150, 243, 0.3); margin: 8px 0;">{ca.get('saturacion_promedio', 0):.1f}%</div>
+                </div>
+                """, unsafe_allow_html=True)
+            
             with col_ca2:
-                st.metric("Espera Avg", f"{ca.get('tiempo_espera_promedio', 0):.0f} min")
-                st.metric("Cruces Totales", f"{ca.get('cruces_totales', 0):,}")
+                st.markdown(f"""
+                <div style="border-color: #2196F3; background: linear-gradient(135deg, rgba(33, 150, 243, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%); box-shadow: 0 0 20px rgba(33, 150, 243, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #2196F3; padding: 24px 20px; text-align: center;">
+                    <div style="color: #0D47A1; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">⏱️ Espera Prom.</div>
+                    <div style="color: #1565C0; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(33, 150, 243, 0.3); margin: 8px 0;">{ca.get('tiempo_espera_promedio', 0):.0f}</div>
+                    <div style="color: #1565C0; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">minutos</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.markdown(f"""
+                <div style="border-color: #2196F3; background: linear-gradient(135deg, rgba(33, 150, 243, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%); box-shadow: 0 0 20px rgba(33, 150, 243, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #2196F3; padding: 24px 20px; text-align: center;">
+                    <div style="color: #0D47A1; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">🚚 Cruces Totales</div>
+                    <div style="color: #1565C0; font-size: 2.2rem; font-weight: 900; text-shadow: 0 2px 8px rgba(33, 150, 243, 0.3); margin: 8px 0;">{ca.get('cruces_totales', 0):,}</div>
+                </div>
+                """, unsafe_allow_html=True)
             
             if 'top_3_saturadas' in ca:
                 st.markdown("**🔴 Top 3 Más Saturadas:**")
@@ -779,21 +879,55 @@ def page_monitoreo_aduanas():
         glob = stats['global']
         st.markdown("---")
         st.markdown("**🎯 Benchmarks del Sistema**")
-        col_b1, col_b2, col_b3, col_b4, col_b5 = st.columns(5)
+        
+        col_b1, col_b2, col_b3 = st.columns(3)
         
         with col_b1:
-            st.metric("🏆 Mejor Aduana", glob.get('mejor_aduana', 'N/A'), 
-                      delta=f"{glob.get('saturacion_min', 0):.0f}%", delta_color="inverse")
+            st.markdown(f"""
+            <div style="border-color: #FF9800; background: linear-gradient(135deg, rgba(255, 152, 0, 0.12) 0%, rgba(255, 167, 38, 0.08) 100%); box-shadow: 0 0 20px rgba(255, 152, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #FF9800; padding: 24px 20px; text-align: center;">
+                <div style="color: #E65100; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">🏆 Mejor Aduana</div>
+                <div style="color: #FF9800; font-size: 1.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(255, 152, 0, 0.3); margin: 8px 0;">{glob.get('mejor_aduana', 'N/A')}</div>
+                <div style="color: #FF9800; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">↓ {glob.get('saturacion_min', 0):.0f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
         with col_b2:
-            st.metric("⚠️ Peor Aduana", glob.get('peor_aduana', 'N/A'),
-                      delta=f"{glob.get('saturacion_max', 0):.0f}%", delta_color="off")
+            st.markdown(f"""
+            <div style="border-color: #F44336; background: linear-gradient(135deg, rgba(244, 67, 54, 0.12) 0%, rgba(229, 57, 53, 0.08) 100%); box-shadow: 0 0 20px rgba(244, 67, 54, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #F44336; padding: 24px 20px; text-align: center;">
+                <div style="color: #C62828; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">⚠️ Peor Aduana</div>
+                <div style="color: #F44336; font-size: 1.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(244, 67, 54, 0.3); margin: 8px 0;">{glob.get('peor_aduana', 'N/A')}</div>
+                <div style="color: #F44336; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">↑ {glob.get('saturacion_max', 0):.0f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
         with col_b3:
-            st.metric("📊 Mediana", f"{glob.get('mediana_saturacion', 0):.0f}%")
-        with col_b4:
-            st.metric("📉 Desv. Estándar", f"{glob.get('desviacion_std', 0):.1f}%")
-        with col_b5:
             rango = glob.get('saturacion_max', 0) - glob.get('saturacion_min', 0)
-            st.metric("📏 Rango", f"{rango:.0f}%")
+            st.markdown(f"""
+            <div style="border-color: #9C27B0; background: linear-gradient(135deg, rgba(156, 39, 176, 0.12) 0%, rgba(142, 54, 157, 0.08) 100%); box-shadow: 0 0 20px rgba(156, 39, 176, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #9C27B0; padding: 24px 20px; text-align: center;">
+                <div style="color: #6A1B9A; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">📏 Rango</div>
+                <div style="color: #9C27B0; font-size: 1.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(156, 39, 176, 0.3); margin: 8px 0;">{rango:.0f}%</div>
+                <div style="color: #9C27B0; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">Variación</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Segunda fila de benchmarks
+        col_b4, col_b5 = st.columns(2)
+        
+        with col_b4:
+            st.markdown(f"""
+            <div style="border-color: #00BCD4; background: linear-gradient(135deg, rgba(0, 188, 212, 0.12) 0%, rgba(0, 150, 136, 0.08) 100%); box-shadow: 0 0 20px rgba(0, 188, 212, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #00BCD4; padding: 24px 20px; text-align: center;">
+                <div style="color: #00695C; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">📊 Mediana</div>
+                <div style="color: #00BCD4; font-size: 1.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0, 188, 212, 0.3); margin: 8px 0;">{glob.get('mediana_saturacion', 0):.0f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col_b5:
+            st.markdown(f"""
+            <div style="border-color: #673AB7; background: linear-gradient(135deg, rgba(103, 58, 183, 0.12) 0%, rgba(94, 53, 177, 0.08) 100%); box-shadow: 0 0 20px rgba(103, 58, 183, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #673AB7; padding: 24px 20px; text-align: center;">
+                <div style="color: #4527A0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">📉 Desv. Est.</div>
+                <div style="color: #673AB7; font-size: 1.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(103, 58, 183, 0.3); margin: 8px 0;">{glob.get('desviacion_std', 0):.1f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
     
     # ========================================================================
     # SISTEMA DE INSIGHTS INTELIGENTES
@@ -814,16 +948,44 @@ def page_monitoreo_aduanas():
         exitos = [i for i in insights if i['tipo'] == 'exito']
         info = [i for i in insights if i['tipo'] == 'info']
         
-        # Métricas de resumen
+        # Métricas de resumen CON TARJETAS PERSONALIZADAS
         col_i1, col_i2, col_i3, col_i4 = st.columns(4)
+        
         with col_i1:
-            st.metric("🚨 Críticos", len(criticos), help="Situaciones que requieren acción inmediata")
+            st.markdown(f"""
+            <div style="border-color: #D32F2F; background: linear-gradient(135deg, rgba(211, 47, 47, 0.12) 0%, rgba(198, 40, 40, 0.08) 100%); box-shadow: 0 0 20px rgba(211, 47, 47, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #D32F2F; padding: 24px 20px; text-align: center;">
+                <div style="color: #B71C1C; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">🚨 Críticos</div>
+                <div style="color: #D32F2F; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(211, 47, 47, 0.3); margin: 8px 0;">{len(criticos)}</div>
+                <div style="color: #D32F2F; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">Acción inmediata</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
         with col_i2:
-            st.metric("⚠️ Advertencias", len(advertencias), help="Situaciones que requieren monitoreo")
+            st.markdown(f"""
+            <div style="border-color: #FF9800; background: linear-gradient(135deg, rgba(255, 152, 0, 0.12) 0%, rgba(255, 167, 38, 0.08) 100%); box-shadow: 0 0 20px rgba(255, 152, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #FF9800; padding: 24px 20px; text-align: center;">
+                <div style="color: #E65100; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">⚠️ Advertencias</div>
+                <div style="color: #FF9800; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(255, 152, 0, 0.3); margin: 8px 0;">{len(advertencias)}</div>
+                <div style="color: #FF9800; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">Monitorear</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
         with col_i3:
-            st.metric("💡 Oportunidades", len(oportunidades), help="Áreas de optimización detectadas")
+            st.markdown(f"""
+            <div style="border-color: #7E57C2; background: linear-gradient(135deg, rgba(126, 87, 194, 0.12) 0%, rgba(103, 58, 183, 0.08) 100%); box-shadow: 0 0 20px rgba(126, 87, 194, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #7E57C2; padding: 24px 20px; text-align: center;">
+                <div style="color: #4527A0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">💡 Oportunidades</div>
+                <div style="color: #7E57C2; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(126, 87, 194, 0.3); margin: 8px 0;">{len(oportunidades)}</div>
+                <div style="color: #7E57C2; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">Optimizar</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
         with col_i4:
-            st.metric("🔮 Predicciones", len(predicciones), help="Tendencias anticipadas")
+            st.markdown(f"""
+            <div style="border-color: #00BCD4; background: linear-gradient(135deg, rgba(0, 188, 212, 0.12) 0%, rgba(0, 150, 136, 0.08) 100%); box-shadow: 0 0 20px rgba(0, 188, 212, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1); border-radius: 14px; border: 2px solid #00BCD4; padding: 24px 20px; text-align: center;">
+                <div style="color: #00695C; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">🔮 Predicciones</div>
+                <div style="color: #00BCD4; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0, 188, 212, 0.3); margin: 8px 0;">{len(predicciones)}</div>
+                <div style="color: #00BCD4; font-size: 0.95rem; font-weight: 700; margin-top: 8px;">Tendencias</div>
+            </div>
+            """, unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
         
@@ -832,21 +994,21 @@ def page_monitoreo_aduanas():
             st.markdown("### 🚨 Situaciones Críticas - Acción Inmediata Requerida")
             for insight in criticos:
                 st.markdown(f"""
-                    <div style='background: linear-gradient(135deg, #EF553B 0%, #D32F2F 100%); 
+                    <div style="background: linear-gradient(135deg, #EF553B 0%, #D32F2F 100%); 
                                 color: white; 
                                 padding: 20px; 
                                 border-radius: 12px; 
                                 margin: 12px 0;
                                 box-shadow: 0 4px 15px rgba(239, 85, 59, 0.3);
-                                border-left: 6px solid #B71C1C;'>
-                        <h4 style='color: white; margin: 0 0 10px 0; font-size: 1.1rem;'>{insight['icono']} {insight['titulo']}</h4>
-                        <p style='color: white; margin: 8px 0; font-size: 0.95rem;'>{insight['mensaje']}</p>
-                        <div style='background-color: rgba(255,255,255,0.15); 
+                                border-left: 6px solid #B71C1C;">
+                        <h4 style="color: white; margin: 0 0 10px 0; font-size: 1.1rem;">{insight['icono']} {insight['titulo']}</h4>
+                        <p style="color: white; margin: 8px 0; font-size: 0.95rem;">{insight['mensaje']}</p>
+                        <div style="background-color: rgba(255,255,255,0.15); 
                                     padding: 12px; 
                                     border-radius: 8px; 
                                     margin-top: 12px;
-                                    border-left: 3px solid white;'>
-                            <p style='color: white; margin: 0; font-weight: 600; font-size: 0.9rem;'>
+                                    border-left: 3px solid white;">
+                            <p style="color: white; margin: 0; font-weight: 600; font-size: 0.9rem;">
                                 💡 <strong>Recomendación:</strong> {insight['recomendacion']}
                             </p>
                         </div>
@@ -862,19 +1024,19 @@ def page_monitoreo_aduanas():
                     for insight in advertencias:
                         color = '#FFA726' if insight['impacto'] == 'alto' else '#FFB74D'
                         st.markdown(f"""
-                            <div style='background-color: #FFF3E0; 
+                            <div style="background-color: #FFF3E0; 
                                         border-left: 5px solid {color}; 
                                         padding: 15px; 
                                         border-radius: 8px; 
-                                        margin: 10px 0;'>
-                                <h5 style='color: #E65100; margin: 0 0 8px 0;'>{insight['icono']} {insight['titulo']}</h5>
-                                <p style='color: #333; margin: 5px 0; font-size: 0.9rem;'>{insight['mensaje']}</p>
-                                <p style='background-color: rgba(255,167,38,0.1); 
+                                        margin: 10px 0;">
+                                <h5 style="color: #E65100; margin: 0 0 8px 0;">{insight['icono']} {insight['titulo']}</h5>
+                                <p style="color: #333; margin: 5px 0; font-size: 0.9rem;">{insight['mensaje']}</p>
+                                <p style="background-color: rgba(255,167,38,0.1); 
                                           padding: 10px; 
                                           margin: 8px 0 0 0; 
                                           border-radius: 5px;
                                           color: #333;
-                                          font-size: 0.85rem;'>
+                                          font-size: 0.85rem;">
                                     <strong>💡 Recomendación:</strong> {insight['recomendacion']}
                                 </p>
                             </div>
@@ -886,20 +1048,20 @@ def page_monitoreo_aduanas():
                 if predicciones:
                     for insight in predicciones:
                         st.markdown(f"""
-                            <div style='background: linear-gradient(135deg, #673AB7 0%, #512DA8 100%); 
+                            <div style="background: linear-gradient(135deg, #673AB7 0%, #512DA8 100%); 
                                         color: white; 
                                         padding: 15px; 
                                         border-radius: 10px; 
                                         margin: 10px 0;
-                                        box-shadow: 0 3px 10px rgba(103, 58, 183, 0.2);'>
-                                <h5 style='color: white; margin: 0 0 8px 0;'>{insight['icono']} {insight['titulo']}</h5>
-                                <p style='color: white; margin: 5px 0; font-size: 0.9rem;'>{insight['mensaje']}</p>
-                                <p style='background-color: rgba(255,255,255,0.15); 
+                                        box-shadow: 0 3px 10px rgba(103, 58, 183, 0.2);">
+                                <h5 style="color: white; margin: 0 0 8px 0;">{insight['icono']} {insight['titulo']}</h5>
+                                <p style="color: white; margin: 5px 0; font-size: 0.9rem;">{insight['mensaje']}</p>
+                                <p style="background-color: rgba(255,255,255,0.15); 
                                           padding: 10px; 
                                           margin: 8px 0 0 0; 
                                           border-radius: 5px;
                                           color: white;
-                                          font-size: 0.85rem;'>
+                                          font-size: 0.85rem;">
                                     <strong>💡 Acción sugerida:</strong> {insight['recomendacion']}
                                 </p>
                             </div>
@@ -917,16 +1079,16 @@ def page_monitoreo_aduanas():
                     st.markdown("**🎯 Optimizaciones Detectadas**")
                     for insight in oportunidades:
                         st.markdown(f"""
-                            <div style='background-color: #E8F5E9; 
+                            <div style="background-color: #E8F5E9; 
                                         border-left: 4px solid #4CAF50; 
                                         padding: 12px; 
                                         border-radius: 8px; 
-                                        margin: 8px 0;'>
-                                <p style='color: #2E7D32; font-weight: 600; margin: 0 0 5px 0; font-size: 0.9rem;'>
+                                        margin: 8px 0;">
+                                <p style="color: #2E7D32; font-weight: 600; margin: 0 0 5px 0; font-size: 0.9rem;">
                                     {insight['icono']} {insight['titulo']}
                                 </p>
-                                <p style='color: #333; margin: 3px 0; font-size: 0.85rem;'>{insight['mensaje']}</p>
-                                <p style='color: #1B5E20; margin: 5px 0 0 0; font-size: 0.8rem; font-style: italic;'>
+                                <p style="color: #333; margin: 3px 0; font-size: 0.85rem;">{insight['mensaje']}</p>
+                                <p style="color: #1B5E20; margin: 5px 0 0 0; font-size: 0.8rem; font-style: italic;">
                                     💡 {insight['recomendacion']}
                                 </p>
                             </div>
@@ -937,16 +1099,16 @@ def page_monitoreo_aduanas():
                     st.markdown("**✅ Rutas Óptimas**")
                     for insight in exitos:
                         st.markdown(f"""
-                            <div style='background-color: #E3F2FD; 
+                            <div style="background-color: #E3F2FD; 
                                         border-left: 4px solid #2196F3; 
                                         padding: 12px; 
                                         border-radius: 8px; 
-                                        margin: 8px 0;'>
-                                <p style='color: #1565C0; font-weight: 600; margin: 0 0 5px 0; font-size: 0.9rem;'>
+                                        margin: 8px 0;">
+                                <p style="color: #1565C0; font-weight: 600; margin: 0 0 5px 0; font-size: 0.9rem;">
                                     {insight['icono']} {insight['titulo']}
                                 </p>
-                                <p style='color: #333; margin: 3px 0; font-size: 0.85rem;'>{insight['mensaje']}</p>
-                                <p style='color: #0D47A1; margin: 5px 0 0 0; font-size: 0.8rem; font-style: italic;'>
+                                <p style="color: #333; margin: 3px 0; font-size: 0.85rem;">{insight['mensaje']}</p>
+                                <p style="color: #0D47A1; margin: 5px 0 0 0; font-size: 0.8rem; font-style: italic;">
                                     🎯 {insight['recomendacion']}
                                 </p>
                             </div>
@@ -976,9 +1138,8 @@ def page_monitoreo_aduanas():
     
     with col1:
         cruces_criticos = criticas['Cruces'].sum() if not criticas.empty else 0
-        st.metric("🔴 Críticas (≥85%)", len(criticas), 
-                  delta=f"{cruces_criticos:,} cruces" if cruces_criticos > 0 else None,
-                  delta_color="inverse")
+        delta_text = f"{cruces_criticos:,} cruces" if cruces_criticos > 0 else None
+        tarjeta_kpi_color("Críticas (≥85%)", str(len(criticas)), "🔴", delta=delta_text, color_preset="rojo")
         if not criticas.empty:
             with st.expander("Ver detalles"):
                 for _, row in criticas.iterrows():
@@ -986,9 +1147,8 @@ def page_monitoreo_aduanas():
     
     with col2:
         cruces_altos = altas['Cruces'].sum() if not altas.empty else 0
-        st.metric("🟠 Altas (70-84%)", len(altas),
-                  delta=f"{cruces_altos:,} cruces" if cruces_altos > 0 else None,
-                  delta_color="off")
+        delta_text = f"{cruces_altos:,} cruces" if cruces_altos > 0 else None
+        tarjeta_kpi_color("Altas (70-84%)", str(len(altas)), "🟠", delta=delta_text, color_preset="naranja")
         if not altas.empty:
             with st.expander("Ver detalles"):
                 for _, row in altas.iterrows():
@@ -996,9 +1156,8 @@ def page_monitoreo_aduanas():
     
     with col3:
         cruces_normales = normales['Cruces'].sum() if not normales.empty else 0
-        st.metric("🟢 Normales (<70%)", len(normales),
-                  delta=f"{cruces_normales:,} cruces" if cruces_normales > 0 else None,
-                  delta_color="normal")
+        delta_text = f"{cruces_normales:,} cruces" if cruces_normales > 0 else None
+        tarjeta_kpi_color("Normales (<70%)", str(len(normales)), "🟢", delta=delta_text, color_preset="verde")
         if not normales.empty:
             with st.expander("Ver top 5 más eficientes"):
                 for _, row in normales.nsmallest(5, 'Saturación').iterrows():
@@ -1274,23 +1433,23 @@ def page_monitoreo_aduanas():
     with col1:
         total_cruces = df_filtrado['Cruces'].sum()
         total_proyectado = df_filtrado['Cruces_Proyectados'].sum()
-        st.metric("Total Cruces Acumulados", f"{total_cruces:,}", 
-                  delta=f"Proyección: {total_proyectado:,}")
+        delta_text = f"Proyección: {total_proyectado:,}"
+        tarjeta_kpi_color("Total Cruces Acumulados", f"{total_cruces:,}", "📊", delta=delta_text, color_preset="azul_primario")
     
     with col2:
         total_trucks = df_filtrado['Trucks'].sum()
-        st.metric("🚛 Trucks", f"{total_trucks:,}")
-        st.caption(f"{(total_trucks/total_cruces*100 if total_cruces > 0 else 0):.1f}% del total")
+        pct_trucks = (total_trucks/total_cruces*100 if total_cruces > 0 else 0)
+        tarjeta_kpi_color("Trucks", f"{total_trucks:,}", "🚛", delta=f"{pct_trucks:.1f}%", color_preset="verde")
     
     with col3:
         total_loaded = df_filtrado['Trucks_Loaded'].sum()
-        st.metric("📦 Contenedores Cargados", f"{total_loaded:,}")
-        st.caption(f"{(total_loaded/total_cruces*100 if total_cruces > 0 else 0):.1f}% del total")
+        pct_loaded = (total_loaded/total_cruces*100 if total_cruces > 0 else 0)
+        tarjeta_kpi_color("Contenedores Cargados", f"{total_loaded:,}", "📦", delta=f"{pct_loaded:.1f}%", color_preset="azul_canada")
     
     with col4:
         total_empty = df_filtrado['Trucks_Empty'].sum()
-        st.metric("📭 Contenedores Vacíos", f"{total_empty:,}")
-        st.caption(f"{(total_empty/total_cruces*100 if total_cruces > 0 else 0):.1f}% del total")
+        pct_empty = (total_empty/total_cruces*100 if total_cruces > 0 else 0)
+        tarjeta_kpi_color("Contenedores Vacíos", f"{total_empty:,}", "📭", delta=f"{pct_empty:.1f}%", color_preset="naranja")
     
     # ========================================================================
     # RESUMEN EJECUTIVO
@@ -1328,30 +1487,30 @@ def page_monitoreo_aduanas():
     eficiencia = (cruces_totales / (proyeccion_total * (porcentaje_dia / 100))) * 100 if proyeccion_total > 0 and porcentaje_dia > 0 else 100
     
     st.markdown(f"""
-        <div style='background: linear-gradient(135deg, #11101D 0%, {color_estado} 100%); 
+        <div style="background: linear-gradient(135deg, #11101D 0%, {color_estado} 100%); 
                     color: white; 
                     padding: 25px; 
                     border-radius: 15px;
                     box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-                    margin: 15px 0;'>
-            <h3 style='color: white; margin: 0 0 15px 0;'>Estado General del Sistema: {estado_sistema}</h3>
-            <p style='color: white; font-size: 1rem; margin: 0 0 15px 0;'>{desc_estado}</p>
-            <div style='display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;'>
-                <div style='background-color: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;'>
-                    <p style='color: white; margin: 0; font-size: 0.8rem; opacity: 0.9;'>Aduanas Activas</p>
-                    <p style='color: white; margin: 5px 0 0 0; font-size: 1.5rem; font-weight: 700;'>{total_aduanas_activas}</p>
+                    margin: 15px 0;">
+            <h3 style="color: white; margin: 0 0 15px 0;">Estado General del Sistema: {estado_sistema}</h3>
+            <p style="color: white; font-size: 1rem; margin: 0 0 15px 0;">{desc_estado}</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                <div style="background-color: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                    <p style="color: white; margin: 0; font-size: 0.8rem; opacity: 0.9;">Aduanas Activas</p>
+                    <p style="color: white; margin: 5px 0 0 0; font-size: 1.5rem; font-weight: 700;">{total_aduanas_activas}</p>
                 </div>
-                <div style='background-color: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;'>
-                    <p style='color: white; margin: 0; font-size: 0.8rem; opacity: 0.9;'>Saturación Avg</p>
-                    <p style='color: white; margin: 5px 0 0 0; font-size: 1.5rem; font-weight: 700;'>{sat_general:.1f}%</p>
+                <div style="background-color: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                    <p style="color: white; margin: 0; font-size: 0.8rem; opacity: 0.9;">Saturación Avg</p>
+                    <p style="color: white; margin: 5px 0 0 0; font-size: 1.5rem; font-weight: 700;">{sat_general:.1f}%</p>
                 </div>
-                <div style='background-color: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;'>
-                    <p style='color: white; margin: 0; font-size: 0.8rem; opacity: 0.9;'>Cruces Procesados</p>
-                    <p style='color: white; margin: 5px 0 0 0; font-size: 1.5rem; font-weight: 700;'>{cruces_totales:,}</p>
+                <div style="background-color: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                    <p style="color: white; margin: 0; font-size: 0.8rem; opacity: 0.9;">Cruces Procesados</p>
+                    <p style="color: white; margin: 5px 0 0 0; font-size: 1.5rem; font-weight: 700;">{cruces_totales:,}</p>
                 </div>
-                <div style='background-color: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;'>
-                    <p style='color: white; margin: 0; font-size: 0.8rem; opacity: 0.9;'>Eficiencia del Día</p>
-                    <p style='color: white; margin: 5px 0 0 0; font-size: 1.5rem; font-weight: 700;'>{eficiencia:.1f}%</p>
+                <div style="background-color: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px;">
+                    <p style="color: white; margin: 0; font-size: 0.8rem; opacity: 0.9;">Eficiencia del Día</p>
+                    <p style="color: white; margin: 5px 0 0 0; font-size: 1.5rem; font-weight: 700;">{eficiencia:.1f}%</p>
                 </div>
             </div>
         </div>
@@ -1394,12 +1553,12 @@ def page_monitoreo_aduanas():
         if recomendaciones:
             for i, rec in enumerate(recomendaciones[:3], 1):
                 st.markdown(f"""
-                    <div style='background-color: #F5F5F5; 
+                    <div style="background-color: #F5F5F5; 
                                 padding: 10px; 
                                 border-radius: 6px; 
                                 margin: 5px 0;
-                                border-left: 3px solid #4070F4;'>
-                        <p style='margin: 0; color: #333; font-size: 0.85rem;'>
+                                border-left: 3px solid #4070F4;">
+                        <p style="margin: 0; color: #333; font-size: 0.85rem;">
                             <strong>{rec['prioridad']}</strong> - {rec['accion']}
                         </p>
                     </div>
@@ -1418,11 +1577,11 @@ def page_monitoreo_aduanas():
         
         col_kpi1, col_kpi2 = st.columns(2)
         with col_kpi1:
-            st.metric("⏱️ Tiempo Espera Avg", f"{tiempo_espera_avg:.0f} min")
-            st.metric("🚀 Tasa Utilización", f"{utilizacion:.1f}%")
+            tarjeta_kpi_color("Tiempo Espera Avg", f"{tiempo_espera_avg:.0f} min", "⏱️", color_preset="azul_primario")
+            tarjeta_kpi_color("Tasa Utilización", f"{utilizacion:.1f}%", "🚀", color_preset="verde")
         with col_kpi2:
-            st.metric("📦 Capacidad/Hora", f"{capacidad_total:,}")
-            st.metric("🔄 Cruces/Hora Actual", f"{cruces_x_hora_actual:,}")
+            tarjeta_kpi_color("Capacidad/Hora", f"{capacidad_total:,}", "📦", color_preset="turquesa")
+            tarjeta_kpi_color("Cruces/Hora Actual", f"{cruces_x_hora_actual:,}", "🔄", color_preset="morado")
     
     # Footer
     st.markdown("---")

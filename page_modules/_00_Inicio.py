@@ -28,7 +28,7 @@ except ImportError:
         st.subheader(f"{icon} {title}")
     
     def spacer(height=20):
-        st.markdown(f"<div style='height: {height}px;'></div>", unsafe_allow_html=True)
+        st.markdown(f'<div style=\"height: {height}px;\"></div>', unsafe_allow_html=True)
 
 # Intentar importar funciones de app.py
 # NOTA: Se comenta para evitar importación circular con app.py
@@ -53,7 +53,60 @@ def page_dashboard():
     from datetime import datetime
     
     # ============================================================
-    # HEADER PROFESIONAL CON BRANDING
+    # CSS GLOBAL PROFESIONAL - MEJORA TODOS LOS COMPONENTES
+    # COMENTADO: Los estilos CSS de [data-testid] interfieren con tarjetas inline
+    # ============================================================
+    # st.markdown("""
+    # <style>
+    #     /* Mejorar tarjetas de métrica (st.metric) */
+    #     [data-testid="metric-container"] {
+    #         background: linear-gradient(135deg, rgba(0, 61, 122, 0.12) 0%, rgba(0, 82, 163, 0.08) 100%) !important;
+    #         padding: 24px !important;
+    #         border-radius: 14px !important;
+    #         border: 2px solid #0066cc !important;
+    #         box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    #         backdrop-filter: blur(8px) !important;
+    #     }
+    #     
+    #     /* Mejorar texto dentro de las tarjetas */
+    #     [data-testid="metric-container"] > div:nth-child(1) {
+    #         color: #0066cc !important;
+    #         font-weight: 600 !important;
+    #         letter-spacing: 0.5px !important;
+    #     }
+    #     
+    #     [data-testid="metric-container"] > div:nth-child(2) {
+    #         color: #0066cc !important;
+    #         font-size: 2.2rem !important;
+    #         font-weight: 900 !important;
+    #         text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3) !important;
+    #     }
+    #     
+    #     /* Mejorar expandibles */
+    #     [data-testid="stExpander"] {
+    #         border: 2px solid #0066cc !important;
+    #         border-radius: 14px !important;
+    #         box-shadow: 0 0 15px rgba(0, 102, 204, 0.3) !important;
+    #     }
+    #     
+    #     /* Mejorar tabs */
+    #     [data-testid="stTabs"] {
+    #         background: linear-gradient(135deg, rgba(0, 82, 163, 0.08) 0%, rgba(25, 118, 210, 0.05) 100%) !important;
+    #         border-radius: 12px !important;
+    #         padding: 16px !important;
+    #     }
+    #     
+    #     /* Mejorar selectores y inputs */
+    #     [data-testid="stForm"] {
+    #         background: linear-gradient(135deg, rgba(0, 61, 122, 0.08) 0%, rgba(0, 82, 163, 0.05) 100%) !important;
+    #         border: 1px solid #0066cc !important;
+    #         border-radius: 12px !important;
+    #         padding: 16px !important;
+    #         box-shadow: 0 0 12px rgba(0, 102, 204, 0.2) !important;
+    #     }
+    # </style>
+    # """, unsafe_allow_html=True)
+    
     # ============================================================
     st.markdown("""
     <style>
@@ -105,17 +158,17 @@ def page_dashboard():
     # KPI 1: Cruces Fronterizos
     with kpi_col1:
         st.markdown("""
-        <div style='background: #003d7a; 
+        <div style="background: #003d7a; 
                     padding: 25px; border-radius: 12px; color: white; 
                     box-shadow: 0 4px 15px rgba(0, 61, 122, 0.3);
-                    text-align: center; height: 180px; display: flex; flex-direction: column; justify-content: center;'>
-            <div style='font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;'>
+                    text-align: center; height: 180px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
                 📦 Cruces Mensuales
             </div>
-            <div style='font-size: 2.5rem; font-weight: 800; margin: 10px 0;'>
+            <div style="font-size: 2.5rem; font-weight: 800; margin: 10px 0;">
                 1.8M
             </div>
-            <div style='font-size: 0.8rem; opacity: 0.85;'>
+            <div style="font-size: 0.8rem; opacity: 0.85;">
                 ↑ 12% vs mes anterior
             </div>
         </div>
@@ -124,17 +177,17 @@ def page_dashboard():
     # KPI 2: Valor Comercial
     with kpi_col2:
         st.markdown("""
-        <div style='background: #0052a3; 
+        <div style="background: #0052a3; 
                     padding: 25px; border-radius: 12px; color: white; 
                     box-shadow: 0 4px 15px rgba(0, 82, 163, 0.3);
-                    text-align: center; height: 180px; display: flex; flex-direction: column; justify-content: center;'>
-            <div style='font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;'>
+                    text-align: center; height: 180px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
                 💰 Valor Comercial
             </div>
-            <div style='font-size: 2.5rem; font-weight: 800; margin: 10px 0;'>
+            <div style="font-size: 2.5rem; font-weight: 800; margin: 10px 0;">
                 $72.7B
             </div>
-            <div style='font-size: 0.8rem; opacity: 0.85;'>
+            <div style="font-size: 0.8rem; opacity: 0.85;">
                 USD/Mes | Promedio 2025
             </div>
         </div>
@@ -143,17 +196,17 @@ def page_dashboard():
     # KPI 3: Utilización Aduanas
     with kpi_col3:
         st.markdown("""
-        <div style='background: #1976d2; 
+        <div style="background: #1976d2; 
                     padding: 25px; border-radius: 12px; color: white; 
                     box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
-                    text-align: center; height: 180px; display: flex; flex-direction: column; justify-content: center;'>
-            <div style='font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;'>
+                    text-align: center; height: 180px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
                 🚦 Utilización Aduanas
             </div>
-            <div style='font-size: 2.5rem; font-weight: 800; margin: 10px 0;'>
+            <div style="font-size: 2.5rem; font-weight: 800; margin: 10px 0;">
                 87.3%
             </div>
-            <div style='font-size: 0.8rem; opacity: 0.85;'>
+            <div style="font-size: 0.8rem; opacity: 0.85;">
                 42 Aduanas | 7 en Alerta
             </div>
         </div>
@@ -162,17 +215,17 @@ def page_dashboard():
     # KPI 4: Índice FreightMetrics
     with kpi_col4:
         st.markdown("""
-        <div style='background: #0066cc; 
+        <div style="background: #0066cc; 
                     padding: 25px; border-radius: 12px; color: white; 
                     box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
-                    text-align: center; height: 180px; display: flex; flex-direction: column; justify-content: center;'>
-            <div style='font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;'>
+                    text-align: center; height: 180px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
                 📈 Índice FM
             </div>
-            <div style='font-size: 2.5rem; font-weight: 800; margin: 10px 0;'>
+            <div style="font-size: 2.5rem; font-weight: 800; margin: 10px 0;">
                 108.4
             </div>
-            <div style='font-size: 0.8rem; opacity: 0.85;'>
+            <div style="font-size: 0.8rem; opacity: 0.85;">
                 Base 100 | ↑ 2.1%
             </div>
         </div>
@@ -190,7 +243,7 @@ def page_dashboard():
     
     with mon_col1:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 61, 122, 0.12) 0%, rgba(0, 82, 163, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -198,19 +251,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>✅ Normal</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>✓</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">✅ Normal</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">✓</span>
             </div>
-            <p style='font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>7</p>
-            <p style='color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Operación fluida</p>
+            <p style="font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">7</p>
+            <p style="color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Operación fluida</p>
         </div>
         """, unsafe_allow_html=True)
     
     with mon_col2:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 82, 163, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -218,19 +271,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(25, 118, 210, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>⚠️ Alerta</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>!</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">⚠️ Alerta</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">!</span>
             </div>
-            <p style='font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);'>5</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Requieren atención</p>
+            <p style="font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);">5</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Requieren atención</p>
         </div>
         """, unsafe_allow_html=True)
     
     with mon_col3:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(255, 193, 7, 0.08) 0%, rgba(255, 152, 0, 0.05) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -238,19 +291,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #d32f2f; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>🔴 Crítico</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>●</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #d32f2f; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">🔴 Crítico</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">●</span>
             </div>
-            <p style='font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>2</p>
-            <p style='color: #d32f2f; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Intervención inmediata</p>
+            <p style="font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">2</p>
+            <p style="color: #d32f2f; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Intervención inmediata</p>
         </div>
         """, unsafe_allow_html=True)
     
     with mon_col4:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(0, 61, 122, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -258,13 +311,13 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 82, 163, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>⏱️ Espera Prom</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>⏱</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">⏱️ Espera Prom</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">⏱</span>
             </div>
-            <p style='font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);'>47 min</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Tiempo procesamiento</p>
+            <p style="font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);">47 min</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Tiempo procesamiento</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -279,7 +332,7 @@ def page_dashboard():
     
     with fl_col1:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 61, 122, 0.12) 0%, rgba(0, 82, 163, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -287,19 +340,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>🏢 Permisionarios</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>🏢</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">🏢 Permisionarios</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">🏢</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>198.5K</p>
-            <p style='color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Empresas federales</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">198.5K</p>
+            <p style="color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Empresas federales</p>
         </div>
         """, unsafe_allow_html=True)
     
     with fl_col2:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 82, 163, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -307,19 +360,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(25, 118, 210, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>🚛 Parque Vehicular</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>🚛</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">🚛 Parque Vehicular</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">🚛</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);'>630K</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Unidades en operación</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);">630K</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Unidades en operación</p>
         </div>
         """, unsafe_allow_html=True)
     
     with fl_col3:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(255, 193, 7, 0.08) 0%, rgba(255, 152, 0, 0.05) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -327,19 +380,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #ff6f00; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>⚠️ Déficit Operadores</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>⚠</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #ff6f00; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">⚠️ Déficit Operadores</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">⚠</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>99K</p>
-            <p style='color: #ff6f00; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Falta 15.7% del total</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">99K</p>
+            <p style="color: #ff6f00; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Falta 15.7% del total</p>
         </div>
         """, unsafe_allow_html=True)
     
     with fl_col4:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(0, 61, 122, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -347,13 +400,13 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 82, 163, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>📊 Ratio Op/Unidad</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>📊</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">📊 Ratio Op/Unidad</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">📊</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);'>1.09</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Operadores por vehículo</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);">1.09</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Operadores por vehículo</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -368,7 +421,7 @@ def page_dashboard():
     
     with corr_col1:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 61, 122, 0.12) 0%, rgba(0, 82, 163, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -376,19 +429,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>🌐 Total Activos</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>🌐</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">🌐 Total Activos</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">🌐</span>
             </div>
-            <p style='font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>12</p>
-            <p style='color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Corredores estratégicos</p>
+            <p style="font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">12</p>
+            <p style="color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Corredores estratégicos</p>
         </div>
         """, unsafe_allow_html=True)
     
     with corr_col2:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 82, 163, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -396,19 +449,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(25, 118, 210, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>💰 Rentabilidad Prom</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>💰</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">💰 Rentabilidad Prom</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">💰</span>
             </div>
-            <p style='font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);'>7 de 12</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Alta rentabilidad (58%)</p>
+            <p style="font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);">7 de 12</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Alta rentabilidad (58%)</p>
         </div>
         """, unsafe_allow_html=True)
     
     with corr_col3:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(25, 118, 210, 0.12) 0%, rgba(0, 102, 204, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -416,19 +469,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>⚡ Riesgo Prom</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>⚡</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">⚡ Riesgo Prom</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">⚡</span>
             </div>
-            <p style='font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>5 de 12</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Bajo riesgo (42%)</p>
+            <p style="font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">5 de 12</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Bajo riesgo (42%)</p>
         </div>
         """, unsafe_allow_html=True)
     
     with corr_col4:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(0, 61, 122, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -436,13 +489,13 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 82, 163, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>📏 Distancia Prom</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>📏</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">📏 Distancia Prom</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">📏</span>
             </div>
-            <p style='font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);'>1,542 km</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Ruta promedio</p>
+            <p style="font-size: 2.2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);">1,542 km</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Ruta promedio</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -457,7 +510,7 @@ def page_dashboard():
     
     with near_col1:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 61, 122, 0.12) 0%, rgba(0, 82, 163, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -465,19 +518,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>💵 IED Q3 2025</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>💵</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">💵 IED Q3 2025</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">💵</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>$40.9B</p>
-            <p style='color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Máximo histórico</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">$40.9B</p>
+            <p style="color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Máximo histórico</p>
         </div>
         """, unsafe_allow_html=True)
     
     with near_col2:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 82, 163, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -485,19 +538,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(25, 118, 210, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>🔄 Reinversión</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>🔄</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">🔄 Reinversión</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">🔄</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);'>67.8%</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>$27.7B USD</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);">67.8%</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">$27.7B USD</p>
         </div>
         """, unsafe_allow_html=True)
     
     with near_col3:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(25, 118, 210, 0.12) 0%, rgba(0, 102, 204, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -505,19 +558,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>🏭 Manufactura (37%)</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>🏭</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">🏭 Manufactura (37%)</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">🏭</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>$15.1B</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Automotriz + Partes</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">$15.1B</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Automotriz + Partes</p>
         </div>
         """, unsafe_allow_html=True)
     
     with near_col4:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(0, 61, 122, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -525,13 +578,13 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 82, 163, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>✅ Inauguraciones</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>✅</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">✅ Inauguraciones</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">✅</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);'>Máximo</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Proyectos operativos</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);">Máximo</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Proyectos operativos</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -547,7 +600,7 @@ def page_dashboard():
     
     with com_col1:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 61, 122, 0.12) 0%, rgba(0, 82, 163, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -555,19 +608,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>💱 Intercambio Total</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>💱</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #003d7a; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">💱 Intercambio Total</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">💱</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>$872.8B</p>
-            <p style='color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>+3.9% vs 2024</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">$872.8B</p>
+            <p style="color: #003d7a; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">+3.9% vs 2024</p>
         </div>
         """, unsafe_allow_html=True)
     
     with com_col2:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 82, 163, 0.12) 0%, rgba(25, 118, 210, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -575,19 +628,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(25, 118, 210, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>📤 Exportaciones MX</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>📤</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">📤 Exportaciones MX</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">📤</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);'>$534.9B</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>+5.8% anual</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #1976d2; text-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);">$534.9B</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">+5.8% anual</p>
         </div>
         """, unsafe_allow_html=True)
     
     with com_col3:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(25, 118, 210, 0.12) 0%, rgba(0, 102, 204, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -595,19 +648,19 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 102, 204, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>📥 Importaciones USA</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>📥</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">📥 Importaciones USA</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">📥</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);'>$338.0B</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Mercado #1 de USA</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0066cc; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);">$338.0B</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Mercado #1 de USA</p>
         </div>
         """, unsafe_allow_html=True)
     
     with com_col4:
         st.markdown("""
-        <div style='
+        <div style="
             background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(0, 61, 122, 0.08) 100%);
             padding: 24px;
             border-radius: 14px;
@@ -615,13 +668,13 @@ def page_dashboard():
             box-shadow: 0 0 20px rgba(0, 82, 163, 0.35), 0 8px 24px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;'>
-                <h4 style='margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;'>📊 Balanza Comercial</h4>
-                <span style='font-size: 1.4rem; opacity: 0.8;'>📊</span>
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <h4 style="margin: 0; color: #0052a3; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">📊 Balanza Comercial</h4>
+                <span style="font-size: 1.4rem; opacity: 0.8;">📊</span>
             </div>
-            <p style='font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);'>$196.9B</p>
-            <p style='color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;'>Superávit MX</p>
+            <p style="font-size: 2rem; font-weight: 900; margin: 12px 0; color: #0052a3; text-shadow: 0 2px 8px rgba(0, 82, 163, 0.3);">$196.9B</p>
+            <p style="color: #0052a3; margin: 0; font-size: 0.9rem; opacity: 0.85; font-weight: 500;">Superávit MX</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -744,26 +797,26 @@ def page_dashboard():
     
     with ins_col1:
         st.markdown("""
-        <div style='background: linear-gradient(135deg, #003d7a 0%, #0052a3 100%); 
+        <div style="background: linear-gradient(135deg, #003d7a 0%, #0052a3 100%); 
                     color: white; padding: 25px; border-radius: 10px; 
-                    box-shadow: 0 4px 15px rgba(0, 61, 122, 0.3);'>
-            <h4 style='margin-top: 0; font-size: 1.1rem;'>🚀 Oportunidad: IED & Nearshoring</h4>
-            <p style='margin: 15px 0;'><b>IED Q3 2025 alcanzó $40.9B USD</b> (máximo histórico). 
+                    box-shadow: 0 4px 15px rgba(0, 61, 122, 0.3);">
+            <h4 style="margin-top: 0; font-size: 1.1rem;">🚀 Oportunidad: IED & Nearshoring</h4>
+            <p style="margin: 15px 0;"><b>IED Q3 2025 alcanzó $40.9B USD</b> (máximo histórico). 
             <b>67.8% reinversión</b> + <b>37% manufactura</b> (automotriz/autopartes). 
             Inauguraciones en nivel máximo histórico.</p>
-            <p style='margin: 0; font-size: 0.9rem; opacity: 0.9;'>📍 Acción: Ampliar capacidad logística fronteriza</p>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">📍 Acción: Ampliar capacidad logística fronteriza</p>
         </div>
         """, unsafe_allow_html=True)
     
     with ins_col2:
         st.markdown("""
-        <div style='background: linear-gradient(135deg, #1976d2 0%, #0066cc 100%); 
+        <div style="background: linear-gradient(135deg, #1976d2 0%, #0066cc 100%); 
                     color: white; padding: 25px; border-radius: 10px; 
-                    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);'>
-            <h4 style='margin-top: 0; font-size: 1.1rem;'>⚠️ Riesgo: Déficit de Talento</h4>
-            <p style='margin: 15px 0;'><b>99,000 operadores faltantes</b> (15.7% del parque). 
+                    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);">
+            <h4 style="margin-top: 0; font-size: 1.1rem;">⚠️ Riesgo: Déficit de Talento</h4>
+            <p style="margin: 15px 0;"><b>99,000 operadores faltantes</b> (15.7% del parque). 
             Ratio Operadores/Unidad en <b>1.09</b>. Impacta saturación operativa.</p>
-            <p style='margin: 0; font-size: 0.9rem; opacity: 0.9;'>📍 Acción: Programa urgente de capacitación</p>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">📍 Acción: Programa urgente de capacitación</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -773,25 +826,25 @@ def page_dashboard():
     
     with ins_col3:
         st.markdown("""
-        <div style='background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
+        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
                     color: white; padding: 25px; border-radius: 10px; 
-                    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.2);'>
-            <h4 style='margin-top: 0; font-size: 1.1rem;'>🔍 Congestión Aduanal</h4>
-            <p style='margin: 15px 0;'><b>2 aduanas críticas</b> con espera 90+ minutos. 
+                    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.2);">
+            <h4 style="margin-top: 0; font-size: 1.1rem;">🔍 Congestión Aduanal</h4>
+            <p style="margin: 15px 0;"><b>2 aduanas críticas</b> con espera 90+ minutos. 
             Utilización en <b>87.3%</b>. Tiempos de procesamiento 47 min promedio.</p>
-            <p style='margin: 0; font-size: 0.9rem; opacity: 0.9;'>📍 Afectadas: Buffalo Niagara Falls, Port Huron</p>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">📍 Afectadas: Buffalo Niagara Falls, Port Huron</p>
         </div>
         """, unsafe_allow_html=True)
     
     with ins_col4:
         st.markdown("""
-        <div style='background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); 
+        <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); 
                     color: white; padding: 25px; border-radius: 10px; 
-                    box-shadow: 0 4px 15px rgba(67, 233, 123, 0.2);'>
-            <h4 style='margin-top: 0; font-size: 1.1rem;'>📊 Crecimiento Sostenido</h4>
-            <p style='margin: 15px 0;'><b>Cruces +12% mensual</b> con valor promedio <b>$72.7B USD/mes</b> (intercambio bilateral 2025). 
+                    box-shadow: 0 4px 15px rgba(67, 233, 123, 0.2);">
+            <h4 style="margin-top: 0; font-size: 1.1rem;">📊 Crecimiento Sostenido</h4>
+            <p style="margin: 15px 0;"><b>Cruces +12% mensual</b> con valor promedio <b>$72.7B USD/mes</b> (intercambio bilateral 2025). 
             Índice FM en <b>108.4</b> (mercado activo). Pronóstico: ↑15% Q2.</p>
-            <p style='margin: 0; font-size: 0.9rem; opacity: 0.9;'>📍 Recomendación: Invertir en infraestructura</p>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">📍 Recomendación: Invertir en infraestructura</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -802,14 +855,14 @@ def page_dashboard():
     # FOOTER PROFESIONAL
     # ============================================================
     st.markdown("""
-    <div style='background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 40px; text-align: center;'>
-        <p style='color: #666; margin: 0; font-size: 0.9rem;'>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 40px; text-align: center;">
+        <p style="color: #666; margin: 0; font-size: 0.9rem;">
             <b>FreightMetrics™ Intelligence Hub</b> - Módulos Integrados: Monitoreo | Flujos | Fuerza Laboral | Corredores | Nearshoring | Índice FM
         </p>
-        <p style='color: #999; margin: 10px 0 0 0; font-size: 0.85rem;'>
+        <p style="color: #999; margin: 10px 0 0 0; font-size: 0.85rem;">
             📊 Datos en tiempo real | 🔒 Enterprise Security | 🚀 Advanced Analytics | ✅ Metodología Verificada
         </p>
-        <p style='color: #999; margin: 8px 0 0 0; font-size: 0.85rem;'>
+        <p style="color: #999; margin: 8px 0 0 0; font-size: 0.85rem;">
             © 2026 FreightMetrics Inc - Líderes en Inteligencia de Negocio para Comercio Transfronterizo
         </p>
     </div>

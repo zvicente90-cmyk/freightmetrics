@@ -13,6 +13,7 @@ from pathlib import Path
 
 from modules.constants import YEARS, MONTHS, MONTHS_MAP
 from modules.session_init import page_header, section_header, spacer
+from page_modules.tarjeta_kpi import tarjeta_kpi_color, COLORES
 
 
 def calcular_crecimiento_historico():
@@ -173,6 +174,18 @@ def page_flujos_de_carga():
     """Página principal de Flujos de Carga"""
     
     page_header("🚛 Flujos de Carga Transfronterizos", "Análisis de cruces fronterizos")
+    
+    # ============================================================
+    # Estilos CSS LOCALES para esta página
+    # ============================================================
+    st.markdown("""
+    <style>
+        [data-testid="metric-container"] {
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.12) 0%, rgba(66, 165, 245, 0.08) 100%) !important;
+            border-top: 4px solid #1976d2 !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
     
     # FILTROS EN 3 COLUMNAS
     col1, col2, col3 = st.columns(3)
@@ -365,16 +378,16 @@ def page_flujos_de_carga():
     empty = df_metrics['Truck Containers Empty'].sum() if 'Truck Containers Empty' in df_metrics.columns else 0
     
     with col1:
-        st.metric("Total Cruces", f"{total:,}")
+        tarjeta_kpi_color("Total Cruces", f"{total:,}", "📊", color_preset="azul_primario")
     with col2:
         pct = (trucks / total * 100) if total > 0 else 0
-        st.metric("🚛 Trucks", f"{trucks:,}", f"{pct:.1f}%")
+        tarjeta_kpi_color("Trucks", f"{trucks:,}", "🚛", delta=f"{pct:.1f}%", color_preset="azul_primario")
     with col3:
         pct = (loaded / total * 100) if total > 0 else 0
-        st.metric("📦 Loaded", f"{loaded:,}", f"{pct:.1f}%")
+        tarjeta_kpi_color("Loaded", f"{loaded:,}", "📦", delta=f"{pct:.1f}%", color_preset="verde")
     with col4:
         pct = (empty / total * 100) if total > 0 else 0
-        st.metric("📭 Empty", f"{empty:,}", f"{pct:.1f}%")
+        tarjeta_kpi_color("Empty", f"{empty:,}", "📭", delta=f"{pct:.1f}%", color_preset="naranja")
     
     st.markdown("---")
     

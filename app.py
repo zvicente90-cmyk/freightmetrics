@@ -706,6 +706,17 @@ st.markdown("""
 
 st.set_page_config(page_title="FreightMetrics Pro", layout="wide")
 
+# ============================================================
+# APLICAR ESTILOS GLOBALES PROFESIONALES A TODA LA APP
+# ============================================================
+# COMENTADO: Los estilos globales interfieren con estilos inline en páginas
+# Cada página aplica sus propios estilos inline directamente
+# try:
+#     from page_modules.global_styles import apply_global_styles
+#     apply_global_styles()
+# except ImportError:
+#     pass  # Si no está disponible, continúa sin estilos
+
 # --- NUEVA FUNCIÓN: Obtener tipo de cambio real ---
 def obtener_tipo_cambio():
     try:

@@ -8,6 +8,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from modules.config import t, SEGMENTACION_FUERZA_LABORAL, DATOS_REGIONALES_FRONTERIZOS
+from page_modules.tarjeta_kpi import tarjeta_kpi_color, COLORES
 
 # ============================================================
 # FUNCIONES AUXILIARES
@@ -52,10 +53,23 @@ def page_fuerza_laboral():
         subtitulo = "Analyse des opérateurs, conducteurs et capacité opérationnelle"
     
     # Título con estilo corporativo
-    st.markdown(f"<h1 style='color: #11101D; font-weight: 700; margin-bottom: 0;'>{titulo}</h1>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color: #0052a3; font-size: 1.1rem; font-weight: 500; margin-top: 5px;'>{subtitulo}</p>", unsafe_allow_html=True)
+    st.markdown(f'<h1 style=\"color: #11101D; font-weight: 700; margin-bottom: 0;\">{titulo}</h1>', unsafe_allow_html=True)
+    st.markdown(f'<p style=\"color: #0052a3; font-size: 1.1rem; font-weight: 500; margin-top: 5px;\">{subtitulo}</p>', unsafe_allow_html=True)
     
     st.markdown("---")
+    
+    # ============================================================
+    # Estilos CSS LOCALES para esta página - COMENTADO
+    # Los estilos inline funcionan mejor en Streamlit
+    # ============================================================
+    # st.markdown("""
+    # <style>
+    #     [data-testid="metric-container"] {
+    #         background: linear-gradient(135deg, rgba(229, 57, 53, 0.10) 0%, rgba(244, 67, 54, 0.08) 100%) !important;
+    #         border-right: 4px solid #E53935 !important;
+    #     }
+    # </style>
+    # """, unsafe_allow_html=True)
     
     # SECCIÓN 1: INDICADORES PRINCIPALES
     if lang == 'es':
@@ -70,33 +84,24 @@ def page_fuerza_laboral():
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric(
-            label="Total Permisionarios" if lang == 'es' else "Total Operators" if lang == 'en' else "Total Opérateurs",
-            value="198,500",
-            delta="SICT 2024" if lang == 'es' else "SICT 2024" if lang == 'en' else "SICT 2024"
-        )
+        label_text = "Total Permisionarios" if lang == 'es' else "Total Operators" if lang == 'en' else "Total Opérateurs"
+        delta_text = "SICT 2024" if lang == 'es' else "SICT 2024" if lang == 'en' else "SICT 2024"
+        tarjeta_kpi_color(label_text, "198,500", "👥", delta=delta_text, color_preset="azul_primario")
     
     with col2:
-        st.metric(
-            label="Parque Vehicular" if lang == 'es' else "Vehicle Fleet" if lang == 'en' else "Parc Automobile",
-            value="630,000",
-            delta="Unidades activas" if lang == 'es' else "Active units" if lang == 'en' else "Unités actives"
-        )
+        label_text = "Parque Vehicular" if lang == 'es' else "Vehicle Fleet" if lang == 'en' else "Parc Automobile"
+        delta_text = "Unidades activas" if lang == 'es' else "Active units" if lang == 'en' else "Unités actives"
+        tarjeta_kpi_color(label_text, "630,000", "🚛", delta=delta_text, color_preset="verde")
     
     with col3:
-        st.metric(
-            label="Déficit Operadores" if lang == 'es' else "Operator Deficit" if lang == 'en' else "Déficit Opérateurs",
-            value="99,000",
-            delta="Acumulado 2024" if lang == 'es' else "Accumulated 2024" if lang == 'en' else "Accumulé 2024",
-            delta_color="inverse"
-        )
+        label_text = "Déficit Operadores" if lang == 'es' else "Operator Deficit" if lang == 'en' else "Déficit Opérateurs"
+        delta_text = "Acumulado 2024" if lang == 'es' else "Accumulated 2024" if lang == 'en' else "Accumulé 2024"
+        tarjeta_kpi_color(label_text, "99,000", "⚠️", delta=delta_text, color_preset="rojo")
     
     with col4:
-        st.metric(
-            label="Ratio Operadores/Empresa" if lang == 'es' else "Operators/Company Ratio" if lang == 'en' else "Ratio Opérateurs/Entreprise",
-            value="3.18",
-            delta="Promedio nacional" if lang == 'es' else "National average" if lang == 'en' else "Moyenne nationale"
-        )
+        label_text = "Ratio Operadores/Empresa" if lang == 'es' else "Operators/Company Ratio" if lang == 'en' else "Ratio Opérateurs/Entreprise"
+        delta_text = "Promedio nacional" if lang == 'es' else "National average" if lang == 'en' else "Moyenne nationale"
+        tarjeta_kpi_color(label_text, "3.18", "📊", delta=delta_text, color_preset="morado")
     
     st.markdown("---")
     

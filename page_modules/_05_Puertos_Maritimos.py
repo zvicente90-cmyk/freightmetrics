@@ -18,6 +18,7 @@ from modules.constants import (
     MONTHS_MAP, COLOR_PALETTE, SATURATION_LEVELS, WAIT_TIME_LEVELS
 )
 from modules.session_init import page_header, section_header, spacer
+from page_modules.tarjeta_kpi import tarjeta_kpi_color, COLORES
 
 
 # Constantes Locales de Puertos Mexicanos
@@ -139,6 +140,18 @@ def page_puertos_maritimos():
     # Título
     page_header("⚓ Puertos Marítimos Mexicanos", "Análisis de capacidad, operaciones y congestión portuaria")
     
+    # ============================================================
+    # Estilos CSS LOCALES para esta página
+    # ============================================================
+    st.markdown("""
+    <style>
+        [data-testid="metric-container"] {
+            background: linear-gradient(135deg, rgba(25, 183, 206, 0.12) 0%, rgba(76, 175, 254, 0.08) 100%) !important;
+            border-bottom: 4px solid #19B7CE !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # Botones de control y vista
     col_btn1, col_btn2, col_btn3 = st.columns([1, 1.5, 2])
     
@@ -165,33 +178,41 @@ def page_puertos_maritimos():
     kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
     
     with kpi_col1:
-        st.metric(
-            label="🚢 Throughput Mensual",
-            value=f"{kpis['throughput_nacional']:,.0f}",
-            delta="TEU"
+        tarjeta_kpi_color(
+            "Throughput Mensual", 
+            f"{kpis['throughput_nacional']:,.0f}", 
+            "🚢", 
+            delta="TEU",
+            color_preset="azul_primario"
         )
     
     with kpi_col2:
         sat_change = kpis['saturacion_promedio'] - 55
-        st.metric(
-            label="📈 Saturación Promedio",
-            value=f"{kpis['saturacion_promedio']:.1f}%",
-            delta=f"{sat_change:+.1f}%" if sat_change != 0 else None
+        delta_text = f"{sat_change:+.1f}%" if sat_change != 0 else None
+        tarjeta_kpi_color(
+            "Saturación Promedio",
+            f"{kpis['saturacion_promedio']:.1f}%",
+            "📈",
+            delta=delta_text,
+            color_preset="verde" if sat_change <= 0 else "rojo"
         )
     
     with kpi_col3:
-        st.metric(
-            label="💰 Valor Comercial",
-            value=f"${kpis['valor_comercial']/1_000_000:.1f}M",
-            delta="USD"
+        tarjeta_kpi_color(
+            "Valor Comercial",
+            f"${kpis['valor_comercial']/1_000_000:.1f}M",
+            "💰",
+            delta="USD",
+            color_preset="turquesa"
         )
     
     with kpi_col4:
-        st.metric(
-            label="⚠️ Puertos Críticos",
-            value=kpis['puertos_criticos'],
+        tarjeta_kpi_color(
+            "Puertos Críticos",
+            str(kpis['puertos_criticos']),
+            "⚠️",
             delta="Requieren atención",
-            delta_color="inverse"
+            color_preset="rojo"
         )
     
     st.markdown("---")
@@ -449,11 +470,11 @@ def page_puertos_maritimos():
             
             # Crear popup con información del puerto
             popup_text = f"""
-            <div style='font-family: Arial; width: 250px;'>
-                <h4 style='margin: 5px 0;'>{puerto['Puerto']}</h4>
-                <table style='width: 100%; border-collapse: collapse;'>
+            <div style="font-family: Arial; width: 250px;">
+                <h4 style="margin: 5px 0;">{puerto['Puerto']}</h4>
+                <table style="width: 100%; border-collapse: collapse;">
                     <tr><td><b>Región:</b></td><td>{puerto['Región']}</td></tr>
-                    <tr><td><b>Estado:</b></td><td><span style='color: {color};'>●</span> {estado}</td></tr>
+                    <tr><td><b>Estado:</b></td><td><span style="color: {color};">●</span> {estado}</td></tr>
                     <tr><td><b>TEU/Mes:</b></td><td>{puerto['TEU_Mes']:,.0f}</td></tr>
                     <tr><td><b>Saturación:</b></td><td>{puerto['Saturación']:.1f}%</td></tr>
                     <tr><td><b>Operaciones:</b></td><td>{puerto['Operaciones']:,.0f}</td></tr>
