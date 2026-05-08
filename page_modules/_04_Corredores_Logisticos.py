@@ -248,185 +248,189 @@ def page_corredores_logisticos():
         '#8338EC'     # Púrpura - Corredor 12
     ]
     
-    # Dibujar las rutas (Líneas) con estilos mejorados
-    for idx, ruta in enumerate(corredores):
-        color = color_riesgo.get(ruta['riesgo'], '#4070F4')
-        # Usar color único si disponible
-        if idx < len(colores_corredores):
-            color_unico = colores_corredores[idx]
-        else:
-            color_unico = color
-        
-        # Calcular punto medio para mostrar información
-        mid_lat = (puntos[ruta['origen']][0] + puntos[ruta['destino']][0]) / 2
-        mid_lon = (puntos[ruta['origen']][1] + puntos[ruta['destino']][1]) / 2
-        
-        # Línea de ruta: MÁS DELGADA pero más vibrante
-        line_width = 4 if ruta['rentabilidad'] == 'Alta' else 3 if ruta['rentabilidad'] == 'Media' else 2.5
-        
-        # Diferenciación visual: usar opacidad y dash para transversales vs longitudinales
-        is_transversal = ruta['nombre'].startswith('🔄') or ruta['nombre'].startswith('📦')
-        dash_style = 'solid' if ruta['rentabilidad'] == 'Alta' else 'dash' if is_transversal else 'dot'
-        opacity_val = 0.95 if ruta['rentabilidad'] == 'Alta' else 0.75 if ruta['rentabilidad'] == 'Media' else 0.6
-        
-        fig.add_trace(go.Scattergeo(
-            locationmode = 'ISO-3',
-            lon = [puntos[ruta['origen']][1], puntos[ruta['destino']][1]],
-            lat = [puntos[ruta['origen']][0], puntos[ruta['destino']][0]],
-            mode = 'lines',
-            line = dict(
-                width = line_width, 
-                color = color_unico,
-                dash = dash_style
-            ),
-            opacity=opacity_val,
-            name = f"{ruta['nombre']}",
-            hoverinfo='skip',
-            showlegend=False
-        ))
-        
-        # SOMBRA del corredor (efecto de profundidad)
-        fig.add_trace(go.Scattergeo(
-            locationmode = 'ISO-3',
-            lon = [puntos[ruta['origen']][1], puntos[ruta['destino']][1]],
-            lat = [puntos[ruta['origen']][0], puntos[ruta['destino']][0]],
-            mode = 'lines',
-            line = dict(
-                width = line_width + 2, 
-                color = color_unico,
-                dash = dash_style
-            ),
-            opacity=0.15,
-            hoverinfo='skip',
-            showlegend=False
-        ))
-        
-        # Número del corredor en posición media
-        num_corredor = idx + 1
-        fig.add_trace(go.Scattergeo(
-            locationmode = 'ISO-3',
-            lon = [mid_lon],
-            lat = [mid_lat],
-            mode = 'text',
-            text = [f"<b>{num_corredor}</b>"],
-            textposition = 'middle center',
-            textfont = dict(size=13, color='white', family='Arial', weight='bold'),
-            hoverinfo='skip',
-            showlegend=False
-        ))
-        
-        # Punto medio con información (invisible pero con hover)
-        fig.add_trace(go.Scattergeo(
-            locationmode = 'ISO-3',
-            lon = [mid_lon],
-            lat = [mid_lat],
-            mode = 'markers',
-            marker = dict(
-                size = 14,
-                color = color,
-                symbol = 'circle',
-                opacity = 0.7,
-                line = dict(width=2, color='white')
-            ),
-            name = f"{ruta['nombre']}",
-            text = [f"{ruta['distancia_km']} km"],
-            hovertemplate = f"<b>#{num_corredor} - {ruta['nombre']}</b><br>" +
-                           f"━━━━━━━━━━━━━━━━<br>" +
-                           f"📍 Origen: <b>{ruta['origen']}</b><br>" +
-                           f"🎯 Destino: <b>{ruta['destino']}</b><br>" +
-                           f"━━━━━━━━━━━━━━━━<br>" +
-                           f"🚨 Nivel de Riesgo: <b>{ruta['riesgo']}</b><br>" +
-                           f"💰 Rentabilidad: <b>{ruta['rentabilidad']}</b><br>" +
-                           f"━━━━━━━━━━━━━━━━<br>" +
-                           f"📏 Distancia: <b>{ruta['distancia_km']:,} km</b><br>" +
-                           f"⏱️ Tiempo Estimado: <b>{ruta['tiempo_hrs']} hrs</b><br>" +
-                           f"🚚 Velocidad Prom: <b>{ruta['distancia_km']/ruta['tiempo_hrs']:.0f} km/h</b><br>" +
-                           "<extra></extra>",
-            showlegend=True
-        ))
+    # Dibujar las rutas (Líneas) con estilos mejorados - SOLO SI SHOW_CORREDORES
+    if show_corredores:
+        for idx, ruta in enumerate(corredores):
+            color = color_riesgo.get(ruta['riesgo'], '#4070F4')
+            # Usar color único si disponible
+            if idx < len(colores_corredores):
+                color_unico = colores_corredores[idx]
+            else:
+                color_unico = color
+            
+            # Calcular punto medio para mostrar información
+            mid_lat = (puntos[ruta['origen']][0] + puntos[ruta['destino']][0]) / 2
+            mid_lon = (puntos[ruta['origen']][1] + puntos[ruta['destino']][1]) / 2
+            
+            # Línea de ruta: MÁS DELGADA pero más vibrante
+            line_width = 4 if ruta['rentabilidad'] == 'Alta' else 3 if ruta['rentabilidad'] == 'Media' else 2.5
+            
+            # Diferenciación visual: usar opacidad y dash para transversales vs longitudinales
+            is_transversal = ruta['nombre'].startswith('🔄') or ruta['nombre'].startswith('📦')
+            dash_style = 'solid' if ruta['rentabilidad'] == 'Alta' else 'dash' if is_transversal else 'dot'
+            opacity_val = 0.95 if ruta['rentabilidad'] == 'Alta' else 0.75 if ruta['rentabilidad'] == 'Media' else 0.6
+            
+            fig.add_trace(go.Scattergeo(
+                locationmode = 'ISO-3',
+                lon = [puntos[ruta['origen']][1], puntos[ruta['destino']][1]],
+                lat = [puntos[ruta['origen']][0], puntos[ruta['destino']][0]],
+                mode = 'lines',
+                line = dict(
+                    width = line_width, 
+                    color = color_unico,
+                    dash = dash_style
+                ),
+                opacity=opacity_val,
+                name = f"{ruta['nombre']}",
+                hoverinfo='skip',
+                showlegend=False
+            ))
+            
+            # SOMBRA del corredor (efecto de profundidad)
+            fig.add_trace(go.Scattergeo(
+                locationmode = 'ISO-3',
+                lon = [puntos[ruta['origen']][1], puntos[ruta['destino']][1]],
+                lat = [puntos[ruta['origen']][0], puntos[ruta['destino']][0]],
+                mode = 'lines',
+                line = dict(
+                    width = line_width + 2, 
+                    color = color_unico,
+                    dash = dash_style
+                ),
+                opacity=0.15,
+                hoverinfo='skip',
+                showlegend=False
+            ))
+            
+            # Número del corredor en posición media
+            num_corredor = idx + 1
+            fig.add_trace(go.Scattergeo(
+                locationmode = 'ISO-3',
+                lon = [mid_lon],
+                lat = [mid_lat],
+                mode = 'text',
+                text = [f"<b>{num_corredor}</b>"],
+                textposition = 'middle center',
+                textfont = dict(size=13, color='white', family='Arial', weight='bold'),
+                hoverinfo='skip',
+                showlegend=False
+            ))
+            
+            # Punto medio con información (invisible pero con hover)
+            fig.add_trace(go.Scattergeo(
+                locationmode = 'ISO-3',
+                lon = [mid_lon],
+                lat = [mid_lat],
+                mode = 'markers',
+                marker = dict(
+                    size = 14,
+                    color = color,
+                    symbol = 'circle',
+                    opacity = 0.7,
+                    line = dict(width=2, color='white')
+                ),
+                name = f"{ruta['nombre']}",
+                text = [f"{ruta['distancia_km']} km"],
+                hovertemplate = f"<b>#{num_corredor} - {ruta['nombre']}</b><br>" +
+                               f"━━━━━━━━━━━━━━━━<br>" +
+                               f"📍 Origen: <b>{ruta['origen']}</b><br>" +
+                               f"🎯 Destino: <b>{ruta['destino']}</b><br>" +
+                               f"━━━━━━━━━━━━━━━━<br>" +
+                               f"🚨 Nivel de Riesgo: <b>{ruta['riesgo']}</b><br>" +
+                               f"💰 Rentabilidad: <b>{ruta['rentabilidad']}</b><br>" +
+                               f"━━━━━━━━━━━━━━━━<br>" +
+                               f"📏 Distancia: <b>{ruta['distancia_km']:,} km</b><br>" +
+                               f"⏱️ Tiempo Estimado: <b>{ruta['tiempo_hrs']} hrs</b><br>" +
+                               f"🚚 Velocidad Prom: <b>{ruta['distancia_km']/ruta['tiempo_hrs']:.0f} km/h</b><br>" +
+                               "<extra></extra>",
+                showlegend=True
+            ))
     
     # ==================== MARCADORES DE CIUDADES ====================
     
-    # Agregar marcadores de PUERTOS (Símbolos de círculo)
-    for puerto in puertos_lista:
-        if puerto in puntos:
-            fig.add_trace(go.Scattergeo(
-                locationmode = 'ISO-3',
-                lon = [puntos[puerto][1]],
-                lat = [puntos[puerto][0]],
-                mode = 'markers+text',
-                marker = dict(
-                    size = 20,
-                    color = '#1E88E5',  # Azul vibrante
-                    symbol = 'circle',
-                    line = dict(width=3, color='#29B5E8')  # Cyan border
-                ),
-                text = [puerto],
-                textposition = 'top center',
-                textfont = dict(size=9, color='#FFFFFF', family='Arial', weight='bold'),
-                name = f"⚓ {puerto}",
-                hovertemplate = f"<b>⚓ PUERTO MARÍTIMO</b><br>" +
-                               f"<b>{puerto}</b><br>" +
-                               f"━━━━━━━━━━━━━━━━<br>" +
-                               f"Tipo: Puerto de altura<br>" +
-                               f"Coordenadas: {puntos[puerto][0]:.2f}°N, {puntos[puerto][1]:.2f}°W<br>" +
-                               "<extra></extra>",
-                showlegend=True
-            ))
+    # Agregar marcadores de PUERTOS (Símbolos de círculo) - SOLO SI SHOW_PUERTOS
+    if show_puertos:
+        for puerto in puertos_lista:
+            if puerto in puntos:
+                fig.add_trace(go.Scattergeo(
+                    locationmode = 'ISO-3',
+                    lon = [puntos[puerto][1]],
+                    lat = [puntos[puerto][0]],
+                    mode = 'markers+text',
+                    marker = dict(
+                        size = 20,
+                        color = '#1E88E5',  # Azul vibrante
+                        symbol = 'circle',
+                        line = dict(width=3, color='#29B5E8')  # Cyan border
+                    ),
+                    text = [puerto],
+                    textposition = 'top center',
+                    textfont = dict(size=9, color='#FFFFFF', family='Arial', weight='bold'),
+                    name = f"⚓ {puerto}",
+                    hovertemplate = f"<b>⚓ PUERTO MARÍTIMO</b><br>" +
+                                   f"<b>{puerto}</b><br>" +
+                                   f"━━━━━━━━━━━━━━━━<br>" +
+                                   f"Tipo: Puerto de altura<br>" +
+                                   f"Coordenadas: {puntos[puerto][0]:.2f}°N, {puntos[puerto][1]:.2f}°W<br>" +
+                                   "<extra></extra>",
+                    showlegend=True
+                ))
     
-    # Agregar marcadores de FRONTERAS (Símbolos de cuadrado)
-    for frontera in fronteras_lista:
-        if frontera in puntos:
-            fig.add_trace(go.Scattergeo(
-                locationmode = 'ISO-3',
-                lon = [puntos[frontera][1]],
-                lat = [puntos[frontera][0]],
-                mode = 'markers+text',
-                marker = dict(
-                    size = 20,
-                    color = '#FF6B6B',  # Rojo vibrante
-                    symbol = 'square',
-                    line = dict(width=3, color='#FF9999')  # Rojo claro border
-                ),
-                text = [frontera],
-                textposition = 'top center',
-                textfont = dict(size=9, color='#FFFFFF', family='Arial', weight='bold'),
-                name = f"🚛 {frontera}",
-                hovertemplate = f"<b>🚛 CRUCE FRONTERIZO</b><br>" +
-                               f"<b>{frontera}</b><br>" +
-                               f"━━━━━━━━━━━━━━━━<br>" +
-                               f"Tipo: Aduana fronteriza<br>" +
-                               f"Coordenadas: {puntos[frontera][0]:.2f}°N, {puntos[frontera][1]:.2f}°W<br>" +
-                               "<extra></extra>",
-                showlegend=True
-            ))
+    # Agregar marcadores de FRONTERAS (Símbolos de cuadrado) - SOLO SI SHOW_FRONTERAS
+    if show_fronteras:
+        for frontera in fronteras_lista:
+            if frontera in puntos:
+                fig.add_trace(go.Scattergeo(
+                    locationmode = 'ISO-3',
+                    lon = [puntos[frontera][1]],
+                    lat = [puntos[frontera][0]],
+                    mode = 'markers+text',
+                    marker = dict(
+                        size = 20,
+                        color = '#FF6B6B',  # Rojo vibrante
+                        symbol = 'square',
+                        line = dict(width=3, color='#FF9999')  # Rojo claro border
+                    ),
+                    text = [frontera],
+                    textposition = 'top center',
+                    textfont = dict(size=9, color='#FFFFFF', family='Arial', weight='bold'),
+                    name = f"🚛 {frontera}",
+                    hovertemplate = f"<b>🚛 CRUCE FRONTERIZO</b><br>" +
+                                   f"<b>{frontera}</b><br>" +
+                                   f"━━━━━━━━━━━━━━━━<br>" +
+                                   f"Tipo: Aduana fronteriza<br>" +
+                                   f"Coordenadas: {puntos[frontera][0]:.2f}°N, {puntos[frontera][1]:.2f}°W<br>" +
+                                   "<extra></extra>",
+                    showlegend=True
+                ))
     
-    # Agregar marcadores de HUBS DE DISTRIBUCIÓN (Símbolo de diamante)
-    for hub in hubs_lista:
-        if hub in puntos:
-            fig.add_trace(go.Scattergeo(
-                locationmode = 'ISO-3',
-                lon = [puntos[hub][1]],
-                lat = [puntos[hub][0]],
-                mode = 'markers+text',
-                marker = dict(
-                    size = 22,
-                    color = '#29B5E8',  # Cyan vibrante
-                    symbol = 'diamond',
-                    line = dict(width=3, color='#58D9F5')  # Cyan claro border
-                ),
-                text = [hub],
-                textposition = 'top center',
-                textfont = dict(size=10, color='#000000', family='Arial', weight='bold'),
-                name = f"🏢 {hub}",
-                hovertemplate = f"<b>🏢 HUB DE DISTRIBUCIÓN PRINCIPAL</b><br>" +
-                               f"<b>{hub}</b><br>" +
-                               f"━━━━━━━━━━━━━━━━<br>" +
-                               f"Tipo: Centro de distribución estratégico<br>" +
-                               f"Coordenadas: {puntos[hub][0]:.2f}°N, {puntos[hub][1]:.2f}°W<br>" +
-                               "<extra></extra>",
-                showlegend=True
-            ))
+    # Agregar marcadores de HUBS DE DISTRIBUCIÓN (Símbolo de diamante) - SOLO SI SHOW_HUBS
+    if show_hubs:
+        for hub in hubs_lista:
+            if hub in puntos:
+                fig.add_trace(go.Scattergeo(
+                    locationmode = 'ISO-3',
+                    lon = [puntos[hub][1]],
+                    lat = [puntos[hub][0]],
+                    mode = 'markers+text',
+                    marker = dict(
+                        size = 22,
+                        color = '#29B5E8',  # Cyan vibrante
+                        symbol = 'diamond',
+                        line = dict(width=3, color='#58D9F5')  # Cyan claro border
+                    ),
+                    text = [hub],
+                    textposition = 'top center',
+                    textfont = dict(size=10, color='#000000', family='Arial', weight='bold'),
+                    name = f"🏢 {hub}",
+                    hovertemplate = f"<b>🏢 HUB DE DISTRIBUCIÓN PRINCIPAL</b><br>" +
+                                   f"<b>{hub}</b><br>" +
+                                   f"━━━━━━━━━━━━━━━━<br>" +
+                                   f"Tipo: Centro de distribución estratégico<br>" +
+                                   f"Coordenadas: {puntos[hub][0]:.2f}°N, {puntos[hub][1]:.2f}°W<br>" +
+                                   "<extra></extra>",
+                    showlegend=True
+                ))
     
     # Agregar marcadores de CIUDADES SECUNDARIAS (Símbolos pequeños sin texto)
     for ciudad in ciudades_secundarias:

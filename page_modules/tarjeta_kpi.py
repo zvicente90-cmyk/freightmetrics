@@ -26,7 +26,7 @@ def tarjeta_kpi(
     estilo_tarjeta = f"border-radius: 14px; border: 2px solid {color_borde}; background: linear-gradient(135deg, {color_fondo_rgb} 0%, rgba(25, 118, 210, 0.08) 100%); padding: 24px 20px; text-align: center; box-shadow: 0 0 20px rgba(0, 102, 204, 0.2), 0 8px 24px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.1); transition: all 0.3s ease; width: {'100%' if ancho_completo else 'auto'};"
     
     # HTML de la tarjeta - TODO EN UNA LÍNEA
-    html = f'<div style="{estilo_tarjeta}"><div style="color: {color_titulo}; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">{icono} {titulo}</div><div style="color: {color_valor}; font-size: 2.8rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); margin: 8px 0;">{valor}</div>'
+    html = f'<div style="{estilo_tarjeta}"><div style="color: {color_titulo}; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;">{icono} {titulo}</div><div style="color: {color_valor}; font-size: 25px; font-weight: 900; text-shadow: 0 2px 8px rgba(0, 102, 204, 0.3); margin: 8px 0;">{valor}</div>'
     
     # Agregar delta si existe
     if delta:

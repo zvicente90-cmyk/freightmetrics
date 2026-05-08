@@ -21,12 +21,10 @@ from modules.constants import (
 from modules.session_init import page_header, section_header, spacer
 from page_modules.tarjeta_kpi import tarjeta_kpi_color, COLORES
 
-# Zona horaria de México (Centro)
-TZ_MEXICO = pytz.timezone('America/Mexico_City')
-
+# Usar zona horaria local del sistema
 def obtener_hora_actual():
-    """Obtiene la hora actual en zona horaria de México"""
-    return datetime.now(TZ_MEXICO)
+    """Obtiene la hora actual en la zona horaria local del sistema"""
+    return datetime.now()
 
 
 # Constantes Locales de Puertos Mexicanos

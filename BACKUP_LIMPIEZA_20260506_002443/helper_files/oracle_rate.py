@@ -115,3 +115,5 @@ def page_oracle_rate():
             </a>
         </div>
     """, unsafe_allow_html=True)
+
+

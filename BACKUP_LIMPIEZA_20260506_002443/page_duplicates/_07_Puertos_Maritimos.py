@@ -45,6 +45,18 @@ def page_puertos_maritimos():
         </div>
     """, unsafe_allow_html=True)
     
+    # ============================================================
+    # Estilos CSS LOCALES para esta página
+    # ============================================================
+    st.markdown("""
+    <style>
+        [data-testid="metric-container"] {
+            background: linear-gradient(135deg, rgba(0, 128, 96, 0.12) 0%, rgba(76, 175, 80, 0.08) 100%) !important;
+            border-top: 4px solid #00805F !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # ============ DATOS DE PUERTOS ============
     puertos_data = {
         'Litoral del Pacífico': [

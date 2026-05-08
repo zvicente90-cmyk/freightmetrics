@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import requests # Para conectarnos a internet
+import requests
 import random
 import numpy as np
 from datetime import datetime, timedelta
@@ -15,7 +15,11 @@ from dotenv import load_dotenv, set_key, find_dotenv
 import json
 from pathlib import Path
 import pytz
-# from fpdf import FPDF  # Comentado temporalmente - no disponible en Streamlit Cloud
+
+# ============================================================
+# CRÍTICO: set_page_config DEBE ser el primer comando st.
+# ============================================================
+st.set_page_config(page_title="FreightMetrics Pro", layout="wide", page_icon="🚛")
 
 # Importar páginas separadas del directorio pages/
 try:
@@ -67,21 +71,12 @@ except ImportError:
     MONITOREO_ADUANAS_AVAILABLE = False
     page_monitoreo_aduanas = None
 
-# Importar nueva página de monitoreo V2
 try:
-    from monitoreo_v2 import page_monitoreo_v2
-    MONITOREO_V2_AVAILABLE = True
+    from page_modules._06_CBP_Wait_Times import page_cbp_wait_times
+    CBP_WAIT_TIMES_AVAILABLE = True
 except ImportError:
-    MONITOREO_V2_AVAILABLE = False
-    page_monitoreo_v2 = None
-
-# Importar nuevas páginas: Índice FreightMetrics y Oracle Rate
-try:
-    from indice_freightmetrics import page_indice_freightmetrics
-    INDICE_FM_AVAILABLE = True
-except ImportError:
-    INDICE_FM_AVAILABLE = False
-    page_indice_freightmetrics = None
+    CBP_WAIT_TIMES_AVAILABLE = False
+    page_cbp_wait_times = None
 
 try:
     from oracle_rate import page_oracle_rate
@@ -89,6 +84,10 @@ try:
 except ImportError:
     ORACLE_RATE_AVAILABLE = False
     page_oracle_rate = None
+
+# NOTA: Las páginas monitoreo_v2, indice_freightmetrics fueron removidas durante la limpieza
+# Se mantiene solo el core funcional de la aplicación
+# Futuro: Estas páginas pueden ser reimplementadas como módulos separados si es necesario
 
 # Importar inicialización centralizada de session_state
 try:
@@ -166,8 +165,7 @@ TRANSLATIONS = {
         'menu_ports': 'Puertos Marítimos',
         'menu_workforce': 'Fuerza Laboral',
         'menu_nearshoring': 'Nearshoring',
-        'menu_indice': 'Índice FreightMetrics',
-        'menu_oracle': 'Oracle Rate',
+        'menu_cbp_times': 'Tiempos CBP',
         
         # Botones y acciones
         'download_pdf': 'Descargar PDF',
@@ -252,8 +250,7 @@ TRANSLATIONS = {
         'menu_ports': 'Maritime Ports',
         'menu_workforce': 'Workforce',
         'menu_nearshoring': 'Nearshoring',
-        'menu_indice': 'FreightMetrics Index',
-        'menu_oracle': 'Oracle Rate',
+        'menu_cbp_times': 'CBP Wait Times',
         
         # Buttons and actions
         'download_pdf': 'Download PDF',
@@ -338,8 +335,7 @@ TRANSLATIONS = {
         'menu_ports': 'Ports Maritimes',
         'menu_workforce': 'Main-d\'œuvre',
         'menu_nearshoring': 'Relocalisation',
-        'menu_indice': 'Indice FreightMetrics',
-        'menu_oracle': 'Oracle Rate',
+        'menu_cbp_times': 'Temps d\'Attente CBP',
         
         # Boutons et actions
         'download_pdf': 'Télécharger PDF',
@@ -667,55 +663,9 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- FUNCIÓN PARA CREAR EL PDF (Comentada - No disponible en Streamlit Cloud) ---
-# def crear_pdf(dataframe, tipo_cambio):
-#     pdf = FPDF()
-#     pdf.add_page()
-#     
-#     # Título del Reporte
-#     pdf.set_font("Arial", 'B', 16)
-#     pdf.cell(190, 10, "FREIGHTMETRICS - REPORTE OPERATIVO", 0, 1, 'C')
-#     pdf.ln(10)
-#     
-#     # Fecha y Tipo de Cambio
-#     pdf.set_font("Arial", '', 10)
-#     pdf.cell(190, 10, f"Fecha de emision: {dt.date.today()}", 0, 1, 'L')
-#     pdf.cell(190, 10, f"Tipo de Cambio aplicado: ${tipo_cambio:.2f} MXN/USD", 0, 1, 'L')
-#     pdf.ln(5)
-#     
-#     # Tabla de Datos
-#     pdf.set_font("Arial", 'B', 10)
-#     pdf.cell(40, 10, "Puerto", 1)
-#     pdf.cell(40, 10, "Saturacion (%)", 1)
-#     pdf.cell(60, 10, "Costo Est. (MXN)", 1)
-#     pdf.ln()
-#     
-#     pdf.set_font("Arial", '', 10)
-#     for index, row in dataframe.iterrows():
-#         pdf.cell(40, 10, str(row['Puerto']), 1)
-#         pdf.cell(40, 10, f"{row['Saturacion']}%", 1)
-#         pdf.cell(60, 10, f"${row['Costo_Estimado_MXN']:,.2f}", 1)
-#         pdf.ln()
-#     
-#     # Nota de Alerta
-#     pdf.ln(10)
-#     pdf.set_font("Arial", 'I', 8)
-#     pdf.multi_cell(180, 5, "Nota: Este reporte es generado automaticamente. Los niveles superiores al 80% requieren accion inmediata del departamento de trafico.")
-#     
-#     return pdf.output(dest='S').encode('latin-1') # Retorna el PDF como datos
 
-st.set_page_config(page_title="FreightMetrics Pro", layout="wide")
 
-# ============================================================
-# APLICAR ESTILOS GLOBALES PROFESIONALES A TODA LA APP
-# ============================================================
-# COMENTADO: Los estilos globales interfieren con estilos inline en páginas
-# Cada página aplica sus propios estilos inline directamente
-# try:
-#     from page_modules.global_styles import apply_global_styles
-#     apply_global_styles()
-# except ImportError:
-#     pass  # Si no está disponible, continúa sin estilos
+# (set_page_config movido al inicio del archivo)
 
 # --- NUEVA FUNCIÓN: Obtener tipo de cambio real ---
 def obtener_tipo_cambio():
@@ -2146,13 +2096,14 @@ with st.sidebar:
     # Lista de páginas
     pages_list = [
         t('menu_dashboard', lang),           # 0. Dashboard
-        t('menu_monitoring', lang),           # 1. Monitoreo de Aduanas
+        t('menu_cbp_times', lang),           # 1. Tiempos de Espera CBP
+        # t('menu_monitoring', lang),           # OCULTO - Monitoreo de Aduanas
         t('menu_flows', lang),               # 2. Flujos de Carga
         t('menu_workforce', lang),           # 3. Fuerza Laboral
         t('menu_corridors', lang),           # 4. Corredores Logísticos
         t('menu_ports', lang),               # 5. Puertos Marítimos
         t('menu_nearshoring', lang),         # 6. Nearshoring
-        t('menu_oracle', lang)               # 7. Oracle Rate
+        'Oracle Rate'                         # 7. Oracle Rate
     ]
     
     opcion = st.radio(
@@ -2180,930 +2131,49 @@ with st.sidebar:
             st.rerun()
 
 # ============================================================
-# EJECUTAR LA PÁGINA SELECCIONADA
+# MAPEO DE OPCIÓN A PAGE_KEY
 # ============================================================
-dashboard_label = t('menu_dashboard', lang)
-monitoring_label = t('menu_monitoring', lang)
-flows_label = t('menu_flows', lang)
-workforce_label = t('menu_workforce', lang)
-corridors_label = t('menu_corridors', lang)
-ports_label = t('menu_ports', lang)
-nearshoring_label = t('menu_nearshoring', lang)
-oracle_label = t('menu_oracle', lang)
+# Mapear la opción seleccionada (etiqueta traducida) a la clave interna de página
+pages_map = {
+    t('menu_dashboard', lang): 'dashboard',
+    # t('menu_monitoring', lang): 'monitoreo',  # OCULTO
+    t('menu_flows', lang): 'flujos',
+    t('menu_workforce', lang): 'workforce',
+    t('menu_corridors', lang): 'corredores',
+    t('menu_ports', lang): 'puertos',
+    t('menu_nearshoring', lang): 'nearshoring',
+    t('menu_cbp_times', lang): 'cbp_times',
+    'Oracle Rate': 'oracle_rate'
+}
+page_key = pages_map.get(opcion, 'dashboard')  # Default a dashboard si no existe
 
-if opcion == dashboard_label:
+# ============================================================
+# ENRUTAMIENTO DE PÁGINAS
+# ============================================================
+
+if page_key == "dashboard":
     if DASHBOARD_AVAILABLE:
         page_dashboard()
     else:
-        st.error("❌ Página de Dashboard no disponible")
-        
-elif opcion == monitoring_label:
-    if MONITOREO_ADUANAS_AVAILABLE:
-        page_monitoreo_aduanas()
-    else:
-        st.error("❌ Página de Monitoreo de Aduanas no disponible")
-        
-elif opcion == flows_label:
-    if FLUJOS_CARGA_AVAILABLE:
-        page_flujos_de_carga()
-    else:
-        st.error("❌ Página de Flujos de Carga no disponible")
-        
-elif opcion == workforce_label:
-    if FUERZA_LABORAL_AVAILABLE:
-        page_fuerza_laboral()
-    else:
-        st.error("❌ Página de Fuerza Laboral no disponible")
-        
-elif opcion == corridors_label:
-    if CORREDORES_LOGISTICOS_AVAILABLE:
-        page_corredores_logisticos()
-    else:
-        st.error("❌ Página de Corredores Logísticos no disponible")
-        
-elif opcion == ports_label:
-    if PUERTOS_MARITIMOS_AVAILABLE:
-        page_puertos_maritimos()
-    else:
-        st.error("❌ Página de Puertos Marítimos no disponible")
-        
-elif opcion == nearshoring_label:
-    if NEARSHORING_AVAILABLE:
-        page_nearshoring()
-    else:
-        st.error("❌ Página de Nearshoring no disponible")
-        
-elif opcion == oracle_label:
-    if ORACLE_RATE_AVAILABLE:
-        page_oracle_rate()
-    else:
-        st.error("❌ Página de Oracle Rate no disponible")
+        st.error("❌ Dashboard no disponible")
 
-# --- FUNCIÓN PARA CARGAR DATOS HISTÓRICOS MULTI-AÑO ---
-@st.cache_data(ttl=600)  # Cache de 10 minutos
-def cargar_datos_historicos_multiannual(years=[2026]):
-    """
-    Carga datos históricos de cruces fronterizos de múltiples años.
-    Por defecto carga solo 2026 (año actual de análisis).
-    
-    Args:
-        years: Lista de años a cargar (por defecto [2026])
-    
-    Returns:
-        DataFrame consolidado con todos los años
-    """
-    data_dir = Path(__file__).parent / "data"
-    all_data = []
-    
-    for year in years:
-        file_path = data_dir / f"border_crossings_{year}_historical.csv"
-        if file_path.exists():
-            try:
-                df = pd.read_csv(file_path)
-                df['year'] = year
-                all_data.append(df)
-            except Exception as e:
-                st.warning(f"⚠️ No se pudo cargar datos de {year}: {str(e)}")
-        else:
-            st.warning(f"⚠️ No se encontró archivo de datos para {year}")
-    
-    if not all_data:
-        return None
-    
-    # Consolidar todos los años
-    df_consolidated = pd.concat(all_data, ignore_index=True)
-    
-    # FILTRO 1: Solo fronteras US-Mexico y US-Canada
-    df_consolidated = df_consolidated[
-        df_consolidated['border'].isin(['US-Mexico Border', 'US-Canada Border'])
-    ].copy()
-    
-    # Asegurar que date es datetime
-    df_consolidated['date'] = pd.to_datetime(df_consolidated['date'])
-    
-    # FILTRO 2: Solo tipos de medida específicos
-    df_consolidated = df_consolidated[
-        df_consolidated['measure'].isin(['Trucks', 'Truck Containers Empty', 'Truck Containers Loaded'])
-    ].copy()
-    
-    # Procesar para formato compatible con las páginas
-    df_processed = []
-    
-    for _, row in df_consolidated.iterrows():
-        # Mapear nombres de puertos para consistencia
-        puerto_map = {
-            # Puertos México (US-Mexico Border)
-            'Laredo': 'Nuevo Laredo',
-            'Otay Mesa': 'Tijuana (Mesa de Otay)',
-            'Calexico East': 'Mexicali (Calexico Este)',
-            'Nogales': 'Nogales',
-            'Eagle Pass': 'Piedras Negras',
-            'Hidalgo': 'Reynosa (Hidalgo)',
-            'Ysleta': 'Ciudad Juárez (Ysleta)',
-            'Brownsville': 'Matamoros',
-            'Pharr': 'Reynosa (Pharr)',
-            'Del Rio': 'Ciudad Acuña',
-            'El Paso': 'Ciudad Juárez',
-            'Presidio': 'Ojinaga',
-            'Roma': 'Miguel Alemán',
-            'Progreso': 'Nuevo Progreso',
-            'Calexico': 'Mexicali',
-            'San Ysidro': 'Tijuana',
-            'Tecate': 'Tecate',
-            'Lukeville': 'Sonoyta',
-            'Douglas': 'Agua Prieta',
-            'Naco': 'Naco',
-            'Columbus': 'Palomas',
-            # Puertos Canadá (US-Canada Border) - mantener nombres originales
-            'Detroit': 'Detroit',
-            'Port Huron': 'Port Huron',
-            'Buffalo Niagara Falls': 'Buffalo Niagara Falls',
-            'Champlain': 'Champlain',
-            'Blaine': 'Blaine',
-            'Pembina': 'Pembina',
-            'International Falls': 'International Falls',
-            'Portal': 'Portal',
-            'Sweetgrass': 'Sweetgrass',
-            'Sumas': 'Sumas',
-            'Derby Line': 'Derby Line'
-        }
-        
-        puerto = puerto_map.get(row['port_name'], row['port_name'])
-        
-        df_processed.append({
-            'Fecha': row['date'],
-            'Puerto': puerto,
-            'Puerto_Original': row['port_name'],
-            'Estado': row['state'],
-            'Frontera': row['border'],
-            'Tipo': row['measure'],
-            'Cruces': int(row['value']),
-            'Año': row['year']
-        })
-    
-    df_final = pd.DataFrame(df_processed)
-    
-    # Mapear nombres de frontera para los filtros
-    df_final['Frontera'] = df_final['Frontera'].map({
-        'US-Mexico Border': 'México',
-        'US-Canada Border': 'Canadá'
-    })
-    
-    # Agregar columnas calculadas
-    # Valor comercial estimado: $20,000 USD promedio por cruce de camión
-    df_final['Valor_USD'] = df_final['Cruces'] * 20000
-    
-    return df_final
+elif page_key == "monitoreo" and MONITOREO_ADUANAS_AVAILABLE:
+    page_monitoreo_aduanas()
 
+elif page_key == "flujos" and FLUJOS_CARGA_AVAILABLE:
+    page_flujos_de_carga()
 
-# ============================================================
-# SISTEMA DE SIMULACIÓN Y PREDICCIÓN 2026 (BASADO EN BTS)
-# ============================================================
+elif page_key == "corredores" and CORREDORES_LOGISTICOS_AVAILABLE:
+    page_corredores_logisticos()
 
-def calcular_tendencias_historicas(df_historico):
-    """Analiza datos históricos para extraer tendencias y patrones"""
-    try:
-        df_historico = df_historico.copy()
-        df_historico['Fecha'] = pd.to_datetime(df_historico['Fecha'])
-        df_historico['Año'] = df_historico['Fecha'].dt.year
-        df_historico['Mes'] = df_historico['Fecha'].dt.month
-        
-        tendencias = {}
-        
-        for puerto in df_historico['Puerto'].unique():
-            df_puerto = df_historico[df_historico['Puerto'] == puerto].copy()
-            
-            if len(df_puerto) < 10:
-                continue
-            
-            # Calcular tasa de crecimiento anual
-            promedios_anuales = df_puerto.groupby('Año')['Cruces'].sum().to_dict()
-            tasas_crecimiento = []
-            
-            if 2023 in promedios_anuales and 2024 in promedios_anuales and promedios_anuales[2023] > 0:
-                tasa_23_24 = (promedios_anuales[2024] - promedios_anuales[2023]) / promedios_anuales[2023]
-                tasas_crecimiento.append(tasa_23_24)
-            
-            if 2024 in promedios_anuales and 2025 in promedios_anuales and promedios_anuales[2024] > 0:
-                tasa_24_25 = (promedios_anuales[2025] - promedios_anuales[2024]) / promedios_anuales[2024]
-                tasas_crecimiento.append(tasa_24_25)
-            
-            tasa_crecimiento_promedio = np.mean(tasas_crecimiento) if tasas_crecimiento else 0.03
-            tasa_crecimiento_promedio = max(-0.10, min(0.15, tasa_crecimiento_promedio))
-            
-            # Calcular estacionalidad mensual
-            promedio_global = df_puerto['Cruces'].mean()
-            estacionalidad = {}
-            
-            for mes in range(1, 13):
-                df_mes = df_puerto[df_puerto['Mes'] == mes]
-                if len(df_mes) > 0 and promedio_global > 0:
-                    promedio_mes = df_mes['Cruces'].mean()
-                    estacionalidad[mes] = promedio_mes / promedio_global
-                else:
-                    estacionalidad[mes] = 1.0
-            
-            # Calcular volatilidad
-            volatilidad_std = df_puerto['Cruces'].std()
-            volatilidad_cv = volatilidad_std / df_puerto['Cruces'].mean() if df_puerto['Cruces'].mean() > 0 else 0.1
-            volatilidad = max(0.05, min(0.30, volatilidad_cv))
-            
-            # Obtener datos de 2025
-            df_2025 = df_puerto[df_puerto['Año'] == 2025]
-            if len(df_2025) > 0:
-                # CRÍTICO: Los datos de BTS son MENSUALES, necesitamos convertir a DIARIOS
-                # Verificar si son datos mensuales (pocos registros por año)
-                registros_por_anio = len(df_2025)
-                if registros_por_anio <= 12:  # Datos mensuales
-                    # Convertir totales mensuales a promedios diarios (~30 días por mes)
-                    promedio_diario_2025 = df_2025['Cruces'].mean() / 30
-                    ultimo_valor = df_2025.sort_values('Fecha')['Cruces'].iloc[-1] / 30
-                else:  # Datos diarios
-                    promedio_diario_2025 = df_2025['Cruces'].mean()
-                    ultimo_valor = df_2025.sort_values('Fecha')['Cruces'].iloc[-1]
-            else:
-                # Si no hay datos de 2025, usar el promedio general (convertido a diario si es necesario)
-                registros_totales = len(df_puerto)
-                años_unicos = df_puerto['Año'].nunique()
-                if registros_totales / años_unicos <= 12:  # Probablemente mensuales
-                    promedio_diario_2025 = df_puerto['Cruces'].mean() / 30
-                else:
-                    promedio_diario_2025 = df_puerto['Cruces'].mean()
-                ultimo_valor = promedio_diario_2025
-            
-            frontera = df_puerto['Frontera'].iloc[0] if 'Frontera' in df_puerto.columns else 'México'
-            
-            tendencias[puerto] = {
-                'tasa_crecimiento_anual': tasa_crecimiento_promedio,
-                'estacionalidad_mensual': estacionalidad,
-                'promedio_diario_2025': promedio_diario_2025,
-                'volatilidad': volatilidad,
-                'ultimo_valor_conocido': ultimo_valor,
-                'frontera': frontera
-            }
-        
-        return tendencias
-        
-    except Exception as e:
-        st.error(f"❌ Error calculando tendencias: {e}")
-        return {}
+elif page_key == "puertos" and PUERTOS_MARITIMOS_AVAILABLE:
+    page_puertos_maritimos()
 
+elif page_key == "workforce" and FUERZA_LABORAL_AVAILABLE:
+    page_fuerza_laboral()
 
-def simular_cruces_2026(tendencias, fecha_inicio='2026-01-01', fecha_fin=None):
-    """Genera datos simulados de cruces para 2026 basados en tendencias históricas"""
-    try:
-        if fecha_fin is None:
-            hoy = datetime.now()
-            fecha_fin = hoy.strftime('%Y-%m-%d') if hoy.year == 2026 else '2026-12-31'
-        
-        fechas = pd.date_range(start=fecha_inicio, end=fecha_fin, freq='D')
-        
-        if len(fechas) == 0:
-            return pd.DataFrame()
-        
-        datos_simulados = []
-        np.random.seed(42)
-        
-        for puerto, trend in tendencias.items():
-            base_2026 = trend['ultimo_valor_conocido'] * (1 + trend['tasa_crecimiento_anual'])
-            
-            for fecha in fechas:
-                mes = fecha.month
-                dia_semana = fecha.weekday()
-                
-                # Aplicar estacionalidad
-                factor_estacional = trend['estacionalidad_mensual'].get(mes, 1.0)
-                cruces_base = base_2026 * factor_estacional
-                
-                # Añadir variación realista
-                variacion = np.random.normal(0, trend['volatilidad'] * cruces_base)
-                cruces_simulados = max(0, cruces_base + variacion)
-                
-                # Reducir en fines de semana
-                if dia_semana >= 5:
-                    cruces_simulados = cruces_simulados * 0.70
-                
-                # Reducir en días festivos
-                if es_dia_festivo(fecha):
-                    cruces_simulados = cruces_simulados * 0.50
-                
-                cruces_simulados = int(round(cruces_simulados))
-                
-                # Calcular distribución FAST/Regular/Perecederos
-                cruces_fast = int(cruces_simulados * np.random.uniform(0.35, 0.45))
-                cruces_regular = int(cruces_simulados * np.random.uniform(0.50, 0.60))
-                cruces_perecederos = max(0, cruces_simulados - cruces_fast - cruces_regular)
-                
-                # === AGREGAR DISTRIBUCIÓN DE TIPOS BTS (Trucks, Containers Loaded, Containers Empty) ===
-                # Distribución típica BTS: ~60% Trucks completos, ~30% Containers Loaded, ~10% Empty
-                trucks = int(cruces_simulados * np.random.uniform(0.55, 0.65))
-                trucks_loaded = int(cruces_simulados * np.random.uniform(0.25, 0.35))
-                trucks_empty = int(cruces_simulados * np.random.uniform(0.05, 0.15))
-                
-                # Ajustar para que sumen exactamente
-                diferencia_bts = cruces_simulados - (trucks + trucks_loaded + trucks_empty)
-                trucks = max(0, trucks + diferencia_bts)
-                
-                # Calcular valor comercial
-                valor_usd = cruces_simulados * np.random.uniform(18000, 25000)
-                
-                datos_simulados.append({
-                    'Fecha': fecha,
-                    'Puerto': puerto,
-                    'Cruces': cruces_simulados,
-                    'Cruces_FAST': cruces_fast,
-                    'Cruces_Regular': cruces_regular,
-                    'Cruces_Perecederos': cruces_perecederos,
-                    'Trucks': trucks,
-                    'Trucks_Loaded': trucks_loaded,
-                    'Trucks_Empty': trucks_empty,
-                    'Valor_USD': valor_usd,
-                    'Frontera': trend['frontera'],
-                    'Tipo': 'Simulado 2026',
-                    'Fuente': f"Predicción basada en tendencias históricas (crecimiento: {trend['tasa_crecimiento_anual']*100:.1f}%)",
-                    'Es_Festivo': es_dia_festivo(fecha)
-                })
-        
-        df_simulado = pd.DataFrame(datos_simulados)
-        return df_simulado
-        
-    except Exception as e:
-        st.error(f"❌ Error simulando datos 2026: {e}")
-        return pd.DataFrame()
+elif page_key == "nearshoring" and NEARSHORING_AVAILABLE:
+    page_nearshoring()
 
-
-# --- FUNCIÓN SIMPLE: CARGAR DATOS POR AÑO ---
-@st.cache_data(ttl=300)  # Cache de 5 minutos
-# --- FUNCIÓN CENTRALIZADA: DATOS DE CRUCES CONSOLIDADOS ---
-@st.cache_data(ttl=300)  # Cache de 5 minutos
-def obtener_datos_cruces_consolidados(usar_datos_reales=True, incluir_simulacion_2026=True, year=None):
-    """
-    Función centralizada que genera/carga datos de cruces aduanales de BTS.
-    Unifica datos de: Trucks, Truck Containers Loaded, Truck Containers Empty
-    Incluye fronteras: US-Mexico Border y US-Canada Border
-    
-    Args:
-        usar_datos_reales: Si True, intenta cargar datos reales de BTS
-        incluir_simulacion_2026: Si True, genera predicciones para 2026 basadas en tendencias históricas
-        year: Año específico a cargar (ej: 2023, 2024, 2025, 2026). Si None, carga todos.
-    
-    Retorna:
-        - df_border: DataFrame con historial de cruces (datos reales + simulaciones cuando aplique)
-        - df_diario_hoy: DataFrame con datos del día actual para cada aduana
-    """
-    
-    # Intentar cargar datos reales desde archivos históricos de BTS
-    df_border = None
-    
-    if usar_datos_reales:
-        try:
-            # OPCIÓN 1: Cargar datos históricos de BTS desde archivos CSV
-            data_dir = Path(__file__).parent / "data"
-            
-            # Determinar qué archivos cargar
-            if year:
-                # Si se especifica un año, cargar solo ese archivo
-                archivos_historicos = [
-                    data_dir / f"border_crossings_{year}_historical.csv"
-                ]
-            else:
-                # Si no se especifica año, usar el orden por defecto (priorizar 2026)
-                archivos_historicos = [
-                    data_dir / "border_crossings_2026_historical.csv",
-                    data_dir / "border_crossings_2025_historical.csv",
-                    data_dir / "border_crossings_2024_historical.csv",
-                    data_dir / "border_crossings_2023_historical.csv"
-                ]
-            
-            dfs_historicos = []
-            for archivo in archivos_historicos:
-                if archivo.exists():
-                    try:
-                        # Usar lectura robusta que maneja columnas combinadas
-                        df_temp = leer_csv_bts_robusto(archivo)
-                        
-                        if df_temp is None or df_temp.empty:
-                            continue
-                        
-                        # Validar que tenga las columnas necesarias (formato BTS)
-                        if 'date' in df_temp.columns and 'port_name' in df_temp.columns and 'value' in df_temp.columns:
-                            # Renombrar columnas para consistencia
-                            df_temp = df_temp.rename(columns={
-                                'date': 'Fecha',
-                                'port_name': 'Puerto',
-                                'value': 'Valor',
-                                'measure': 'Tipo_Medida',
-                                'border': 'Frontera_Original'
-                            })
-                            
-                            # Convertir fecha
-                            df_temp['Fecha'] = pd.to_datetime(df_temp['Fecha'])
-                            
-                            # ===== DETECTAR SI SON DATOS MENSUALES O DIARIOS =====
-                            # Formato BTS estándar: YYYY-MM (mensual) o YYYY-MM-DD (diario)
-                            fechas_unicas = df_temp['Fecha'].dt.to_period('M').nunique()
-                            registros_totales = len(df_temp)
-                            
-                            # Si hay menos registros que días esperados, son datos mensuales
-                            es_mensual = (registros_totales / fechas_unicas) < 5  # Menos de 5 registros por mes = mensual
-                            
-                            if es_mensual:
-                                # Convertir datos mensuales a diarios
-                                df_temp = convertir_mensual_a_diario(df_temp)
-                            
-                            # IMPORTANTE: Filtrar solo medidas de camiones
-                            # Tipos de medida BTS: "Trucks", "Truck Containers Loaded", "Truck Containers Empty"
-                            if 'Tipo_Medida' in df_temp.columns:
-                                df_temp = df_temp[df_temp['Tipo_Medida'].isin([
-                                    'Trucks',
-                                    'Truck Containers Loaded',
-                                    'Truck Containers Empty'
-                                ])]
-                            
-                            # Convertir valores a numérico
-                            df_temp['Valor'] = pd.to_numeric(df_temp['Valor'], errors='coerce').fillna(0).astype(int)
-                            
-                            # Agregar columna Frontera simplificada (México o Canadá)
-                            if 'Frontera_Original' in df_temp.columns:
-                                df_temp['Frontera'] = df_temp['Frontera_Original'].apply(
-                                    lambda x: 'México' if 'Mexico' in str(x) else 'Canadá'
-                                )
-                            
-                            dfs_historicos.append(df_temp)
-                            
-                    except Exception as e:
-                        st.warning(f"⚠️ Error cargando {archivo.name}: {e}")
-                        continue
-            
-            # Combinar todos los dataframes históricos
-            if dfs_historicos:
-                df_combined = pd.concat(dfs_historicos, ignore_index=True)
-                
-                # PASO 1: Pivotar los datos para consolidar los 3 tipos de medida por puerto/fecha
-                # Agrupar por Puerto, Fecha, Frontera y sumar/separar por tipo de medida
-                df_pivot = df_combined.pivot_table(
-                    index=['Puerto', 'Fecha', 'Frontera'],
-                    columns='Tipo_Medida',
-                    values='Valor',
-                    aggfunc='sum',
-                    fill_value=0
-                ).reset_index()
-                
-                # Renombrar columnas pivotadas
-                df_pivot.columns.name = None
-                columnas_rename = {}
-                for col in df_pivot.columns:
-                    if col == 'Trucks':
-                        columnas_rename[col] = 'Trucks'
-                    elif col == 'Truck Containers Loaded':
-                        columnas_rename[col] = 'Trucks_Loaded'
-                    elif col == 'Truck Containers Empty':
-                        columnas_rename[col] = 'Trucks_Empty'
-                
-                df_pivot = df_pivot.rename(columns=columnas_rename)
-                
-                # Asegurar que existen las columnas necesarias
-                for col in ['Trucks', 'Trucks_Loaded', 'Trucks_Empty']:
-                    if col not in df_pivot.columns:
-                        df_pivot[col] = 0
-                
-                # PASO 2: Calcular total de cruces consolidado
-                # Total = Trucks + Trucks_Loaded + Trucks_Empty
-                df_pivot['Cruces'] = df_pivot['Trucks'] + df_pivot['Trucks_Loaded'] + df_pivot['Trucks_Empty']
-                
-                # Eliminar filas sin cruces
-                df_pivot = df_pivot[df_pivot['Cruces'] > 0]
-                
-                # Ordenar por fecha y puerto
-                df_border = df_pivot.sort_values(['Fecha', 'Puerto'])
-                
-                # PASO 3: Agregar columnas calculadas
-                df_border['Es_Festivo'] = df_border['Fecha'].apply(es_dia_festivo)
-                
-                # Calcular distribución FAST vs Regular basada en datos reales
-                # FAST típicamente es 35-45% del tráfico, Regular 50-60%, Perecederos 5%
-                np.random.seed(42)  # Para reproducibilidad
-                df_border['Cruces_FAST'] = (df_border['Cruces'] * np.random.uniform(0.35, 0.45, len(df_border))).astype(int)
-                df_border['Cruces_Regular'] = (df_border['Cruces'] * np.random.uniform(0.50, 0.60, len(df_border))).astype(int)
-                df_border['Cruces_Perecederos'] = (df_border['Cruces'] * 0.05).astype(int)
-                
-                # Ajustar para que sumen correctamente
-                diferencia = df_border['Cruces'] - (df_border['Cruces_FAST'] + df_border['Cruces_Regular'] + df_border['Cruces_Perecederos'])
-                df_border['Cruces_Regular'] = df_border['Cruces_Regular'] + diferencia
-                
-                # Calcular valor comercial (promedio real: $18,000-$25,000 USD por camión)
-                df_border['Valor_USD'] = df_border['Cruces'] * np.random.uniform(18000, 25000, len(df_border))
-                
-                # Estadísticas de carga
-                puertos_mexico = df_border[df_border['Frontera'] == 'México']['Puerto'].nunique()
-                puertos_canada = df_border[df_border['Frontera'] == 'Canadá']['Puerto'].nunique()
-                
-                # ============================================================
-                # NUEVO: SISTEMA DE SIMULACIÓN PARA 2026
-                # ============================================================
-                if incluir_simulacion_2026:
-                    try:
-                        with st.spinner("🔮 Generando predicción de cruces basada en tendencias históricas..."):
-                            # Calcular tendencias históricas
-                            tendencias = calcular_tendencias_historicas(df_border)
-                            
-                            if tendencias:
-                                # Simular datos para 2026 (hasta la fecha actual si estamos en 2026)
-                                fecha_actual = datetime.now()
-                                fecha_inicio_2026 = '2026-01-01'
-                                fecha_fin_2026 = fecha_actual.strftime('%Y-%m-%d') if fecha_actual.year == 2026 else '2026-12-31'
-                                
-                                df_simulado_2026 = simular_cruces_2026(tendencias, fecha_inicio_2026, fecha_fin_2026)
-                                
-                                if not df_simulado_2026.empty:
-                                    # Combinar datos reales con simulados
-                                    df_border = pd.concat([df_border, df_simulado_2026], ignore_index=True)
-                                    df_border = df_border.sort_values(['Fecha', 'Puerto'])
-                                    
-                                    # Estadísticas de la simulación
-                                    registros_2026 = len(df_simulado_2026)
-                                    puertos_2026 = df_simulado_2026['Puerto'].nunique()
-                                    cruces_2026 = df_simulado_2026['Cruces'].sum()
-                                    tasa_crecimiento_promedio = np.mean([t['tasa_crecimiento_anual'] for t in tendencias.values()]) * 100
-                                
-                    except Exception as e:
-                        pass  # Simulación fallida, continuar con datos disponibles
-                
-        except Exception as e:
-            st.error(f"❌ Error cargando datos históricos de BTS: {e}")
-            df_border = None
-    
-    # Si no hay datos reales, generar datos simulados consistentes
-    if df_border is None or df_border.empty:
-        # Generar datos de los últimos 12 meses
-        fecha_inicio = (datetime.now() - timedelta(days=365))
-        fecha_fin = datetime.now()
-        fechas = pd.date_range(start=fecha_inicio, end=fecha_fin, freq='D')
-        
-        # PUERTOS CON VOLÚMENES BASE CONSISTENTES (cruces diarios promedio)
-        # Basados en datos mensuales reales convertidos a diarios (mensual ÷ 30)
-        puertos_base = {
-            'Nuevo Laredo III (Comercio Mundial)': 567,     # ~17,000 mensuales
-            'Reynosa (Pharr)': 450,                         # ~13,500 mensuales
-            'Laredo - Colombia': 400,                       # ~12,000 mensuales
-            'Cd. Juárez (Paso del Norte/Zaragoza)': 383,   # ~11,500 mensuales
-            'Tijuana (Mesa de Otay)': 350,                  # ~10,500 mensuales
-            'Matamoros (Gral. Ignacio Zaragoza)': 300,     # ~9,000 mensuales
-            'Nogales (Mariposa)': 250,                      # ~7,500 mensuales
-            'Mexicali II (Nvo. Mexicali)': 200,            # ~6,000 mensuales
-            'Piedras Negras': 167,                          # ~5,000 mensuales
-            'San Luis Río Colorado': 133,                   # ~4,000 mensuales
-            'Agua Prieta': 100,                             # ~3,000 mensuales
-            'Cd. Acuña': 117                                # ~3,500 mensuales
-        }
-        
-        # Generar datos históricos
-        data_list = []
-        np.random.seed(42)  # Seed fijo para consistencia
-        
-        for puerto, base_cruces in puertos_base.items():
-            for fecha in fechas:
-                es_festivo = es_dia_festivo(fecha)
-                
-                # Variabilidad diaria consistente (+/- 15%)
-                variabilidad = np.random.uniform(0.85, 1.15)
-                cruces_base = int(base_cruces * variabilidad)
-                
-                # Distribución FAST vs Regular vs Perecederos
-                if es_festivo:
-                    # En días festivos: reducción ~70%
-                    cruces_fast = int(cruces_base * 0.25)
-                    cruces_regular = 0
-                    cruces_perecederos = int(cruces_base * 0.05)
-                    cruces = cruces_fast + cruces_perecederos
-                else:
-                    # Día normal: FAST 40%, Regular 55%, Perecederos 5%
-                    cruces_fast = int(cruces_base * 0.40)
-                    cruces_regular = int(cruces_base * 0.55)
-                    cruces_perecederos = int(cruces_base * 0.05)
-                    cruces = cruces_fast + cruces_regular + cruces_perecederos
-                
-                # Valor comercial por camión: $18,000 - $25,000 USD (promedio real)
-                # Fuente: US Census Bureau - valor promedio por camión en comercio MX-USA
-                valor_usd = cruces * np.random.uniform(18000, 25000)
-                
-                data_list.append([
-                    fecha, puerto, cruces, cruces_fast, cruces_regular, 
-                    cruces_perecederos, valor_usd, es_festivo
-                ])
-        
-        df_border = pd.DataFrame(data_list, columns=[
-            'Fecha', 'Puerto', 'Cruces', 'Cruces_FAST', 'Cruces_Regular', 'Cruces_Perecederos', 'Valor_USD', 'Es_Festivo'
-        ])
-        
-        # ===== AGREGAR COLUMNAS DE TIPOS BTS (Trucks, Containers Loaded, Containers Empty) =====
-        # Distribución típica BTS: ~60% Trucks completos, ~30% Containers Loaded, ~10% Empty
-        np.random.seed(42)  # Mantener consistencia
-        df_border['Trucks'] = (df_border['Cruces'] * np.random.uniform(0.55, 0.65, len(df_border))).astype(int)
-        df_border['Trucks_Loaded'] = (df_border['Cruces'] * np.random.uniform(0.25, 0.35, len(df_border))).astype(int)
-        df_border['Trucks_Empty'] = (df_border['Cruces'] * np.random.uniform(0.05, 0.15, len(df_border))).astype(int)
-        
-        # Ajustar para que sumen exactamente al total de cruces
-        diferencia_bts = df_border['Cruces'] - (df_border['Trucks'] + df_border['Trucks_Loaded'] + df_border['Trucks_Empty'])
-        df_border['Trucks'] = df_border['Trucks'] + diferencia_bts
-        df_border['Trucks'] = df_border['Trucks'].clip(lower=0)  # No negativos
-        
-        st.info(f"📊 Datos simulados generados: {len(df_border):,} registros con distribución BTS (Trucks, Containers Loaded/Empty)")
-        
-        # Agregar columna Frontera para compatibilidad con filtros
-        # Mapeo básico de puertos conocidos a fronteras
-        puertos_mexico = [
-            'Nuevo Laredo', 'Tijuana', 'Mexicali', 'Nogales', 'Piedras Negras',
-            'Reynosa', 'Ciudad Juárez', 'Matamoros', 'Ciudad Acuña', 'Ojinaga',
-            'Miguel Alemán', 'Nuevo Progreso', 'Tecate', 'Sonoyta', 'Agua Prieta',
-            'Naco', 'Palomas', 'Laredo', 'Otay Mesa', 'Calexico', 'Eagle Pass',
-            'Hidalgo', 'Ysleta', 'Brownsville', 'Pharr', 'Del Rio', 'El Paso',
-            'Presidio', 'Roma', 'Progreso', 'San Ysidro', 'Lukeville', 'Douglas',
-            'Columbus'
-        ]
-        
-        df_border['Frontera'] = df_border['Puerto'].apply(
-            lambda x: 'México' if any(p in str(x) for p in puertos_mexico) else 'Canadá'
-        )
-    
-    # Agregar columnas auxiliares
-    df_border['Mes'] = pd.to_datetime(df_border['Fecha']).dt.strftime('%Y-%m')
-    df_border['Semana'] = pd.to_datetime(df_border['Fecha']).dt.isocalendar().week
-    
-    # ===== CREAR ALIASES PARA COMPATIBILIDAD CON DIFERENTES MÓDULOS =====
-    # Algunos módulos usan 'Truck Containers Loaded', otros 'Trucks_Loaded'
-    if 'Trucks_Loaded' in df_border.columns and 'Truck Containers Loaded' not in df_border.columns:
-        df_border['Truck Containers Loaded'] = df_border['Trucks_Loaded']
-    
-    if 'Trucks_Empty' in df_border.columns and 'Truck Containers Empty' not in df_border.columns:
-        df_border['Truck Containers Empty'] = df_border['Trucks_Empty']
-    
-    # Crear DataFrame del día actual para monitoreo
-    fecha_hoy = datetime.now().date()
-    
-    # === DEBUG: Verificar fechas disponibles ===
-    fechas_disponibles = pd.to_datetime(df_border['Fecha']).dt.date.unique()
-    fechas_recientes = sorted(fechas_disponibles)[-5:]
-    
-    # === DEBUG CRÍTICO: Identificar origen de datos ===
-    tiene_columna_tipo = 'Tipo' in df_border.columns
-    # Verificar si tiene columnas BTS en df_border
-    tiene_bts_en_border = all(col in df_border.columns for col in ['Trucks', 'Trucks_Loaded', 'Trucks_Empty'])
-    
-    df_diario_hoy = df_border[pd.to_datetime(df_border['Fecha']).dt.date == fecha_hoy].copy()
-    
-    # Si no hay datos de hoy, usar el último día disponible
-    if df_diario_hoy.empty:
-        ultima_fecha = df_border['Fecha'].max()
-        df_diario_hoy = df_border[df_border['Fecha'] == ultima_fecha].copy()
-    
-    # Renombrar para compatibilidad con página de monitoreo
-    if 'Puerto' in df_diario_hoy.columns and 'Aduana' not in df_diario_hoy.columns:
-        df_diario_hoy['Aduana'] = df_diario_hoy['Puerto']
-    
-    # Agregar columna de Contenedores (para compatibilidad)
-    if 'Contenedores' not in df_diario_hoy.columns:
-        df_diario_hoy['Contenedores'] = df_diario_hoy['Cruces']
-    
-    # ===== CREAR ALIASES DE COLUMNAS PARA COMPATIBILIDAD =====
-    if 'Trucks_Loaded' in df_diario_hoy.columns and 'Truck Containers Loaded' not in df_diario_hoy.columns:
-        df_diario_hoy['Truck Containers Loaded'] = df_diario_hoy['Trucks_Loaded']
-    
-    if 'Trucks_Empty' in df_diario_hoy.columns and 'Truck Containers Empty' not in df_diario_hoy.columns:
-        df_diario_hoy['Truck Containers Empty'] = df_diario_hoy['Trucks_Empty']
-    
-    # ===== VERIFICAR Y CREAR COLUMNAS DE TIPOS BTS SI NO EXISTEN =====
-    if 'Trucks' not in df_diario_hoy.columns or 'Trucks_Loaded' not in df_diario_hoy.columns or 'Trucks_Empty' not in df_diario_hoy.columns:
-        # Distribución típica: 60% Trucks, 30% Loaded, 10% Empty
-        np.random.seed(int(datetime.now().timestamp()))
-        df_diario_hoy['Trucks'] = (df_diario_hoy['Cruces'] * np.random.uniform(0.55, 0.65, len(df_diario_hoy))).astype(int)
-        df_diario_hoy['Trucks_Loaded'] = (df_diario_hoy['Cruces'] * np.random.uniform(0.25, 0.35, len(df_diario_hoy))).astype(int)
-        df_diario_hoy['Trucks_Empty'] = (df_diario_hoy['Cruces'] * np.random.uniform(0.05, 0.15, len(df_diario_hoy))).astype(int)
-        
-        # Ajustar para que sumen correctamente
-        diferencia = df_diario_hoy['Cruces'] - (df_diario_hoy['Trucks'] + df_diario_hoy['Trucks_Loaded'] + df_diario_hoy['Trucks_Empty'])
-        df_diario_hoy['Trucks'] = df_diario_hoy['Trucks'] + diferencia
-        df_diario_hoy['Trucks'] = df_diario_hoy['Trucks'].clip(lower=0)
-    
-    return df_border, df_diario_hoy
-
-# --- PÁGINAS ---
-# Todas las páginas han sido extraídas a la carpeta pages/ e importadas al inicio del archivo
-    # Título con diseño corporativo mejorado
-    page_header(
-        title="FreightMetrics", 
-        subtitle="Dashboard Ejecutivo de Inteligencia Logística",
-        icon="🚢"
-    )
-
-    # ============ SECCIÓN 1: FUERZA LABORAL ============
-    section_header("Sector Autotransporte - Fuerza Laboral", icon="👥", color="#4070F4")
-    
-    col_fl1, col_fl2, col_fl3 = st.columns(3)
-    with col_fl1:
-        metric_card(
-            title="Total Permisionarios",
-            value="198,500",
-            icon="🏢",
-            color="#29B5E8",
-            delta="Permisionarios federales (SICT)"
-        )
-    with col_fl2:
-        metric_card(
-            title="Parque Vehicular",
-            value="630,000",
-            icon="🚛",
-            color="#4070F4",
-            delta="Unidades motrices en operación"
-        )
-    with col_fl3:
-        metric_card(
-            title="Déficit Operadores",
-            value="99,000",
-            icon="⚠️",
-            color="#EF553B",
-            delta="Acumulado 2024 (IRU)"
-        )
-
-    spacer(30)
-
-    # ============ SECCIÓN 2: PUERTOS MARÍTIMOS ============
-    section_header("Puertos Marítimos Mexicanos", icon="⚓", color="#29B5E8")
-    
-    # Obtener datos de puertos
-    df_puertos = obtener_datos_mapeados()
-    total_puertos = len(df_puertos)
-    total_operaciones = int(df_puertos["Operaciones"].sum())
-    saturacion_promedio = int(df_puertos["Saturacion"].mean())
-    puerto_mayor = df_puertos.loc[df_puertos["Operaciones"].idxmax(), "Puerto"]
-    
-    col_pm1, col_pm2, col_pm3, col_pm4 = st.columns(4)
-    with col_pm1:
-        metric_card_compact(
-            title="Puertos Monitorizados",
-            value=str(total_puertos),
-            icon="⚓",
-            color="#29B5E8"
-        )
-    with col_pm2:
-        metric_card_compact(
-            title="Operaciones Totales",
-            value=f"{total_operaciones:,}",
-            icon="📦",
-            color="#4070F4"
-        )
-    with col_pm3:
-        metric_card_compact(
-            title="Saturación Promedio",
-            value=f"{saturacion_promedio}%",
-            icon="📊",
-            color="#FFA726" if saturacion_promedio > 70 else "#00C853"
-        )
-    with col_pm4:
-        metric_card_compact(
-            title="Líder Operaciones",
-            value=puerto_mayor,
-            icon="🏆",
-            color="#4CAF50"
-        )
-
-    spacer(30)
-
-    # ============ SECCIÓN 3: FLUJOS FRONTERIZOS ============
-    section_header(
-        title="Flujos de Carga Transfronterizos",
-        icon="🚛",
-        color="#4070F4"
-    )
-    
-    # Simular métricas de flujos fronterizos
-    col_ff1, col_ff2, col_ff3, col_ff4 = st.columns(4)
-    with col_ff1:
-        metric_card_compact(
-            title="Puertos Activos",
-            value="12",
-            icon="🌎",
-            color="#29B5E8"
-        )
-    with col_ff2:
-        metric_card_compact(
-            title="Cruces Mensuales",
-            value="1.8M",
-            icon="🚚",
-            color="#4070F4"
-        )
-    with col_ff3:
-        metric_card_compact(
-            title="Valor Comercio",
-            value="$98B",
-            icon="💵",
-            color="#4CAF50"
-        )
-    with col_ff4:
-        metric_card_compact(
-            title="Líder Cruces",
-            value="N. Laredo",
-            icon="🏆",
-            color="#FFA726"
-        )
-
-    spacer(30)
-
-    # ============ SECCIÓN 4: MONITOREO ADUANAS ============
-    section_header(
-        title="Estado Operativo de Aduanas",
-        icon="🚦",
-        color="#4070F4"
-    )
-    
-    col_ad1, col_ad2, col_ad3, col_ad4 = st.columns(4)
-    with col_ad1:
-        metric_card_compact(
-            title="Operación Normal",
-            value="7",
-            icon="✅",
-            color="#4CAF50"
-        )
-    with col_ad2:
-        metric_card_compact(
-            title="Saturación Media",
-            value="3",
-            icon="⚠️",
-            color="#FFA726"
-        )
-    with col_ad3:
-        metric_card_compact(
-            title="Alerta Crítica",
-            value="2",
-            icon="🔴",
-            color="#EF553B"
-        )
-    with col_ad4:
-        metric_card_compact(
-            title="Tiempo Espera Prom.",
-            value="47 min",
-            icon="⏱️",
-            color="#11101D"
-        )
-
-    spacer(30)
-
-    # ============ INSIGHTS EJECUTIVOS ============
-    section_header(
-        title="Insights Ejecutivos",
-        icon="💡",
-        color="#FFA726"
-    )
-    
-    col_ins1, col_ins2 = st.columns(2)
-    with col_ins1:
-        info_card(
-            title="⚠️ Déficit Crítico de Operadores",
-            content="""El sector enfrenta un déficit de **99,000 operadores**, equivalente al **15.7%** 
-            del parque vehicular (acumulado 2024 según IRU). Se requiere inversión urgente en capacitación y atracción de talento.""",
-            icon="⚠️",
-            color="#FFA726"
-        )
-    with col_ins2:
-        info_card(
-            title="📈 Flujo Comercial Robusto",
-            content="""Los cruces fronterizos mantienen un promedio de **1.8M mensuales**, con un valor comercial 
-            de **$98B USD/mes**. Nuevo Laredo continúa siendo el puerto líder.""",
-            icon="📈",
-            color="#4CAF50"
-        )
-    
-    spacer(20)
-    
-    col_ins3, col_ins4 = st.columns(2)
-    with col_ins3:
-        info_card(
-            title="🚦 Congestión Aduanal",
-            content="""**2 aduanas** en estado crítico con tiempos de espera superiores a 90 minutos. 
-            Se recomienda optimización de rutas y horarios de cruce.""",
-            icon="🚦",
-            color="#EF553B"
-        )
-    with col_ins4:
-        info_card(
-            title="🏢 Atomización del Sector",
-            content="""El **82.2%** de permisionarios son "hombre-camión" (1-5 unidades), 
-            lo que representa oportunidades de consolidación y profesionalización.""",
-            icon="🏢",
-            color="#4070F4"
-        )
-
-
-# ============================================================
-# PÁGINAS: TODAS LAS PÁGINAS HAN SIDO EXTRAÍDAS
-# ============================================================
-# Las siguientes páginas se importan desde el directorio pages/:
-# - page_inicio: pages/Inicio.py
-# - page_mapa: pages/Mapa.py
-# - page_fuerza_laboral: pages/Fuerza_Laboral.py
-# - page_puertos_maritimos: pages/Puertos_Maritimos.py
-# - page_corredores_logisticos: pages/Corredores_Logisticos.py
-# - page_nearshoring: pages/Nearshoring.py
-# - page_monitoreo_aduanas: pages/Monitoreo_Aduanas.py
-# ============================================================
-
+elif page_key == "cbp_times" and CBP_WAIT_TIMES_AVAILABLE:
+    page_cbp_wait_times()

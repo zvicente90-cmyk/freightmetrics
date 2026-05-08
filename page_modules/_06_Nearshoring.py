@@ -38,6 +38,18 @@ def page_nearshoring():
         "🌎"
     )
     
+    # ============================================================
+    # Estilos CSS LOCALES para esta página
+    # ============================================================
+    st.markdown("""
+    <style>
+        [data-testid="metric-container"] {
+            background: linear-gradient(135deg, rgba(251, 192, 45, 0.10) 0%, rgba(255, 235, 59, 0.08) 100%) !important;
+            border-left: 5px solid #FBC02D !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # Cargar datos históricos
     @st.cache_data(ttl=600)
     def cargar_datos_nearshoring():

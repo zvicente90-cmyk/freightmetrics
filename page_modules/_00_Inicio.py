@@ -53,12 +53,10 @@ def page_dashboard():
     from datetime import datetime
     import pytz
     
-    # Zona horaria de México (Centro)
-    TZ_MEXICO = pytz.timezone('America/Mexico_City')
-    
+    # Usar zona horaria local del sistema
     def obtener_hora_actual():
-        """Obtiene la hora actual en zona horaria de México"""
-        return datetime.now(TZ_MEXICO)
+        """Obtiene la hora actual en la zona horaria local del sistema"""
+        return datetime.now()
     
     # CSS GLOBAL PROFESIONAL - MEJORA TODOS LOS COMPONENTES
     # COMENTADO: Los estilos CSS de [data-testid] interfieren con tarjetas inline
