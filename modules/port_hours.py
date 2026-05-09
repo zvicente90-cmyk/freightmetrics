@@ -2,6 +2,7 @@
 Módulo de Horarios de Operación de Puertos
 Almacena y gestiona los horarios de operación de puertos México-USA y Canadá-USA
 """
+import re
 
 # ============================================================================
 # HORARIOS DE PUERTOS MÉXICO-USA
@@ -430,21 +431,41 @@ HORARIOS_CANADA = {
 TODOS_HORARIOS = {**HORARIOS_MEXICO, **HORARIOS_CANADA}
 
 
+def _normalizar(s: str) -> str:
+    """Normaliza texto para comparación: minúsculas, sin puntuación."""
+    return re.sub(r'[^a-z0-9 ]', '', s.lower()).strip()
+
+
 def obtener_horarios_puerto(codigo_puerto: str) -> dict:
     """
     Obtiene los horarios de operación de un puerto.
-    
+
     Args:
-        codigo_puerto: Código CBP del puerto (ej: "09250602")
-    
+        codigo_puerto: Código CBP numérico (ej: "09250602") o clave XML
+                       (ej: "Laredo / World Trade Bridge")
+
     Returns:
-        Dict con horarios o None si no existe
+        Dict con horarios o fallback si no existe
     """
-    return TODOS_HORARIOS.get(codigo_puerto, {
+    # 1. Coincidencia exacta (códigos numéricos CBP heredados)
+    if codigo_puerto in TODOS_HORARIOS:
+        return TODOS_HORARIOS[codigo_puerto]
+
+    # 2. Búsqueda por nombre — soporta claves XML como "Laredo / World Trade Bridge"
+    #    Toma la primera parte antes de " / " como nombre del puerto
+    port_name = _normalizar(codigo_puerto.split(" / ")[0])
+    if port_name:
+        for horarios in TODOS_HORARIOS.values():
+            nombre_norm = _normalizar(horarios.get("nombre", ""))
+            if nombre_norm.startswith(port_name) or port_name in nombre_norm:
+                return horarios
+
+    # 3. Fallback
+    return {
         "nombre": f"Puerto {codigo_puerto}",
         "exportacion_lv": "—",
         "importacion_lv": "—",
         "fin_semana": "—",
         "dia_festivo": "—",
         "notas": "Información no disponible",
-    })
+    }

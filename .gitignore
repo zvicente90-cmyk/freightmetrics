@@ -66,3 +66,5 @@ htlm/
 
 # Componentes temporales
 ui_components.py
+# Streamlit secrets (credenciales locales)
+.streamlit/secrets.toml

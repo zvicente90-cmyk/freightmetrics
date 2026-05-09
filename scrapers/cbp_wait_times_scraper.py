@@ -45,95 +45,81 @@ CBP_API_BASE = "https://bwt.cbp.gov/api"
 CBP_DETAILS_BASE = "https://bwt.cbp.gov/details"
 
 # ============================================================================
-# TODOS LOS PUERTOS MÉXICO-USA (22 puertos principales)
+# TODOS LOS PUERTOS MÉXICO-USA — códigos reales del API bwtpublicmod de CBP
 # ============================================================================
 PUERTOS_MEXICO = {
-    "Laredo": "06480101",
-    "Ysleta": "06450702",
-    "Otay Mesa": "09250602",
-    "Hidalgo": "06470101",
-    "Brownsville": "06471001",
-    "Eagle Pass": "06500601",
-    "El Paso": "06450701",
-    "Nogales": "07200601",
-    "Calexico East": "09251202",
-    "Santa Teresa": "06451701",
-    "San Luis": "07150501",
-    "Del Rio": "06481001",
-    "Douglas": "07201001",
-    "Tecate": "09250702",
-    "Tornillo": "06452401",
-    "Naco": "07202001",
-    "Rio Grande City": "06472001",
-    "Progreso": "06473001",
-    "Roma": "06474001",
-    "Presidio": "06483001",
-    "Columbus": "07203001",
-    "Lukeville": "07204001",
-    
-    # Puertos de carga especializados
-    "San Ysidro": "09250101",
-    "BOTA CARGO FACILITY": "09250401",
-    "Brownsville - Los Indios": "06470501",
-    "Brownsville - Veterans International": "06470701",
+    "Laredo - World Trade Bridge": "230404",
+    "Laredo - Colombia Solidarity": "230403",
+    "Laredo - Bridge I": "230401",
+    "Laredo - Bridge II": "230402",
+    "Brownsville - B&M": "535501",
+    "Brownsville - Los Indios": "535503",
+    "Brownsville - Veterans International": "535502",
+    "Hidalgo": "230501",
+    "Pharr": "230502",
+    "Anzalduas International Bridge": "230503",
+    "Rio Grande City": "230701",
+    "Progreso - Progreso International": "230901",
+    "Progreso - Donna International": "230902",
+    "Roma": "231001",
+    "Del Rio": "230201",
+    "Eagle Pass - Bridge I": "230301",
+    "Eagle Pass - Bridge II": "230302",
+    "Presidio": "240301",
+    "Tornillo": "240401",
+    "El Paso - Ysleta": "240203",
+    "El Paso - Paso Del Norte": "240202",
+    "El Paso - Bridge of the Americas": "240201",
+    "Santa Teresa": "240801",
+    "Columbus": "240601",
+    "Otay Mesa - Commercial": "250602",
+    "San Ysidro": "250401",
+    "Calexico East": "250301",
+    "Calexico West": "250302",
+    "Tecate": "250501",
+    "Nogales - Mariposa": "260402",
+    "Nogales - Deconcini": "260401",
+    "Douglas": "260101",
+    "Naco": "260301",
+    "Lukeville": "260201",
+    "San Luis I": "260801",
+    "San Luis II": "260802",
 }
 
 # ============================================================================
-# TODOS LOS PUERTOS CANADÁ-USA (15 puertos principales)
+# TODOS LOS PUERTOS CANADÁ-USA — códigos reales del API bwtpublicmod de CBP
 # ============================================================================
 PUERTOS_CANADA = {
-    "Alcan": "04510101",
-    "Alexandria Bay": "01020101",
-    "Antler": "04511001",
-    "Baudette": "04520101",
-    "Beecher Falls": "01030101",
-    "Blaine": "05200101",
-    "Boundary": "04530101",
-    "Bridgewater": "01040101",
-    "Buffalo Niagara Falls": "01050101",
-    "Calais": "01060101",
-    "Carbury": "04540101",
-    "Champlain Rouses Point": "01070101",
-    "Dalton Cache": "04550101",
-    "Danville": "01080101",
-    "Del Bonita": "04560101",
-    "Dunseith": "04570101",
-    "Emerson": "04580101",
-    "Fort Frances": "04590101",
-    "Highgate Springs": "01090101",
-    "International Falls": "04600101",
-    "Jacobs Field": "04610101",
-    "Lynden": "05210101",
-    "Ogdensburg": "01100101",
-    "Pembina": "04620101",
-    "Pigeon River": "04630101",
-    "Point Roberts": "05220101",
-    "Port of Bellingham": "05230101",
-    "Rainbow Bridge": "01110101",
-    "St. Armand": "01120101",
-    "St. Stephen": "01130101",
-    "Sweetgrass": "04640101",
-    "Sumas": "05240101",
-    "The Pas": "04650101",
-    "Thousand Islands Bridge": "01140101",
-    "Baudette": "04520101",
+    "Blaine - Pacific Highway": "300401",
+    "Blaine - Peace Arch": "300402",
+    "Blaine - Point Roberts": "300403",
+    "Sumas": "300901",
+    "Lynden": "302301",
+    "Sweetgrass": "331001",
+    "Pembina": "340101",
+    "International Falls": "360401",
+    "Sault Ste. Marie": "380301",
+    "Detroit - Ambassador Bridge": "380001",
+    "Detroit - Windsor Tunnel": "380002",
+    "Port Huron - Bluewater Bridge": "380201",
+    "Buffalo/Niagara Falls - Peace Bridge": "090101",
+    "Buffalo/Niagara Falls - Rainbow Bridge": "090102",
+    "Buffalo/Niagara Falls - Lewiston Bridge": "090104",
+    "Alexandria Bay - Thousand Islands Bridge": "070801",
+    "Ogdensburg": "070101",
+    "Massena": "070401",
+    "Champlain": "071201",
+    "Highgate Springs": "021201",
+    "Derby Line": "020901",
+    "Norton": "021101",
+    "Calais - Ferry Point": "011501",
+    "Calais - International Avenue": "011503",
+    "Houlton": "010601",
+    "Jackman": "010401",
 }
 
 # Todos los puertos combinados
 TODOS_PUERTOS = {**PUERTOS_MEXICO, **PUERTOS_CANADA}
-
-# Puerto de referencia (Otay Mesa - Calexico East similar)
-PUERTOS_CBPCODE_LEGACY = {
-    "Otay Mesa": "09250602",          # San Diego, California (COV)
-    "San Ysidro": "09250101",         # San Diego, California (TIJ)
-    "Tecate": "09250702",             # California (TEC)
-    "Calexico East": "09251202",      # California (CEX)
-    "El Paso": "06450701",            # Texas (ELP)
-    "Laredo": "06480101",             # Texas (LRD)
-    "Brownsville": "06471001",        # Texas (BRO)
-    "Eagle Pass": "06500601",         # Texas (EPT)
-    "Nogales": "07200601",            # Arizona (NOG)
-}
 
 # Extensiones por tipo de puerto
 PORT_EXTENSIONS = {

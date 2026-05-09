@@ -1,375 +1,296 @@
-"""
-Módulo de integración de CBP Wait Times en Streamlit
-Proporciona funciones para mostrar tiempos de espera actualizados EN TIEMPO REAL
+﻿"""
+Módulo CBP Wait Times — FreightMetrics
+API: https://bwt.cbp.gov/api/waittimes (XML, todos los puertos en una llamada)
 """
 
 import streamlit as st
 import requests
-import pandas as pd
+import xml.etree.ElementTree as ET
 from datetime import datetime
-from pathlib import Path
-import json
 import logging
-import sys
 
 logger = logging.getLogger(__name__)
 
-# Intentar importar Selenium
-try:
-    from selenium import webdriver
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
-    from selenium.webdriver.chrome.service import Service
-    from selenium.common.exceptions import TimeoutException
-    from webdriver_manager.chrome import ChromeDriverManager
-    SELENIUM_AVAILABLE = True
-except ImportError:
-    SELENIUM_AVAILABLE = False
-    logger.warning("Selenium no disponible - usando fallback")
-
 # ============================================================================
-# PUERTOS SOPORTADOS - TODOS LOS PUERTOS MÉXICO-USA Y CANADÁ-USA
+# MAPEO DE NOMBRES CBP → NOMBRES AMIGABLES
+# Clave: nombre exacto como aparece en el XML de CBP
 # ============================================================================
-
-# PUERTOS MÉXICO-USA (22 principales + especializados)
 PUERTOS_MEXICO = {
     # Texas
-    "Laredo": "06480101",
-    "Brownsville": "06471001",
-    "Rio Grande City": "06472001",
-    "Progreso": "06473001",
-    "Roma": "06474001",
-    "Del Rio": "06481001",
-    "Eagle Pass": "06500601",
-    "Presidio": "06483001",
-    "Tornillo": "06452401",
-    
-    # California-Arizona
-    "Ysleta": "06450702",
-    "Otay Mesa": "09250602",
-    "San Ysidro": "09250101",
-    "Calexico East": "09251202",
-    "Tecate": "09250702",
-    "El Paso": "06450701",
-    "Santa Teresa": "06451701",
-    
+    "Laredo": "Laredo (TX)",
+    "World Trade Bridge": "World Trade Bridge (TX)",
+    "Colombia Solidarity": "Colombia Solidarity (TX)",
+    "Brownsville": "Brownsville (TX)",
+    "Los Indios": "Los Indios (TX)",
+    "Veterans International": "Veterans Intl (TX)",
+    "Rio Grande City": "Rio Grande City (TX)",
+    "Progreso": "Progreso (TX)",
+    "Roma": "Roma (TX)",
+    "Del Rio": "Del Rio (TX)",
+    "Eagle Pass": "Eagle Pass (TX)",
+    "Presidio": "Presidio (TX)",
+    "Tornillo": "Tornillo (TX)",
+    "Hidalgo": "Hidalgo (TX)",
+    "Pharr": "Pharr (TX)",
+    "Anzalduas International Bridge": "Anzalduas (TX)",
+    # El Paso
+    "Ysleta": "Ysleta / El Paso (TX)",
+    "El Paso": "El Paso (TX)",
+    "Bridge of the Americas": "Bridge of Americas (TX)",
+    "Stanton DCL": "Stanton St (TX)",
+    # New Mexico
+    "Santa Teresa": "Santa Teresa (NM)",
+    "Columbus": "Columbus (NM)",
+    # California
+    "Otay Mesa": "Otay Mesa (CA)",
+    "San Ysidro": "San Ysidro (CA)",
+    "Calexico / West": "Calexico West (CA)",
+    "Calexico / East": "Calexico East (CA)",
+    "Tecate": "Tecate (CA)",
     # Arizona
-    "Nogales": "07200601",
-    "Douglas": "07201001",
-    "Naco": "07202001",
-    "Lukeville": "07204001",
-    "San Luis": "07150501",
-    "Columbus": "07203001",
-    
-    # Puertos especializados
-    "BOTA CARGO FACILITY": "09250401",
-    "Brownsville - Los Indios": "06470501",
-    "Brownsville - Veterans International": "06470701",
-    "Hidalgo": "06470101",
+    "Nogales": "Nogales (AZ)",
+    "Mariposa": "Mariposa / Nogales (AZ)",
+    "Douglas": "Douglas (AZ)",
+    "Naco": "Naco (AZ)",
+    "Lukeville": "Lukeville (AZ)",
+    "San Luis": "San Luis (AZ)",
+    "San Luis II": "San Luis II (AZ)",
 }
 
-# PUERTOS CANADÁ-USA (30+ puertos)
 PUERTOS_CANADA = {
-    # British Columbia
-    "Blaine": "05200101",
-    "Point Roberts": "05220101",
-    "Bellingham": "05230101",
-    "Sumas": "05240101",
-    "Lynden": "05210101",
-    
-    # Washington
-    "Port Angeles": "05250101",
-    
-    # Montana
-    "Sweetgrass": "04640101",
-    "Piegan": "04660101",
-    "Turner": "04670101",
-    
-    # North Dakota
-    "Pembina": "04620101",
-    "Portal": "04680101",
-    "Dunseith": "04570101",
-    "Fortuna": "04690101",
-    
-    # Minnesota
-    "International Falls": "04600101",
-    "Baudette": "04520101",
-    "Janesville": "04700101",
-    
-    # Michigan
-    "Sault Ste Marie": "04710101",
-    "Mackinac Bridge": "04720101",
-    
-    # New York
-    "Buffalo Niagara Falls": "01050101",
-    "Thousand Islands Bridge": "01140101",
-    "Rainbow Bridge": "01110101",
-    "Ogdensburg": "01100101",
-    "Champlain Rouses Point": "01070101",
-    "Highgate Springs": "01090101",
-    
-    # Vermont
-    "Alburgh": "01150101",
-    "Highgate Springs": "01090101",
-    
-    # Maine
-    "Calais": "01060101",
-    "Houlton": "01160101",
-    "Van Buren": "01170101",
-    "Jackman": "01180101",
-    "Coburn Gore": "01190101",
+    "Blaine": "Blaine (WA)",
+    "Pacific Highway": "Pacific Hwy (WA)",
+    "Sumas": "Sumas (WA)",
+    "Lynden": "Lynden (WA)",
+    "Sweetgrass": "Sweetgrass (MT)",
+    "Pembina": "Pembina (ND)",
+    "International Falls": "Intl Falls (MN)",
+    "Sault Ste. Marie": "Sault Ste Marie (MI)",
+    "Detroit": "Detroit (MI)",
+    "Port Huron": "Port Huron (MI)",
+    "Buffalo/Niagara Falls": "Buffalo/Niagara (NY)",
+    "Alexandria Bay": "Alexandria Bay (NY)",
+    "Ogdensburg": "Ogdensburg (NY)",
+    "Massena": "Massena (NY)",
+    "Champlain": "Champlain (NY)",
+    "Highgate Springs": "Highgate Springs (VT)",
+    "Calais": "Calais (ME)",
+    "Houlton": "Houlton (ME)",
+    "Jackman": "Jackman (ME)",
+    "Derby Line": "Derby Line (VT)",
 }
 
-# Todos los puertos combinados
-TODOS_PUERTOS_CBP = {**PUERTOS_MEXICO, **PUERTOS_CANADA}
+# Legacy para compatibilidad con page que importa CBP_API_PORTS
+CBP_API_PORTS = {**PUERTOS_MEXICO, **PUERTOS_CANADA}
 
-# Legacy (para compatibilidad)
-CBP_API_PORTS = TODOS_PUERTOS_CBP
+# ============================================================================
+# FETCH ÚNICO — todos los puertos en una sola llamada XML
+# ============================================================================
+
+_CBP_API_DEFAULT = "https://bwt.cbp.gov/api/waittimes"
 
 
-def obtener_espera_puerto_selenium(puerto_codigo: str, puerto_tipo: str = "COV", timeout: int = 10) -> dict:
+def _get_cbp_url() -> str:
     """
-    Obtiene tiempos de espera REALES usando Selenium (ejecuta JavaScript).
-    Este es el método PREFERIDO para datos en tiempo real.
-    
-    Args:
-        puerto_codigo: Código de puerto CBP
-        puerto_tipo: Tipo de puerto (COV = Commercial)
-        timeout: Segundos máximos para esperar
-    
-    Returns:
-        Dict con datos actualizados
+    Resuelve la URL del API de CBP con prioridad:
+    1. st.secrets["CBP_API_URL"]   → configurado en Streamlit Cloud o .streamlit/secrets.toml
+    2. Variable de entorno CBP_API_URL
+    3. URL directa a bwt.cbp.gov (desarrollo local)
     """
-    if not SELENIUM_AVAILABLE:
-        return None
-    
-    driver = None
+    import os
     try:
-        url = f"https://bwt.cbp.gov/details/{puerto_codigo}/{puerto_tipo}"
-        
-        # Configurar Chrome
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--disable-gpu')
-        options.add_argument('--disable-blink-features=AutomationControlled')
-        options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)')
-        
-        # Crear driver
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
-        
-        # Cargar página
-        driver.get(url)
-        
-        # Esperar a que JavaScript cargue datos
-        try:
-            WebDriverWait(driver, timeout).until(
-                lambda d: len(d.find_elements(By.TAG_NAME, "h4")) > 0
-            )
-        except TimeoutException:
-            pass
-        
-        # Extraer datos con JavaScript
-        datos_js = driver.execute_script("""
-        return {
-            'puerto': document.querySelector('h4')?.textContent || 'Unknown',
-            'espera_texto': Array.from(document.querySelectorAll('div')).find(
-                el => el.textContent.includes('Current Wait')
-            )?.textContent || '',
-            'html': document.documentElement.innerHTML.substring(0, 5000)
-        };
-        """)
-        
-        # Procesar datos
-        resultado = {
-            'puerto': datos_js.get('puerto', 'Desconocido'),
-            'espera_minutos': 0,
-            'actualizado': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            'fuente': 'CBP - Tiempo Real (Selenium)',
-            'metodo': 'selenium'
-        }
-        
-        # Extraer tiempo de espera
-        import re
-        espera_texto = datos_js.get('espera_texto', '')
-        if espera_texto and 'Lanes Closed' not in espera_texto:
-            numeros = re.findall(r'\d+', espera_texto)
-            if numeros:
-                resultado['espera_minutos'] = int(numeros[0])
-        
-        return resultado
-        
+        return st.secrets["CBP_API_URL"]
+    except Exception:
+        pass
+    return os.environ.get("CBP_API_URL", _CBP_API_DEFAULT)
+
+
+@st.cache_data(ttl=120)  # Cache 2 minutos
+def _fetch_todos_los_puertos() -> dict:
+    """
+    Llama al XML de CBP una sola vez y devuelve dict con todos los puertos.
+    Formato: { 'Nombre Puerto': { espera_minutos, espera_fast, lanes_open, ... } }
+    """
+    url = _get_cbp_url()
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Accept": "application/xml, text/xml, */*",
+        "Referer": "https://bwt.cbp.gov/",
+    }
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
     except Exception as e:
-        logger.debug(f"Selenium fallback: {str(e)}")
-        return None
-    finally:
-        if driver:
+        logger.error(f"CBP API error: {e}")
+        return {}
+
+    try:
+        root = ET.fromstring(resp.content)
+    except ET.ParseError as e:
+        logger.error(f"XML parse error: {e}")
+        return {}
+
+    puertos = {}
+    timestamp = datetime.now().strftime("%H:%M:%S")
+
+    for port in root.iter("port"):
+        nombre = port.findtext("port_name", "").strip()
+        crossing = port.findtext("crossing_name", "").strip()
+        port_status = port.findtext("port_status", "").strip()
+
+        # Extraer espera comercial
+        def _minutos(tag_path):
+            val = port.findtext(tag_path, "")
             try:
-                driver.quit()
-            except:
-                pass
+                return int(val) if val.isdigit() else None
+            except Exception:
+                return None
+
+        espera_std = _minutos("commercial_vehicle_lanes/standard_lanes/delay_minutes")
+        espera_fast = _minutos("commercial_vehicle_lanes/FAST_lanes/delay_minutes")
+        lanes_open = port.findtext("commercial_vehicle_lanes/standard_lanes/lanes_open", "")
+        update_time = port.findtext("commercial_vehicle_lanes/standard_lanes/update_time", "")
+        commercial_op_status = port.findtext("commercial_vehicle_lanes/standard_lanes/operational_status", "").strip()
+        hours = port.findtext("hours", "")
+
+        key = f"{nombre} / {crossing}" if crossing else nombre
+        puertos[key] = {
+            "port_name": nombre,
+            "crossing_name": crossing,
+            "espera_minutos": espera_std,
+            "espera_fast_minutos": espera_fast,
+            "lanes_open": lanes_open,
+            "port_status": port_status,
+            "commercial_op_status": commercial_op_status,
+            "hours": hours,
+            "update_time": update_time,
+            "actualizado": timestamp,
+            "fuente": "CBP API (Tiempo Real)",
+            "metodo": "xml_waittimes",
+        }
+
+    return puertos
 
 
-@st.cache_data(ttl=60)  # Cache 1 minuto para actualización más rápida
+# ============================================================================
+# API PÚBLICA — misma interfaz que antes para no romper el page
+# ============================================================================
+
 def obtener_espera_puerto(puerto_codigo: str, usar_selenium: bool = False) -> dict:
     """
-    Obtiene tiempos de espera actuales de CBP para un puerto.
-    PRIORIDAD: RSS Feed (RÁPIDO) → Selenium opcional (LENTO) → Datos simulados
-    
-    Args:
-        puerto_codigo: Código de puerto CBP (ej: "09250602")
-        usar_selenium: Si True, intenta Selenium (MÁS LENTO pero más preciso)
-    
-    Returns:
-        Dict con datos de espera
+    Devuelve datos de espera para un puerto.
+    puerto_codigo puede ser un nombre de puerto o código legacy.
     """
-    # Primero: Intentar RSS feed de CBP (RÁPIDO - 1-2 segundos)
-    try:
-        rss_url = f"https://bwt.cbp.gov/api/bwtRss/rssbyportnum/JSON/COV/{puerto_codigo[-6:]}"
-        response = requests.get(rss_url, timeout=3)
-        if response.status_code == 200:
-            data = response.json()
-            
-            resultado = {
-                'puerto': f"Puerto {puerto_codigo}",
-                'espera_minutos': 0,
-                'actualizado': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                'fuente': 'CBP API RSS',
-                'metodo': 'rss'
-            }
-            
-            if isinstance(data, dict) and 'data' in data:
-                item = data['data']
-                resultado['espera_minutos'] = item.get('wait_time', 0)
-                resultado['puerto'] = item.get('port_name', resultado['puerto'])
-            
-            return resultado
-    except Exception as e:
-        logger.debug(f"RSS feed error: {str(e)}")
-    
-    # Opcional: Intenta Selenium si se solicita (MÁS LENTO pero tiempo real)
-    if usar_selenium and SELENIUM_AVAILABLE:
-        try:
-            datos = obtener_espera_puerto_selenium(puerto_codigo)
-            if datos and datos.get('espera_minutos') is not None:
-                return datos
-        except Exception as e:
-            logger.debug(f"Selenium no disponible, usando fallback")
-    
-    # Fallback: Datos simulados
-    return {
-        'puerto': f"Puerto {puerto_codigo}",
-        'espera_minutos': 15,
-        'actualizado': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        'fuente': 'Datos simulados (API no disponible)',
-        'metodo': 'simulado'
-    }
+    todos = _fetch_todos_los_puertos()
+
+    if not todos:
+        return _fallback(puerto_codigo)
+
+    # Buscar coincidencia por nombre exacto primero
+    if puerto_codigo in todos:
+        return todos[puerto_codigo]
+
+    # Buscar coincidencia parcial (case-insensitive)
+    codigo_lower = puerto_codigo.lower()
+    for key, data in todos.items():
+        if codigo_lower in key.lower() or codigo_lower in data.get("port_name", "").lower():
+            return data
+
+    return _fallback(puerto_codigo)
 
 
-def mostrar_tablero_esperas_cbp():
+def obtener_datos_region(region: str = "mexico") -> list[dict]:
     """
-    Muestra un tablero interactivo con tiempos de espera de CBP.
+    Devuelve lista de puertos con datos para una región completa.
+    region: "mexico" | "canada"
     """
-    st.header("🚚 Tiempos de Espera CBP - Puertos de Entrada")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("Puertos México-USA")
-        
-        puertos_mexico = {
-            "Otay Mesa": "09250602",
-            "San Ysidro": "09250101",
-            "Tecate": "09250702",
-            "El Paso": "06450701",
-            "Laredo": "06480101",
-        }
-        
-        # Selectbox para elegir puerto
-        puerto_seleccionado = st.selectbox(
-            "Selecciona un puerto:",
-            list(puertos_mexico.keys())
-        )
-        
-        puerto_codigo = puertos_mexico[puerto_seleccionado]
-        
-        # Obtener datos
-        datos = obtener_espera_puerto(puerto_codigo)
-        
-        # Mostrar datos en tarjetas
-        if datos:
-            col_a, col_b = st.columns(2)
-            
-            with col_a:
-                st.metric(
-                    "⏱️ Espera Actual",
-                    f"{datos.get('espera_minutos', '—')} min",
-                    delta=None
-                )
-            
-            with col_b:
-                st.metric(
-                    "🕐 Actualizado",
-                    datos.get('actualizado', '—'),
-                    delta=None
-                )
-            
-            st.caption(f"Fuente: {datos.get('fuente', 'Desconocida')}")
-    
-    with col2:
-        st.subheader("📊 Comparativa de Puertos")
-        
-        # Tabla comparativa
-        datos_comparativos = []
-        for puerto_nombre, puerto_cod in puertos_mexico.items():
-            datos = obtener_espera_puerto(puerto_cod)
-            datos_comparativos.append({
-                'Puerto': puerto_nombre,
-                'Espera (min)': datos.get('espera_minutos', '—'),
-                'Actualizado': datos.get('actualizado', '—')
-            })
-        
-        df_comparativa = pd.DataFrame(datos_comparativos)
-        st.dataframe(df_comparativa, use_container_width=True, hide_index=True)
+    todos = _fetch_todos_los_puertos()
+    mapa = PUERTOS_MEXICO if region == "mexico" else PUERTOS_CANADA
+    resultado = []
+
+    for cbp_name, display_name in mapa.items():
+        # Buscar en el XML por nombre (exacto, parcial, o palabras clave)
+        datos = None
+        cbp_lower = cbp_name.lower()
+        for key, data in todos.items():
+            key_lower = key.lower()
+            port_lower = data.get("port_name", "").lower()
+            if (
+                cbp_lower in key_lower
+                or cbp_lower in port_lower
+                or key_lower in cbp_lower  # e.g. "East" in "Calexico East"
+            ):
+                datos = data
+                break
+
+        if datos is None:
+            datos = _fallback(cbp_name)
+
+        espera = datos.get("espera_minutos")
+        port_status = datos.get("port_status", "")
+
+        if espera is None:
+            estado_emoji = "⚫"
+            espera_display = "N/A"
+        elif port_status.lower() == "closed":
+            estado_emoji = "⚫"
+            espera_display = "Closed"
+        elif espera < 20:
+            estado_emoji = "🟢"
+            espera_display = espera
+        elif espera < 40:
+            estado_emoji = "🟡"
+            espera_display = espera
+        else:
+            estado_emoji = "🔴"
+            espera_display = espera
+
+        resultado.append({
+            "Estado": estado_emoji,
+            "Puerto": display_name,
+            "Espera (min)": espera if espera is not None else -1,
+            "Espera Display": espera_display,
+            "FAST (min)": datos.get("espera_fast_minutos", ""),
+            "Carriles": datos.get("lanes_open", ""),
+            "Status": port_status,
+            "_datos": datos,
+        })
+
+    return sorted(resultado, key=lambda x: x["Espera (min)"], reverse=True)
 
 
-def widget_espera_rapido(puerto_codigo: str, width: int = "small") -> None:
-    """
-    Widget pequeño que muestra tiempo de espera para un puerto.
-    Útil para dashboards comprimidos.
-    
-    Args:
-        puerto_codigo: Código CBP
-        width: "small", "medium", "large"
-    """
+def widget_espera_rapido(puerto_codigo: str, width: str = "small") -> None:
+    """Widget compacto para dashboards."""
     datos = obtener_espera_puerto(puerto_codigo)
-    
-    espera = datos.get('espera_minutos', '—')
-    
-    # HTML styling
-    colores = {
-        "small": "height: 80px; font-size: 1.2rem;",
-        "medium": "height: 120px; font-size: 1.5rem;",
-        "large": "height: 160px; font-size: 2rem;"
-    }
-    
-    html = f"""
-    <div style="background: linear-gradient(135deg, #ff9800, #f57c00); 
-                border-radius: 12px; padding: 16px; text-align: center; 
-                color: white; {colores.get(width, colores['small'])}
-                display: flex; flex-direction: column; justify-content: center; 
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <div style="font-size: 0.8rem; opacity: 0.9;">⏱️ Espera</div>
-        <div style="font-weight: bold;">{espera} min</div>
-        <div style="font-size: 0.7rem; opacity: 0.7; margin-top: 4px;">CBP</div>
+    espera = datos.get("espera_minutos", "—")
+    espera_str = f"{espera} min" if isinstance(espera, int) else "—"
+
+    sizes = {"small": "1.2rem", "medium": "1.5rem", "large": "2rem"}
+    font = sizes.get(width, "1.2rem")
+
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#ff9800,#f57c00);
+                border-radius:12px;padding:16px;text-align:center;
+                color:white;font-size:{font};
+                box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+        <div style="font-size:0.8rem;opacity:0.9;">⏱️ Espera</div>
+        <div style="font-weight:bold;">{espera_str}</div>
+        <div style="font-size:0.7rem;opacity:0.7;margin-top:4px;">CBP</div>
     </div>
-    """
-    
-    st.markdown(html, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 
-if __name__ == "__main__":
-    mostrar_tablero_esperas_cbp()
+def _fallback(puerto_codigo: str) -> dict:
+    return {
+        "puerto": puerto_codigo,
+        "espera_minutos": None,
+        "espera_fast_minutos": None,
+        "lanes_open": "",
+        "port_status": "Unknown",
+        "hours": "",
+        "update_time": "",
+        "actualizado": datetime.now().strftime("%H:%M:%S"),
+        "fuente": "API sin respuesta",
+        "metodo": "fallback",
+    }

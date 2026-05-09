@@ -19,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from modules.cbp_wait_times import (
     obtener_espera_puerto,
+    obtener_datos_region,
     widget_espera_rapido,
     CBP_API_PORTS
 )
@@ -55,81 +56,88 @@ def page_cbp_wait_times():
     # SECCIÓN 1: SELECCIÓN DE REGIÓN (Similar a CBP.gov)
     # ========================================================================
     
-    # Definir puertos por región
+    # Definir puertos por región — claves CBP (nombre exacto del XML waittimes)
     puertos_mexico = {
-        # TEXAS
-        "Laredo (TX)": "06480101",
-        "Brownsville (TX)": "06471001",
-        "Rio Grande City (TX)": "06472001",
-        "Progreso (TX)": "06473001",
-        "Roma (TX)": "06474001",
-        "Del Rio (TX)": "06481001",
-        "Eagle Pass (TX)": "06500601",
-        "Presidio (TX)": "06483001",
-        "Tornillo (TX)": "06452401",
-        "Ysleta (TX)": "06450702",
-        "El Paso (TX)": "06450701",
-        "Santa Teresa (NM)": "06451701",
-        "Columbus (NM)": "07203001",
-        
-        # CALIFORNIA-ARIZONA
-        "Otay Mesa (CA)": "09250602",
-        "San Ysidro (CA)": "09250101",
-        "Calexico East (CA)": "09251202",
-        "Tecate (CA)": "09250702",
-        
+        # TEXAS - Laredo
+        "Laredo - World Trade Bridge (TX)": "Laredo / World Trade Bridge",
+        "Laredo - Colombia Solidarity (TX)": "Laredo / Colombia Solidarity",
+        "Laredo - Bridge I (TX)": "Laredo / Bridge I",
+        "Laredo - Bridge II (TX)": "Laredo / Bridge II",
+        # TEXAS - Brownsville
+        "Brownsville - B&M (TX)": "Brownsville / B&M",
+        "Brownsville - Los Indios (TX)": "Brownsville / Los Indios",
+        "Brownsville - Veterans International (TX)": "Brownsville / Veterans International",
+        # TEXAS - Pharr/Hidalgo
+        "Hidalgo (TX)": "Hidalgo/Pharr / Hidalgo",
+        "Pharr (TX)": "Hidalgo/Pharr / Pharr",
+        "Anzalduas International Bridge (TX)": "Hidalgo/Pharr / Anzalduas International Bridge",
+        # TEXAS - Other
+        "Rio Grande City (TX)": "Rio Grande City",
+        "Progreso - Progreso International (TX)": "Progreso / Progreso International Bridge",
+        "Progreso - Donna International (TX)": "Progreso / Donna International Bridge",
+        "Roma (TX)": "Roma",
+        "Del Rio (TX)": "Del Rio",
+        "Eagle Pass - Bridge I (TX)": "Eagle Pass / Bridge I",
+        "Eagle Pass - Bridge II (TX)": "Eagle Pass / Bridge II",
+        "Presidio (TX)": "Presidio",
+        "Tornillo (TX)": "Marcelino Serna / Tornillo",
+        # TEXAS - El Paso
+        "El Paso - Ysleta (TX)": "El Paso / Ysleta",
+        "El Paso - Paso Del Norte (TX)": "El Paso / Paso Del Norte (PDN)",
+        "El Paso - Bridge of the Americas (TX)": "El Paso / Bridge of the Americas (BOTA)",
+        "Santa Teresa (NM)": "Santa Teresa / Santa Teresa Port of Entry",
+        "Columbus (NM)": "Columbus",
+        # CALIFORNIA
+        "Otay Mesa - Commercial (CA)": "Otay Mesa / Commercial",
+        "San Ysidro (CA)": "San Ysidro",
+        "Calexico East (CA)": "Calexico / East",
+        "Calexico West (CA)": "Calexico / West",
+        "Tecate (CA)": "Tecate",
         # ARIZONA
-        "Nogales (AZ)": "07200601",
-        "Douglas (AZ)": "07201001",
-        "Naco (AZ)": "07202001",
-        "Lukeville (AZ)": "07204001",
-        "San Luis (AZ)": "07150501",
+        "Nogales - Mariposa (AZ)": "Nogales / Mariposa",
+        "Nogales - Deconcini (AZ)": "Nogales / Deconcini",
+        "Douglas (AZ)": "Douglas (Raul Hector Castro)",
+        "Naco (AZ)": "Naco",
+        "Lukeville (AZ)": "Lukeville",
+        "San Luis I (AZ)": "San Luis / San Luis I",
+        "San Luis II (AZ)": "San Luis / San Luis II",
     }
     
     puertos_canada = {
         # WEST COAST
-        "Blaine (WA)": "05200101",
-        "Point Roberts (WA)": "05220101",
-        "Bellingham (WA)": "05230101",
-        "Sumas (WA)": "05240101",
-        "Lynden (WA)": "05210101",
-        "Port Angeles (WA)": "05250101",
-        
-        # MONTANA-IDAHO
-        "Sweetgrass (MT)": "04640101",
-        "Piegan (MT)": "04660101",
-        "Turner (MT)": "04670101",
-        
+        "Blaine - Pacific Highway (WA)": "Blaine / Pacific Highway",
+        "Blaine - Peace Arch (WA)": "Blaine / Peace Arch",
+        "Blaine - Point Roberts (WA)": "Blaine / Point Roberts",
+        "Sumas (WA)": "Sumas",
+        "Lynden (WA)": "Lynden",
+        # MONTANA
+        "Sweetgrass (MT)": "Sweetgrass",
         # NORTH DAKOTA
-        "Pembina (ND)": "04620101",
-        "Portal (ND)": "04680101",
-        "Dunseith (ND)": "04570101",
-        "Fortuna (ND)": "04690101",
-        
+        "Pembina (ND)": "Pembina",
         # MINNESOTA
-        "International Falls (MN)": "04600101",
-        "Baudette (MN)": "04520101",
-        "Janesville (MN)": "04700101",
-        
+        "International Falls (MN)": "International Falls",
         # MICHIGAN
-        "Sault Ste Marie (MI)": "04710101",
-        "Mackinac Bridge (MI)": "04720101",
-        
-        # NEW YORK - VERMONT
-        "Buffalo Niagara Falls (NY)": "01050101",
-        "Thousand Islands Bridge (NY)": "01140101",
-        "Rainbow Bridge (NY)": "01110101",
-        "Ogdensburg (NY)": "01100101",
-        "Champlain Rouses Point (NY)": "01070101",
-        "Highgate Springs (VT)": "01090101",
-        "Alburgh (VT)": "01150101",
-        
+        "Sault Ste. Marie (MI)": "Sault Ste. Marie / International Bridge - SSM",
+        "Detroit - Ambassador Bridge (MI)": "Detroit / Ambassador Bridge",
+        "Detroit - Windsor Tunnel (MI)": "Detroit / Windsor Tunnel",
+        "Port Huron - Bluewater Bridge (MI)": "Port Huron / Bluewater Bridge",
+        # NEW YORK
+        "Buffalo/Niagara Falls - Peace Bridge (NY)": "Buffalo/Niagara Falls / Peace Bridge",
+        "Buffalo/Niagara Falls - Rainbow Bridge (NY)": "Buffalo/Niagara Falls / Rainbow Bridge",
+        "Buffalo/Niagara Falls - Lewiston Bridge (NY)": "Buffalo/Niagara Falls / Lewiston Bridge",
+        "Alexandria Bay - Thousand Islands Bridge (NY)": "Alexandria Bay / Thousand Islands Bridge",
+        "Ogdensburg (NY)": "Ogdensburg",
+        "Massena (NY)": "Massena",
+        "Champlain (NY)": "Champlain",
+        # VERMONT
+        "Highgate Springs (VT)": "Highgate Springs",
+        "Derby Line (VT)": "Derby Line / Derby Line I-91",
+        "Norton (VT)": "Norton",
         # MAINE
-        "Calais (ME)": "01060101",
-        "Houlton (ME)": "01160101",
-        "Van Buren (ME)": "01170101",
-        "Jackman (ME)": "01180101",
-        "Coburn Gore (ME)": "01190101",
+        "Calais - Ferry Point (ME)": "Calais / Ferry Point",
+        "Calais - International Avenue (ME)": "Calais / International Avenue",
+        "Houlton (ME)": "Houlton",
+        "Jackman (ME)": "Jackman",
     }
     
     # Botones para seleccionar región (estilo CBP)
@@ -195,21 +203,47 @@ def page_cbp_wait_times():
         col_puerto, col_info = st.columns([2, 2])
         
         with col_puerto:
-            espera = datos_puerto.get('espera_minutos', 0)
-            estado = "NORMAL" if espera < 20 else "MODERADO" if espera < 40 else "CRÍTICO"
-            color = "#4CAF50" if estado == "NORMAL" else "#FFC107" if estado == "MODERADO" else "#F44336"
+            espera = datos_puerto.get('espera_minutos')
+            espera_fast = datos_puerto.get('espera_fast_minutos')
+            port_status = datos_puerto.get('port_status', '')
             
+            if espera is None:
+                display_val = "N/A"
+                estado = "DESCONOCIDO"
+                color = "#9E9E9E"
+            elif port_status and port_status.lower() == 'closed':
+                display_val = "CERRADO"
+                estado = "CLOSED"
+                color = "#9E9E9E"
+            else:
+                display_val = str(espera)
+                estado = "NORMAL" if espera < 20 else "MODERADO" if espera < 40 else "CRÍTICO"
+                color = "#4CAF50" if estado == "NORMAL" else "#FFC107" if estado == "MODERADO" else "#F44336"
+            
+            fast_html = ""
+            if espera_fast is not None and espera_fast > 0:
+                fast_html = f'<div style="font-size: 0.8rem; opacity: 0.85; margin-top: 6px;">FAST: {espera_fast} min</div>'
+            
+            lanes = datos_puerto.get('lanes_open', '')
+            lanes_html = f'<div style="font-size: 0.8rem; opacity: 0.75; margin-top: 4px;">Lanes open: {lanes}</div>' if lanes else ""
+            
+            extras = fast_html + lanes_html
+
             st.markdown(f"""
             <div style="background: linear-gradient(135deg, {color}, {color}dd); 
                         border-radius: 8px; padding: 25px; text-align: center; color: white;
                         box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
-                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 10px; font-weight: 500;">CURRENT WAIT TIME</div>
-                <div style="font-size: 3rem; font-weight: 900;">{espera}</div>
-                <div style="font-size: 0.9rem; opacity: 0.85; margin-top: 8px;">minutes • {estado}</div>
+                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 10px; font-weight: 500;">CURRENT WAIT TIME (COMMERCIAL)</div>
+                <div style="font-size: 3rem; font-weight: 900;">{display_val}</div>
+                <div style="font-size: 0.9rem; opacity: 0.85; margin-top: 8px;">{'minutes \u2022 ' + estado if espera is not None else estado}</div>{extras}
             </div>
             """, unsafe_allow_html=True)
         
         with col_info:
+            update_time = datos_puerto.get('update_time', '') or datos_puerto.get('actualizado', '—')
+            hours_info = datos_puerto.get('hours', '')
+            hours_html = f'<div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;"><b>Hours:</b> {hours_info}</div>' if hours_info else ""
+            
             st.markdown(f"""
             <div style="background: linear-gradient(135deg, #f5f5f5, #eeeeee); 
                         border-radius: 8px; padding: 20px; text-align: left; color: #333;
@@ -217,10 +251,14 @@ def page_cbp_wait_times():
                 <div style="font-size: 0.85rem; color: #666; margin-bottom: 12px;"><b>PORT INFORMATION</b></div>
                 <div style="font-size: 1rem; font-weight: 600; margin-bottom: 8px;">{puerto_seleccionado}</div>
                 <div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">
-                    <b>Code:</b> {puerto_codigo}
+                    <b>Port:</b> {datos_puerto.get('port_name', '') or datos_puerto.get('crossing_name', '')}
                 </div>
                 <div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">
-                    <b>Updated:</b> {datos_puerto.get('actualizado', '—')}
+                    <b>Status:</b> {datos_puerto.get('port_status', '—')}
+                </div>
+                {hours_html}
+                <div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">
+                    <b>Updated:</b> {update_time}
                 </div>
                 <div style="font-size: 0.75rem; color: #999; margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
                     Source: {datos_puerto.get('fuente', 'CBP')}
@@ -231,12 +269,12 @@ def page_cbp_wait_times():
         st.markdown("")
         
         # Mostrar estado de la fuente de datos
-        if datos_puerto.get('metodo') == 'rss':
+        if datos_puerto.get('metodo') == 'xml_waittimes':
             st.success("✅ Real-time data from CBP API")
-        elif datos_puerto.get('metodo') == 'selenium':
-            st.info("🔄 Live data via web scraping")
+        elif datos_puerto.get('metodo') == 'fallback':
+            st.warning("⚠️ Datos no disponibles (API sin respuesta)")
         else:
-            st.warning("⚠️ Simulated data (API currently unavailable)")
+            st.info(f"ℹ️ Fuente: {datos_puerto.get('metodo', '?')}")
         
         st.markdown("")
         
@@ -307,28 +345,45 @@ def page_cbp_wait_times():
         - **Status Colors**: 🟢 Normal (<20 min) | 🟡 Moderate (<40 min) | 🔴 Critical (>40 min)
         """)
     
-    # Cargar datos de todos los puertos en la región (desde caché)
-    st.write(f"Loading {len(puertos_region)} ports...")
-    
+    # Cargar datos usando las claves exactas del XML (sin ambigüedad en búsqueda)
     datos_comparativos = []
-    for puerto_nombre, puerto_cod in puertos_region.items():
-        datos = obtener_espera_puerto(puerto_cod)
-        espera = datos.get('espera_minutos', 0)
-        
-        # Clasificar estado
-        if espera < 20:
+    for nombre_display, cbp_xml_key in puertos_region.items():
+        datos = obtener_espera_puerto(cbp_xml_key)
+        espera = datos.get('espera_minutos')
+        port_status = datos.get('port_status', '')
+        commercial_op = datos.get('commercial_op_status', '').upper()
+
+        sin_cvl = (commercial_op == 'N/A' or commercial_op == '') and espera is None
+
+        if port_status.lower() == 'closed':
+            estado_emoji = "⚫"
+            espera_display = "Closed"
+        elif sin_cvl:
+            estado_emoji = "⚪"
+            espera_display = "Sin CVL"
+        elif espera is None:
+            estado_emoji = "⚫"
+            espera_display = "N/A"
+        elif espera < 20:
             estado_emoji = "🟢"
+            espera_display = espera
         elif espera < 40:
             estado_emoji = "🟡"
+            espera_display = espera
         else:
             estado_emoji = "🔴"
-        
+            espera_display = espera
+
         datos_comparativos.append({
             'Estado': estado_emoji,
-            'Puerto': puerto_nombre,
-            'Espera (min)': espera,
+            'Puerto': nombre_display,
+            'Espera (min)': espera if espera is not None else -1,
+            'Espera Display': espera_display,
+            'FAST (min)': datos.get('espera_fast_minutos', ''),
+            'Carriles': datos.get('lanes_open', ''),
+            'Status': port_status,
         })
-    
+
     df_comparativa = pd.DataFrame(datos_comparativos)
     df_comparativa = df_comparativa.sort_values('Espera (min)', ascending=False)
     
@@ -337,28 +392,35 @@ def page_cbp_wait_times():
     
     with col_tabla:
         st.dataframe(
-            df_comparativa,
+            df_comparativa[['Estado', 'Puerto', 'Espera Display', 'FAST (min)', 'Carriles', 'Status']].rename(
+                columns={'Espera Display': 'Espera (min)'}
+            ),
             use_container_width=True,
             hide_index=True,
             column_config={
-                'Estado': st.column_config.TextColumn('Status', width=50),
+                'Estado': st.column_config.TextColumn('', width=40),
                 'Puerto': st.column_config.TextColumn('Port', width=150),
-                'Espera (min)': st.column_config.NumberColumn('Wait (min)', width=100),
+                'Espera (min)': st.column_config.TextColumn('Wait (min)', width=90),
+                'FAST (min)': st.column_config.TextColumn('FAST', width=70),
+                'Carriles': st.column_config.TextColumn('Lanes', width=60),
+                'Status': st.column_config.TextColumn('Status', width=80),
             }
         )
     
     with col_chart:
+        # Solo graficar puertos con datos numéricos
+        df_chart = df_comparativa[df_comparativa['Espera (min)'] >= 0].copy()
         fig = go.Figure(data=[
             go.Bar(
-                y=df_comparativa['Puerto'],
-                x=df_comparativa['Espera (min)'],
+                y=df_chart['Puerto'],
+                x=df_chart['Espera (min)'],
                 orientation='h',
                 marker=dict(
-                    color=df_comparativa['Espera (min)'],
+                    color=df_chart['Espera (min)'],
                     colorscale='RdYlGn_r',
                     showscale=False
                 ),
-                text=df_comparativa['Espera (min)'].apply(lambda x: f"{x} min"),
+                text=df_chart['Espera (min)'].apply(lambda x: f"{x} min"),
                 textposition='auto',
                 hovertemplate='<b>%{y}</b><br>Wait: %{x} min<extra></extra>'
             )
