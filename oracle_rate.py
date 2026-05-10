@@ -22,7 +22,7 @@ def page_oracle_rate():
                     margin-bottom: 40px;
                     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
                     border: 2px solid #4A7C9E;'>
-            <h1 style='color: #FFFFFF; margin: 0; font-size: 3.5rem; font-weight: 800; letter-spacing: -1px;'>FreightMetrics Oracle Rate</h1>
+            <h1 style='color: #FFFFFF !important; margin: 0; font-size: 3.5rem; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);'>FreightMetrics Oracle Rate</h1>
             <p style='color: #B0C4DE; font-size: 1.25rem; font-weight: 600; margin: 20px 0 0 0; line-height: 1.4;'>
                 La primera plataforma en México en desarrollar el Sistema Actuarial de Cálculo para Tarifas Spot de Autotransporte
             </p>
