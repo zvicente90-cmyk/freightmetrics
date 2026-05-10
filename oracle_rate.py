@@ -96,25 +96,17 @@ def page_oracle_rate():
     st.markdown("---")
     
     # ============ BOTÓN LLAMATIVO DE REDIRECCIÓN ============
-    st.markdown("""
-        <div style='display: flex; justify-content: center; align-items: center; margin: 60px 0;'>
-            <a href='https://freightmetrics-oracle-rate.streamlit.app/' target='_blank' style='text-decoration: none;'>
-                <button style='background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%); 
-                            color: white; 
-                            padding: 20px 50px; 
-                            border-radius: 50px; 
-                            font-size: 1.1rem; 
-                            font-weight: 700;
-                            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.35);
-                            transition: all 0.3s ease;
-                            cursor: pointer;
-                            border: 2px solid #FF6B6B;
-                            letter-spacing: 0.5px;'>
-                    🚀 ACCEDER A ORACLE RATE COMPLETO
-                </button>
-            </a>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center; margin: 60px 0;'>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.link_button(
+            "🚀 ACCEDER A ORACLE RATE COMPLETO",
+            "https://freightmetrics-oracle-rate.streamlit.app/",
+            use_container_width=True
+        )
+    
+    st.markdown("</div>", unsafe_allow_html=True)
     
     # ============ INFORMACIÓN ADICIONAL ============
     st.markdown("""
