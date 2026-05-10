@@ -7,7 +7,6 @@ import requests
 import random
 import numpy as np
 from datetime import datetime, timedelta
-import datetime as dt
 import math
 import base64
 import os
@@ -63,13 +62,6 @@ try:
 except ImportError:
     NEARSHORING_AVAILABLE = False
     page_nearshoring = None
-
-try:
-    from page_modules._01_Monitoreo_Aduanas import page_monitoreo_aduanas
-    MONITOREO_ADUANAS_AVAILABLE = True
-except ImportError:
-    MONITOREO_ADUANAS_AVAILABLE = False
-    page_monitoreo_aduanas = None
 
 try:
     from page_modules._06_CBP_Wait_Times import page_cbp_wait_times
@@ -2156,9 +2148,6 @@ if page_key == "dashboard":
         page_dashboard()
     else:
         st.error("❌ Dashboard no disponible")
-
-elif page_key == "monitoreo" and MONITOREO_ADUANAS_AVAILABLE:
-    page_monitoreo_aduanas()
 
 elif page_key == "flujos" and FLUJOS_CARGA_AVAILABLE:
     page_flujos_de_carga()
