@@ -2166,3 +2166,9 @@ elif page_key == "nearshoring" and NEARSHORING_AVAILABLE:
 
 elif page_key == "cbp_times" and CBP_WAIT_TIMES_AVAILABLE:
     page_cbp_wait_times()
+
+elif page_key == "oracle_rate" and ORACLE_RATE_AVAILABLE:
+    page_oracle_rate()
+
+else:
+    st.error(f"❌ Página '{page_key}' no está disponible")
