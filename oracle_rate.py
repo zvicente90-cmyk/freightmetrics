@@ -99,7 +99,7 @@ def page_oracle_rate():
     st.markdown("""
         <div style='display: flex; justify-content: center; align-items: center; margin: 60px 0;'>
             <a href='https://freightmetrics-oracle-rate.streamlit.app/' target='_blank' style='text-decoration: none;'>
-                <div style='background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%); 
+                <button style='background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%); 
                             color: white; 
                             padding: 20px 50px; 
                             border-radius: 50px; 
@@ -111,7 +111,28 @@ def page_oracle_rate():
                             border: 2px solid #FF6B6B;
                             letter-spacing: 0.5px;'>
                     🚀 ACCEDER A ORACLE RATE COMPLETO
-                </div>
+                </button>
             </a>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # ============ INFORMACIÓN ADICIONAL ============
+    st.markdown("""
+        <div style='background: rgba(74, 124, 158, 0.08); 
+                    padding: 30px 40px; 
+                    border-radius: 15px; 
+                    margin-top: 60px;
+                    border-left: 6px solid #FF6B6B;'>
+            <h3 style='color: #FF6B6B; margin: 0 0 20px 0;'>ℹ️ Sobre Oracle Rate Completo</h3>
+            <p style='color: #555; font-size: 1rem; margin: 10px 0; line-height: 1.7;'>
+                La versión completa en Streamlit Cloud incluye:
+            </p>
+            <ul style='color: #555; font-size: 0.95rem; margin: 15px 0; line-height: 1.8;'>
+                <li><strong>🔄 Actualizaciones en tiempo real</strong> de tasas de cambio, energía e inflación</li>
+                <li><strong>📈 Gráficos interactivos</strong> con análisis histórico de precios</li>
+                <li><strong>🧮 Calculadora de CPK</strong> personalizada por ruta y corredor</li>
+                <li><strong>📊 Dashboard ejecutivo</strong> con KPIs de mercado</li>
+                <li><strong>🔐 Seguridad robusta</strong> y auditoría de cambios</li>
+            </ul>
         </div>
     """, unsafe_allow_html=True)
