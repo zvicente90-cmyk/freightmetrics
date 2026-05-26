@@ -77,6 +77,13 @@ except ImportError:
     ORACLE_RATE_AVAILABLE = False
     page_oracle_rate = None
 
+try:
+    from page_modules._08_Academy import page_academy
+    ACADEMY_AVAILABLE = True
+except ImportError:
+    ACADEMY_AVAILABLE = False
+    page_academy = None
+
 # NOTA: Las páginas monitoreo_v2, indice_freightmetrics fueron removidas durante la limpieza
 # Se mantiene solo el core funcional de la aplicación
 # Futuro: Estas páginas pueden ser reimplementadas como módulos separados si es necesario
@@ -158,6 +165,7 @@ TRANSLATIONS = {
         'menu_workforce': 'Fuerza Laboral',
         'menu_nearshoring': 'Nearshoring',
         'menu_cbp_times': 'Tiempos CBP',
+        'menu_academy': 'Academia',
         
         # Botones y acciones
         'download_pdf': 'Descargar PDF',
@@ -243,6 +251,7 @@ TRANSLATIONS = {
         'menu_workforce': 'Workforce',
         'menu_nearshoring': 'Nearshoring',
         'menu_cbp_times': 'CBP Wait Times',
+        'menu_academy': 'Academy',
         
         # Buttons and actions
         'download_pdf': 'Download PDF',
@@ -328,6 +337,7 @@ TRANSLATIONS = {
         'menu_workforce': 'Main-d\'œuvre',
         'menu_nearshoring': 'Relocalisation',
         'menu_cbp_times': 'Temps d\'Attente CBP',
+        'menu_academy': 'Académie',
         
         # Boutons et actions
         'download_pdf': 'Télécharger PDF',
@@ -2095,7 +2105,8 @@ with st.sidebar:
         t('menu_corridors', lang),           # 4. Corredores Logísticos
         t('menu_ports', lang),               # 5. Puertos Marítimos
         t('menu_nearshoring', lang),         # 6. Nearshoring
-        'Oracle Rate'                         # 7. Oracle Rate
+        t('menu_academy', lang),             # 7. Academia
+        'Oracle Rate'                         # 8. Oracle Rate
     ]
     
     opcion = st.radio(
@@ -2135,6 +2146,7 @@ pages_map = {
     t('menu_ports', lang): 'puertos',
     t('menu_nearshoring', lang): 'nearshoring',
     t('menu_cbp_times', lang): 'cbp_times',
+    t('menu_academy', lang): 'academy',
     'Oracle Rate': 'oracle_rate'
 }
 page_key = pages_map.get(opcion, 'dashboard')  # Default a dashboard si no existe
@@ -2166,6 +2178,9 @@ elif page_key == "nearshoring" and NEARSHORING_AVAILABLE:
 
 elif page_key == "cbp_times" and CBP_WAIT_TIMES_AVAILABLE:
     page_cbp_wait_times()
+
+elif page_key == "academy" and ACADEMY_AVAILABLE:
+    page_academy()
 
 elif page_key == "oracle_rate" and ORACLE_RATE_AVAILABLE:
     page_oracle_rate()
