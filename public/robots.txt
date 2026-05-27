@@ -1,0 +1,31 @@
+# FreightMetrics Robots.txt - SEO Configuration
+# Allows search engines to index all content
+
+User-agent: *
+Allow: /
+Disallow: /_stcore/
+Disallow: /.streamlit/
+Disallow: /healthz
+
+# Specific crawl delay for Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Allow other search engines
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Sitemap location
+Sitemap: https://freightmetrics.streamlit.app/sitemap.xml
+Sitemap: https://freightmetrics.streamlit.app/public/sitemap.xml
+
+# Cache settings
+Cache-Control: public, max-age=3600

@@ -9,6 +9,37 @@ from datetime import datetime
 import os
 from pathlib import Path
 import base64
+import json
+
+
+def _generate_seo_schema():
+    """Genera schema.org JSON-LD para SEO"""
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "FreightMetrics Academy",
+        "description": "Plataforma de recursos educativos y ebooks gratuitos para profesionales de logística transfronteriza México-USA",
+        "url": "https://freightmetrics.streamlit.app",
+        "image": "https://freightmetrics.streamlit.app/logo.png",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Tijuana",
+            "addressRegion": "BC",
+            "addressCountry": "MX"
+        },
+        "sameAs": [
+            "https://www.linkedin.com/company/freightmetrics",
+            "https://github.com/zvicente90-cmyk/freightmetrics"
+        ],
+        "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "MXN",
+            "price": "0",
+            "offerCount": 3,
+            "description": "3 ebooks gratuitos sobre logística, transporte y nearshoring"
+        }
+    }
+    return schema
 
 
 def _get_supabase_client():
@@ -108,13 +139,13 @@ EBOOKS = [
     {
         "id": "kpis_logistica",
         "emoji": "📊",
-        "titulo": "KPIs de Logistica para Directivos",
+        "titulo": "KPIs de Logistica para Directivos - Transporte México-USA",
         "subtitulo": "Metricas que importan en el transporte Mexico-USA",
         "descripcion": (
-            "Domina los indicadores clave de desempenio que usan los directores de "
-            "logistica mas exitosos. Aprende a medir costo por kilometro, tiempo de "
-            "transito, tasa de cumplimiento y mas de 25 KPIs esenciales con ejemplos "
-            "reales de corredores mexicanos."
+            "Domina los 25+ indicadores clave de desempenio que usan los directores de "
+            "logistica mas exitosos en corredores mexicanos. Aprende a medir costo por kilometro, "
+            "tiempo de transito, tasa de cumplimiento y mas con ejemplos reales de logistica "
+            "transfronteriza México-USA."
         ),
         "temas": [
             "25+ KPIs esenciales de transporte",
@@ -128,12 +159,13 @@ EBOOKS = [
     {
         "id": "guia_autotransporte",
         "emoji": "🚛",
-        "titulo": "Guia de Apoyo al Autotransporte de Carga",
-        "subtitulo": "Apoyos, creditos y programas gubernamentales",
+        "titulo": "Guia de Apoyo al Autotransporte - Programas Gubernamentales México 2025",
+        "subtitulo": "Apoyos, creditos y programas federales para transportistas",
         "descripcion": (
             "Una guia completa sobre los programas de apoyo federales y estatales "
             "para el autotransporte en Mexico. Desde SICT hasta NAFIN, descubre como "
-            "acceder a financiamiento y renovar tu equipo."
+            "acceder a financiamiento, creditos y renovar tu equipo. Incluye Plan de Apoyo Masivo "
+            "y esquemas de financiamiento actualizados 2025."
         ),
         "temas": [
             "Programa de Apoyo Masivo al Autotransporte ($2,250 MDP)",
@@ -148,12 +180,13 @@ EBOOKS = [
     {
         "id": "hombre_camion",
         "emoji": "🔧",
-        "titulo": "Guia del Hombre-Camion",
-        "subtitulo": "Renovacion de equipo, creditos y apoyos para el transportista independiente",
+        "titulo": "Guia del Hombre-Camion - Renovación Equipo & Apoyos para Transportistas Independientes",
+        "subtitulo": "Creditos NAFIN, Plan Masivo y financiamiento para renovación",
         "descripcion": (
             "Disenada para transportistas independientes con 1-5 unidades. "
             "Conoce el Plan de Apoyo Masivo de $2,250 millones de pesos, esquemas de "
-            "financiamiento, creditos NAFIN y como aprovecharlos para renovar tu equipo."
+            "financiamiento, creditos NAFIN y como aprovecharlos para renovar tu tractocamion. "
+            "Incluye checklist completo y contactos SICT."
         ),
         "temas": [
             "Plan de Apoyo Masivo: $2,250 MDP explicado",
@@ -169,12 +202,13 @@ EBOOKS = [
     {
         "id": "nearshoring_101",
         "emoji": "🏭",
-        "titulo": "Nearshoring 101 para Transportistas",
+        "titulo": "Nearshoring 101 para Transportistas - Logistica Industrial México",
         "subtitulo": "Como posicionar tu flota para la relocalizacion industrial",
         "descripcion": (
             "El nearshoring esta transformando la logistica en Mexico. Esta guia "
             "explica que corredores industriales crecen mas rapido y como posicionar "
-            "tu empresa para capturar contratos con empresas manufactureras."
+            "tu empresa para capturar contratos con empresas manufactureras. Incluye mapa "
+            "de parques industriales con mayor demanda en fronteras México-USA."
         ),
         "temas": [
             "Mapa de parques industriales con mayor demanda",
@@ -321,6 +355,20 @@ def _render_notify_form():
 
 
 def page_academy():
+    # SEO: Meta tags
+    st.set_page_config(
+        page_title="FreightMetrics Academy - Ebooks Logística México-USA Gratis",
+        page_icon="🎓",
+        layout="wide"
+    )
+    
+    # SEO: JSON-LD Schema
+    schema = _generate_seo_schema()
+    st.markdown(
+        f'<script type="application/ld+json">{json.dumps(schema)}</script>',
+        unsafe_allow_html=True
+    )
+    
     st.markdown("""
     <style>
     .academy-hero-title {
@@ -345,7 +393,8 @@ def page_academy():
         </p>
         <p style="color:#c8d0e0;font-size:0.9rem;max-width:600px;margin:0 auto;line-height:1.6;">
             Recursos educativos gratuitos para transportistas, directivos y profesionales
-            del comercio exterior en Mexico.
+            del comercio exterior en Mexico. Aprende sobre logistica transfronteriza México-USA,
+            programas de apoyo al autotransporte, KPIs y nearshoring.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -364,7 +413,11 @@ def page_academy():
 
     col_f1, col_f2 = st.columns([3, 1])
     with col_f1:
-        st.subheader("Biblioteca de Recursos")
+        st.subheader("📚 Biblioteca de Recursos - Ebooks de Logística Transfronteriza")
+        st.caption(
+            "Aprende sobre transporte México-USA, autotransporte, logística y nearshoring. "
+            "Recursos gratuitos diseñados para transportistas, directivos y profesionales del comercio exterior."
+        )
     with col_f2:
         nivel_filtro = st.selectbox("Nivel", ["Todos", "Basico", "Intermedio", "Avanzado"],
                                     label_visibility="collapsed")
