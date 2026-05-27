@@ -23,9 +23,9 @@ Allow: /
 User-agent: DuckDuckBot
 Allow: /
 
-# Sitemap location
-Sitemap: https://freightmetrics.streamlit.app/sitemap.xml
-Sitemap: https://freightmetrics.streamlit.app/public/sitemap.xml
+# Sitemap locations
+Sitemap: https://freightmetrics.mx/sitemap.xml
+Sitemap: https://freightmetrics.mx/public/sitemap.xml
 
 # Cache settings
 Cache-Control: public, max-age=3600

@@ -2087,103 +2087,61 @@ with col_right:
 lang = st.session_state.language
 
 # ============================================================
-# BARRA LATERAL Y NAVEGACIÓN
+# PÁGINA PRINCIPAL (HOME)
 # ============================================================
-with st.sidebar:
-    st.title("FreightMetrics")
-    st.markdown("**Connecting Borders, Delivering Insights.**")
-    st.markdown("---")
-    st.metric("Tipo de Cambio USD/MXN", f"${tipo_cambio:.2f}")
-    
-    # Lista de páginas
-    pages_list = [
-        t('menu_dashboard', lang),           # 0. Dashboard
-        t('menu_cbp_times', lang),           # 1. Tiempos de Espera CBP
-        # t('menu_monitoring', lang),           # OCULTO - Monitoreo de Aduanas
-        t('menu_flows', lang),               # 2. Flujos de Carga
-        t('menu_workforce', lang),           # 3. Fuerza Laboral
-        t('menu_corridors', lang),           # 4. Corredores Logísticos
-        t('menu_ports', lang),               # 5. Puertos Marítimos
-        t('menu_nearshoring', lang),         # 6. Nearshoring
-        t('menu_academy', lang),             # 7. Academia
-        'Oracle Rate'                         # 8. Oracle Rate
-    ]
-    
-    opcion = st.radio(
-        "Selecciona una página:" if lang == 'es' else ("Select a page:" if lang == 'en' else "Sélectionnez une page:"),
-        pages_list,
-        index=st.session_state.selected_page_index,
-        key="page_selector"
-    )
-    
-    # Guardar la selección
-    st.session_state.selected_page_index = pages_list.index(opcion)
-    
-    st.markdown("---")
-    
-    # Botón para limpiar caché
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🗑️ Limpiar Caché", use_container_width=True):
-            st.cache_data.clear()
-            st.session_state.clear()
-            st.rerun()
-    
-    with col2:
-        if st.button("🔄 Recargar", use_container_width=True):
-            st.rerun()
+# Nota: Las demás páginas se cargan automáticamente desde la carpeta pages/
+# Streamlit maneja la navegación mediante URLs únicas
 
-# ============================================================
-# MAPEO DE OPCIÓN A PAGE_KEY
-# ============================================================
-# Mapear la opción seleccionada (etiqueta traducida) a la clave interna de página
-pages_map = {
-    t('menu_dashboard', lang): 'dashboard',
-    # t('menu_monitoring', lang): 'monitoreo',  # OCULTO
-    t('menu_flows', lang): 'flujos',
-    t('menu_workforce', lang): 'workforce',
-    t('menu_corridors', lang): 'corredores',
-    t('menu_ports', lang): 'puertos',
-    t('menu_nearshoring', lang): 'nearshoring',
-    t('menu_cbp_times', lang): 'cbp_times',
-    t('menu_academy', lang): 'academy',
-    'Oracle Rate': 'oracle_rate'
-}
-page_key = pages_map.get(opcion, 'dashboard')  # Default a dashboard si no existe
+st.markdown("""
+## 🚛 Bienvenido a FreightMetrics
 
-# ============================================================
-# ENRUTAMIENTO DE PÁGINAS
-# ============================================================
+**Connecting Borders, Delivering Insights.**
 
-if page_key == "dashboard":
-    if DASHBOARD_AVAILABLE:
-        page_dashboard()
-    else:
-        st.error("❌ Dashboard no disponible")
+### 📊 Panel de Control Completo
 
-elif page_key == "flujos" and FLUJOS_CARGA_AVAILABLE:
-    page_flujos_de_carga()
+Explora nuestras herramientas de análisis logístico en el menú:
 
-elif page_key == "corredores" and CORREDORES_LOGISTICOS_AVAILABLE:
-    page_corredores_logisticos()
+- **Dashboard** - Resumen ejecutivo de cruces fronterizos
+- **Flujos de Carga** - Análisis detallado de movimientos comerciales
+- **Fuerza Laboral** - Datos del mercado laboral en logística
+- **Corredores Logísticos** - Mapeo de rutas estratégicas
+- **Puertos Marítimos** - Estadísticas de puertos principales
+- **Nearshoring** - Análisis de relocalización industrial
+- **CBP Wait Times** - Tiempos reales de espera en cruces
+- **Academia** - Biblioteca de recursos educativos
 
-elif page_key == "puertos" and PUERTOS_MARITIMOS_AVAILABLE:
-    page_puertos_maritimos()
+---
 
-elif page_key == "workforce" and FUERZA_LABORAL_AVAILABLE:
-    page_fuerza_laboral()
+### 🌍 Actualmente Conectado
 
-elif page_key == "nearshoring" and NEARSHORING_AVAILABLE:
-    page_nearshoring()
+""")
 
-elif page_key == "cbp_times" and CBP_WAIT_TIMES_AVAILABLE:
-    page_cbp_wait_times()
+# Mostrar tipo de cambio en la home
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("💱 USD/MXN", f"${tipo_cambio:.2f}")
+with col2:
+    st.metric("📅 Fecha", datetime.now().strftime("%d/%m/%Y"))
+with col3:
+    st.metric("🕐 Hora", datetime.now().strftime("%H:%M:%S"))
 
-elif page_key == "academy" and ACADEMY_AVAILABLE:
-    page_academy()
+st.markdown("---")
 
-elif page_key == "oracle_rate" and ORACLE_RATE_AVAILABLE:
-    page_oracle_rate()
+# Selector de idioma en la home también
+st.markdown("### 🌐 Idioma")
+lang_col1, lang_col2, lang_col3 = st.columns(3)
 
-else:
-    st.error(f"❌ Página '{page_key}' no está disponible")
+with lang_col1:
+    if st.button("🇲🇽 ES", key="btn_es_home", help="Español"):
+        st.session_state.language = 'es'
+        st.rerun()
+
+with lang_col2:
+    if st.button("🇺🇸 EN", key="btn_en_home", help="English"):
+        st.session_state.language = 'en'
+        st.rerun()
+
+with lang_col3:
+    if st.button("🇫🇷 FR", key="btn_fr_home", help="Français"):
+        st.session_state.language = 'fr'
+        st.rerun()
