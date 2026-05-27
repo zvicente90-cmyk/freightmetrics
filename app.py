@@ -16,4 +16,4 @@ from modules.estilos_globales import aplicar_estilos_globales
 aplicar_estilos_globales()
 
 # Redirect a página de inicio
-st.switch_page("pages/Inicio.py")
+st.switch_page("pages/_01_Inicio.py")
