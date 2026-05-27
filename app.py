@@ -1,4 +1,8 @@
 """
+🏠 Inicio
+"""
+
+"""
 FreightMetrics Pro - Página de Inicio (Landing Page)
 Plataforma de inteligencia logística para la ruta México-USA
 """
