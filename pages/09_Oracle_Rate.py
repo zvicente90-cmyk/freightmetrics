@@ -139,6 +139,3 @@ aplicar_estilos_globales()
 
 # Llamar a la función para renderizar la página
 page_oracle_rate()
-            </ul>
-        </div>
-    """, unsafe_allow_html=True)
