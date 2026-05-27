@@ -128,3 +128,17 @@ def page_oracle_rate():
             </ul>
         </div>
     """, unsafe_allow_html=True)
+
+
+# ============================================================
+# APLICAR TEMA Y RENDERIZAR PÁGINA
+# ============================================================
+
+from modules.estilos_globales import aplicar_estilos_globales
+aplicar_estilos_globales()
+
+# Llamar a la función para renderizar la página
+page_oracle_rate()
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
