@@ -139,19 +139,33 @@ def _fetch_todos_los_puertos() -> dict:
         crossing = port.findtext("crossing_name", "").strip()
         port_status = port.findtext("port_status", "").strip()
 
-        # Extraer espera comercial
-        def _minutos(tag_path):
-            val = port.findtext(tag_path, "")
-            try:
-                return int(val) if val.isdigit() else None
-            except Exception:
-                return None
-
-        espera_std = _minutos("commercial_vehicle_lanes/standard_lanes/delay_minutes")
-        espera_fast = _minutos("commercial_vehicle_lanes/FAST_lanes/delay_minutes")
-        lanes_open = port.findtext("commercial_vehicle_lanes/standard_lanes/lanes_open", "")
-        update_time = port.findtext("commercial_vehicle_lanes/standard_lanes/update_time", "")
-        commercial_op_status = port.findtext("commercial_vehicle_lanes/standard_lanes/operational_status", "").strip()
+        # Extraer espera comercial navegando la estructura anidada
+        espera_std = None
+        espera_fast = None
+        lanes_open = ""
+        update_time = ""
+        commercial_op_status = ""
+        
+        # Buscar element commercial_vehicle_lanes
+        commercial_lanes = port.find("commercial_vehicle_lanes")
+        if commercial_lanes is not None:
+            # Buscar standard_lanes dentro de commercial_vehicle_lanes
+            standard_lanes = commercial_lanes.find("standard_lanes")
+            if standard_lanes is not None:
+                delay_text = standard_lanes.findtext("delay_minutes", "")
+                if delay_text and delay_text.strip().isdigit():
+                    espera_std = int(delay_text)
+                lanes_open = standard_lanes.findtext("lanes_open", "").strip()
+                update_time = standard_lanes.findtext("update_time", "").strip()
+                commercial_op_status = standard_lanes.findtext("operational_status", "").strip()
+            
+            # Buscar FAST_lanes dentro de commercial_vehicle_lanes
+            fast_lanes = commercial_lanes.find("FAST_lanes")
+            if fast_lanes is not None:
+                delay_text = fast_lanes.findtext("delay_minutes", "")
+                if delay_text and delay_text.strip().isdigit():
+                    espera_fast = int(delay_text)
+        
         hours = port.findtext("hours", "")
 
         key = f"{nombre} / {crossing}" if crossing else nombre
