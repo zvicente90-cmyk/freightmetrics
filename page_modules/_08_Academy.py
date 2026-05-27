@@ -63,7 +63,7 @@ def _obtener_ruta_ebook(id_ebook):
     archivos = {
         "hombre_camion": "FreightMetrics_Academy_Hombre_Camion_ES_EN.pdf",
         "kpis_logistica": "FreightMetrics_Academy_KPIs_Logistica_ES_EN.pdf",
-        "guia_autotransporte": "FreightMetrics_Academy_Autotransporte_ES_EN.pdf",
+        "guia_autotransporte": "FreightMetrics_Academy_Guia_Autotransporte-Programas Gubernamentales_ES_EN.pdf",
         "nearshoring_101": "FreightMetrics_Academy_Nearshoring_ES_EN.pdf",
     }
     
@@ -123,7 +123,7 @@ EBOOKS = [
             "Integracion con datos CRE e INEGI",
         ],
         "paginas": 48, "nivel": "Intermedio", "color": "#4070F4",
-        "disponible": False, "badge": "PROXIMAMENTE",
+        "disponible": True, "badge": "DISPONIBLE",
     },
     {
         "id": "guia_autotransporte",
@@ -143,7 +143,7 @@ EBOOKS = [
             "Verificacion de cumplimiento NOM-012",
         ],
         "paginas": 62, "nivel": "Basico", "color": "#EF553B",
-        "disponible": False, "badge": "PROXIMAMENTE",
+        "disponible": True, "badge": "DISPONIBLE",
     },
     {
         "id": "hombre_camion",
