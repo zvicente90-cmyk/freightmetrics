@@ -20,6 +20,10 @@ import pytz
 # ============================================================
 st.set_page_config(page_title="FreightMetrics Pro", layout="wide", page_icon="🚛")
 
+# Aplicar tema global
+from modules.estilos_globales import aplicar_estilos_globales
+aplicar_estilos_globales()
+
 # Importar páginas separadas del directorio pages/
 try:
     from page_modules._00_Inicio import page_dashboard
