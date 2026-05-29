@@ -15,7 +15,7 @@ st.set_page_config(
 
 pg = st.navigation([
     st.Page("pages/_00_Inicio.py",               title="Inicio",                icon="🏠", default=True),
-    st.Page("pages/01_Dashboard.py",              title="Monitoreo Aduanas",     icon="🛃"),
+    st.Page("pages/01_Dashboard.py",              title="Dashboard",             icon="📊"),
     st.Page("pages/02_Flujos_de_Carga.py",        title="Flujos de Carga",       icon="📦"),
     st.Page("pages/03_Fuerza_Laboral.py",         title="Fuerza Laboral",        icon="👥"),
     st.Page("pages/04_Corredores_Logisticos.py",  title="Corredores Logisticos", icon="🗺️"),
