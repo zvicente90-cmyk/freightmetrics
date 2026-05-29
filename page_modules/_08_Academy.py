@@ -355,13 +355,6 @@ def _render_notify_form():
 
 
 def page_academy():
-    # SEO: Meta tags
-    st.set_page_config(
-        page_title="FreightMetrics Academy - Ebooks Logística México-USA Gratis",
-        page_icon="🎓",
-        layout="wide"
-    )
-    
     # SEO: JSON-LD Schema
     schema = _generate_seo_schema()
     st.markdown(
