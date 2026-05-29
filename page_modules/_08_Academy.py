@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import base64
 import json
+from io import BytesIO
 
 
 def _generate_seo_schema():
@@ -256,17 +257,42 @@ def _render_ebook_card(book):
         if archivo_pdf:
             st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
             
-            # Botón de descarga
-            col_download = st.columns(1)[0]
+            # Dos columnas: Botón de descarga e información
+            col_download, col_info = st.columns([2, 1])
+            
             with col_download:
                 _descargar_ebook(archivo_pdf, book["titulo"].replace(" ", "_"))
             
-            # Información del archivo
-            try:
-                size_mb = archivo_pdf.stat().st_size / (1024 * 1024)
-                st.caption(f"📄 Archivo disponible ({size_mb:.1f} MB) - Descarga para leer")
-            except:
-                st.caption("📄 Descarga el PDF para leer el contenido completo")
+            with col_info:
+                try:
+                    size_mb = archivo_pdf.stat().st_size / (1024 * 1024)
+                    st.caption(f"📄 {size_mb:.1f} MB")
+                except:
+                    pass
+            
+            # Mostrar PDF en expander
+            with st.expander("👁️ Ver previa del PDF", expanded=False):
+                try:
+                    # Leer archivo PDF y convertir a base64
+                    with open(archivo_pdf, "rb") as f:
+                        pdf_bytes = f.read()
+                        pdf_base64 = base64.b64encode(pdf_bytes).decode()
+                    
+                    # Usar object embed tag para mostrar PDF
+                    pdf_html = f"""
+                    <object data="data:application/pdf;base64,{pdf_base64}" 
+                            type="application/pdf" 
+                            width="100%" 
+                            height="600px"
+                            style="border-radius: 8px;">
+                        <p>Tu navegador no soporta visualización de PDFs. 
+                        <a href="data:application/pdf;base64,{pdf_base64}" download>Descarga el archivo aquí</a></p>
+                    </object>
+                    """
+                    st.markdown(pdf_html, unsafe_allow_html=True)
+                    st.caption("💡 Usa los controles del visor para navegar, zoom y descargar")
+                except Exception as e:
+                    st.error(f"No se pudo cargar la previa: {str(e)}")
         else:
             st.info(f"ℹ️ PDF aún no disponible. Intenta más tarde.")
     
