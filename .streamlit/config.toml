@@ -14,12 +14,5 @@ backgroundColor = "#F4F7F6"
 secondaryBackgroundColor = "#E8F0F5"
 textColor = "#11101D"
 font = "sans serif"
-# Valores adicionales para evitar warnings en consola del cliente
-widgetBackgroundColor = "#FFFFFF"
-widgetBorderColor = "#E6EEF9"
-skeletonBackgroundColor = "#F4F7F6"
-
-[theme.sidebar]
-widgetBackgroundColor = "#11101D"
-widgetBorderColor = "#1f2937"
-skeletonBackgroundColor = "#0f1720"
+# Keep only supported theme keys here. Invalid theme keys were removed to avoid
+# Streamlit server warnings about unknown config options.
