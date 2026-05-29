@@ -98,6 +98,8 @@ def _obtener_ruta_ebook(id_ebook):
         "kpis_logistica": "FreightMetrics_Academy_KPIs_Logistica_ES_EN.pdf",
         "guia_autotransporte": "FreightMetrics_Academy_Guia_Autotransporte-Programas Gubernamentales_ES_EN.pdf",
         "nearshoring_101": "FreightMetrics_Academy_Nearshoring_ES_EN.pdf",
+        "compliance_cero_tolerancia": "FreightMetrics_Academy_Compliance_Cero_Tolerancia_ES_EN.pdf",
+        "problemas_logistica_mx": "FreightMetrics_Academy_Problemas_Logistica_MX_ES_EN.pdf",
     }
     
     nombre_archivo = archivos.get(id_ebook)
@@ -199,6 +201,42 @@ EBOOKS = [
             "Checklist de documentos para solicitar apoyos",
         ],
         "paginas": 38, "nivel": "Basico", "color": "#29B5E8",
+        "disponible": True, "badge": "DISPONIBLE",
+    },
+    {
+        "id": "compliance_cero_tolerancia",
+        "emoji": "🔒",
+        "titulo": "Compliance: Cero Tolerancia - Cumplimiento y Buenas Prácticas",
+        "subtitulo": "Políticas, controles y casos prácticos para transporte y aduanas",
+        "descripcion": (
+            "Guía práctica para implementar políticas de cumplimiento en operaciones de transporte, "
+            "incluye checklist, procesos de control interno y medidas frente a incumplimientos."
+        ),
+        "temas": [
+            "Políticas de Cero Tolerancia",
+            "Checklist de control interno",
+            "Acciones correctivas y prevención",
+            "Casos prácticos en aduanas y transporte"
+        ],
+        "paginas": 36, "nivel": "Basico", "color": "#00A388",
+        "disponible": True, "badge": "DISPONIBLE",
+    },
+    {
+        "id": "problemas_logistica_mx",
+        "emoji": "🛠️",
+        "titulo": "Problemas Comunes en Logística MX - Casos y Soluciones",
+        "subtitulo": "Diagnóstico y acciones prácticas para resolver cuellos de botella",
+        "descripcion": (
+            "Revisión de los problemas operativos más frecuentes en la logística mexicana y "
+            "soluciones aplicables para transportistas y gestores de cadena de suministro."
+        ),
+        "temas": [
+            "Cuellos de botella por corredor",
+            "Gestión de equipos y mantenimientos",
+            "Optimización de rutas y tiempos",
+            "Casos de mitigación de riesgo"
+        ],
+        "paginas": 30, "nivel": "Intermedio", "color": "#F59E0B",
         "disponible": True, "badge": "DISPONIBLE",
     },
     {
