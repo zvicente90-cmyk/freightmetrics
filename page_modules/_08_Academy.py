@@ -256,43 +256,17 @@ def _render_ebook_card(book):
         if archivo_pdf:
             st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
             
-            # Dos columnas: Leer y Descargar
-            col_read, col_download = st.columns(2)
-            
-            with col_read:
-                if st.button(
-                    "📖 Leer en línea",
-                    key=f"read_{book['id']}",
-                    use_container_width=True
-                ):
-                    st.session_state[f"expand_pdf_{book['id']}"] = True
-            
+            # Botón de descarga
+            col_download = st.columns(1)[0]
             with col_download:
                 _descargar_ebook(archivo_pdf, book["titulo"].replace(" ", "_"))
             
-            # Mostrar viewer si está expandido
-            if st.session_state.get(f"expand_pdf_{book['id']}", False):
-                st.markdown("---")
-                with st.expander("📖 Lector de PDF", expanded=True):
-                    try:
-                        # Convertir PDF a base64 para mostrar en iframe
-                        with open(archivo_pdf, "rb") as pdf_file:
-                            pdf_data = base64.b64encode(pdf_file.read()).decode()
-                        
-                        # Mostrar PDF usando iframe con data URI
-                        pdf_display = f"""
-                        <iframe 
-                            src="data:application/pdf;base64,{pdf_data}" 
-                            width="100%" 
-                            height="700" 
-                            style="border:none;border-radius:8px;">
-                        </iframe>
-                        """
-                        st.markdown(pdf_display, unsafe_allow_html=True)
-                        st.caption("💡 Puedes hacer zoom, navegar y descargar desde el lector")
-                    except Exception as e:
-                        st.error(f"Error al cargar el PDF: {str(e)}")
-                st.markdown("---")
+            # Información del archivo
+            try:
+                size_mb = archivo_pdf.stat().st_size / (1024 * 1024)
+                st.caption(f"📄 Archivo disponible ({size_mb:.1f} MB) - Descarga para leer")
+            except:
+                st.caption("📄 Descarga el PDF para leer el contenido completo")
         else:
             st.info(f"ℹ️ PDF aún no disponible. Intenta más tarde.")
     
