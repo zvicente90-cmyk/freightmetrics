@@ -18,3 +18,8 @@ font = "sans serif"
 widgetBackgroundColor = "#FFFFFF"
 widgetBorderColor = "#E6EEF9"
 skeletonBackgroundColor = "#F4F7F6"
+
+[theme.sidebar]
+widgetBackgroundColor = "#11101D"
+widgetBorderColor = "#1f2937"
+skeletonBackgroundColor = "#0f1720"
