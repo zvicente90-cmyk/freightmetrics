@@ -12,6 +12,13 @@ import base64
 import json
 from io import BytesIO
 import streamlit.components.v1 as components
+# Optional: prefer using streamlit-pdf-viewer when available for a native viewer
+try:
+    import streamlit_pdf_viewer as spv
+    _has_spv = True
+except Exception:
+    spv = None
+    _has_spv = False
 
 
 def _generate_seo_schema():
@@ -317,31 +324,48 @@ def _render_ebook_card(book):
                         pdf_bytes = f.read()
                         pdf_base64 = base64.b64encode(pdf_bytes).decode()
                     
-                    # Crear un viewer más robusto usando Blob en el navegador
-                    try:
-                        html_viewer = f"""
-                        <div id="pdf_{book['id']}_container"></div>
-                        <script>
-                        const b64 = "{pdf_base64}";
-                        const binary = atob(b64);
-                        const len = binary.length;
-                        const bytes = new Uint8Array(len);
-                        for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-                        const blob = new Blob([bytes], {{type: 'application/pdf'}});
-                        const url = URL.createObjectURL(blob);
-                        const iframe = document.createElement('iframe');
-                        iframe.src = url;
-                        iframe.width = '100%';
-                        iframe.height = '600';
-                        iframe.style.border = 'none';
-                        iframe.style.borderRadius = '8px';
-                        document.getElementById('pdf_{book['id']}_container').appendChild(iframe);
-                        </script>
-                        """
-                        components.html(html_viewer, height=620)
-                        st.caption("💡 Usa los controles del visor para navegar, zoom y descargar")
-                    except Exception as e:
-                        st.error(f"No se pudo cargar la previa (viewer Blob): {str(e)}")
+                    # Intentar usar `streamlit-pdf-viewer` si está instalado, con fallback al viewer Blob
+                    viewer_used = False
+                    if _has_spv and spv is not None:
+                        try:
+                            # probar nombres de función comunes en distintas versiones
+                            for fn in ("display_pdf", "show_pdf", "show", "st_display_pdf", "st_pdf"):
+                                if hasattr(spv, fn):
+                                    try:
+                                        getattr(spv, fn)(pdf_bytes)
+                                        viewer_used = True
+                                        break
+                                    except Exception:
+                                        continue
+                        except Exception:
+                            viewer_used = False
+
+                    if not viewer_used:
+                        try:
+                            # Crear un viewer más robusto usando Blob en el navegador
+                            html_viewer = f"""
+                            <div id="pdf_{book['id']}_container"></div>
+                            <script>
+                            const b64 = "{pdf_base64}";
+                            const binary = atob(b64);
+                            const len = binary.length;
+                            const bytes = new Uint8Array(len);
+                            for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+                            const blob = new Blob([bytes], {{type: 'application/pdf'}});
+                            const url = URL.createObjectURL(blob);
+                            const iframe = document.createElement('iframe');
+                            iframe.src = url;
+                            iframe.width = '100%';
+                            iframe.height = '600';
+                            iframe.style.border = 'none';
+                            iframe.style.borderRadius = '8px';
+                            document.getElementById('pdf_{book['id']}_container').appendChild(iframe);
+                            </script>
+                            """
+                            components.html(html_viewer, height=620)
+                            st.caption("💡 Usa los controles del visor para navegar, zoom y descargar")
+                        except Exception as e:
+                            st.error(f"No se pudo cargar la previa (viewer Blob): {str(e)}")
                 except Exception as e:
                     st.error(f"No se pudo cargar la previa: {str(e)}")
         else:
