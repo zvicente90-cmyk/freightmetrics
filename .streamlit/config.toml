@@ -14,3 +14,7 @@ backgroundColor = "#F4F7F6"
 secondaryBackgroundColor = "#E8F0F5"
 textColor = "#11101D"
 font = "sans serif"
+# Valores adicionales para evitar warnings en consola del cliente
+widgetBackgroundColor = "#FFFFFF"
+widgetBorderColor = "#E6EEF9"
+skeletonBackgroundColor = "#F4F7F6"

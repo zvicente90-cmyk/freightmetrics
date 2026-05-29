@@ -311,8 +311,13 @@ def _render_ebook_card(book):
             
             with col_info:
                 try:
-                    size_mb = archivo_pdf.stat().st_size / (1024 * 1024)
-                    st.caption(f"📄 {size_mb:.1f} MB")
+                    size_bytes = archivo_pdf.stat().st_size
+                    if size_bytes >= 1024 * 1024:
+                        size_mb = size_bytes / (1024 * 1024)
+                        st.caption(f"📄 {size_mb:.1f} MB")
+                    else:
+                        size_kb = size_bytes / 1024
+                        st.caption(f"📄 {size_kb:.0f} KB")
                 except:
                     pass
             
