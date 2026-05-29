@@ -497,8 +497,28 @@ def page_academy():
     if not libros:
         st.info(f"No hay ebooks de nivel '{nivel_filtro}' aun.")
     else:
-        for book in libros:
-            _render_ebook_card(book)
+        # Mostrar en 2 columnas: 3 ebooks por columna
+        max_per_col = 3
+        left_books = libros[:max_per_col]
+        right_books = libros[max_per_col:max_per_col * 2]
+
+        col_left, col_right = st.columns(2)
+
+        with col_left:
+            for book in left_books:
+                _render_ebook_card(book)
+
+        with col_right:
+            for book in right_books:
+                _render_ebook_card(book)
+
+        # Si hay más ebooks (más de 6), listarlos debajo en una sola columna
+        remaining = libros[max_per_col * 2:]
+        if remaining:
+            st.markdown("---")
+            st.subheader("Más recursos")
+            for book in remaining:
+                _render_ebook_card(book)
 
     _render_notify_form()
 
