@@ -11,6 +11,7 @@ from pathlib import Path
 import base64
 import json
 from io import BytesIO
+import streamlit.components.v1 as components
 
 
 def _generate_seo_schema():
@@ -278,19 +279,31 @@ def _render_ebook_card(book):
                         pdf_bytes = f.read()
                         pdf_base64 = base64.b64encode(pdf_bytes).decode()
                     
-                    # Usar object embed tag para mostrar PDF
-                    pdf_html = f"""
-                    <object data="data:application/pdf;base64,{pdf_base64}" 
-                            type="application/pdf" 
-                            width="100%" 
-                            height="600px"
-                            style="border-radius: 8px;">
-                        <p>Tu navegador no soporta visualización de PDFs. 
-                        <a href="data:application/pdf;base64,{pdf_base64}" download>Descarga el archivo aquí</a></p>
-                    </object>
-                    """
-                    st.markdown(pdf_html, unsafe_allow_html=True)
-                    st.caption("💡 Usa los controles del visor para navegar, zoom y descargar")
+                    # Crear un viewer más robusto usando Blob en el navegador
+                    try:
+                        html_viewer = f"""
+                        <div id="pdf_{book['id']}_container"></div>
+                        <script>
+                        const b64 = "{pdf_base64}";
+                        const binary = atob(b64);
+                        const len = binary.length;
+                        const bytes = new Uint8Array(len);
+                        for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+                        const blob = new Blob([bytes], {{type: 'application/pdf'}});
+                        const url = URL.createObjectURL(blob);
+                        const iframe = document.createElement('iframe');
+                        iframe.src = url;
+                        iframe.width = '100%';
+                        iframe.height = '600';
+                        iframe.style.border = 'none';
+                        iframe.style.borderRadius = '8px';
+                        document.getElementById('pdf_{book['id']}_container').appendChild(iframe);
+                        </script>
+                        """
+                        components.html(html_viewer, height=620)
+                        st.caption("💡 Usa los controles del visor para navegar, zoom y descargar")
+                    except Exception as e:
+                        st.error(f"No se pudo cargar la previa (viewer Blob): {str(e)}")
                 except Exception as e:
                     st.error(f"No se pudo cargar la previa: {str(e)}")
         else:
