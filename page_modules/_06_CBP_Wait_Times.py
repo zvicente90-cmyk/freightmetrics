@@ -31,12 +31,6 @@ def page_cbp_wait_times():
     Página principal de tiempos de espera CBP
     """
     
-    st.set_page_config(
-        page_title="Tiempos de Espera CBP",
-        page_icon="🚚",
-        layout="wide"
-    )
-    
     # ========================================================================
     # HEADER
     # ========================================================================
