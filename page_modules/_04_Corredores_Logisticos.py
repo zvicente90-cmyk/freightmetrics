@@ -19,17 +19,7 @@ def page_corredores_logisticos():
     chart_id = st.session_state.chart_counter_corredores
     
     # Título con diseño corporativo
-    st.markdown("""
-        <div style='background: linear-gradient(135deg, #003d7a 0%, #0052a3 100%); 
-                    color: white; 
-                    padding: 30px 40px; 
-                    border-radius: 15px; 
-                    margin-bottom: 30px;
-                    box-shadow: 0 8px 20px rgba(0, 61, 122, 0.3);'>
-            <h1 style='color: white; margin: 0; font-size: 2.5rem; font-weight: 700;'>🛣️ Corredores Logísticos Estratégicos</h1>
-            <p style='color: #0066cc; font-size: 1.2rem; font-weight: 500; margin-top: 10px; margin-bottom: 0;'>Análisis de rutas críticas, riesgo operativo y rentabilidad</p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div style='background: linear-gradient(135deg, #0b1326 0%, #1a2d4a 100%); color: white; padding: 30px 40px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 8px 20px rgba(41, 181, 232, 0.2);'><h1 style='color: white; margin: 0; font-size: 2.5rem; font-weight: 700;'>🛣️ Corredores Logísticos Estratégicos</h1><p style='color: #F4F7F6; font-size: 1.2rem; font-weight: 500; margin-top: 10px; margin-bottom: 0;'>Análisis de rutas críticas, riesgo operativo y rentabilidad</p></div>""", unsafe_allow_html=True)
     
     # --- CONFIGURACIÓN DE PUNTOS CLAVE (Coordenadas aproximadas) ---
     puntos = {
@@ -83,71 +73,17 @@ def page_corredores_logisticos():
     distancia_promedio = df_corr['distancia_km'].mean()
     
     # ============ MÉTRICAS PRINCIPALES ============
-    st.markdown("""
-        <div style='background: linear-gradient(135deg, #003d7a 0%, #0052a3 100%); 
-                    color: white; 
-                    padding: 15px 20px; 
-                    border-radius: 10px; 
-                    margin: 20px 0;
-                    box-shadow: 0 4px 12px rgba(0, 61, 122, 0.2);
-                    border: 1px solid #0066cc;'>
-            <h3 style='color: #0066cc; margin: 0; font-size: 1.3rem; font-weight: 600;'>📊 Resumen Ejecutivo de Corredores</h3>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div style='background: linear-gradient(135deg, #0b1326 0%, #1a2d4a 100%); color: white; padding: 15px 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0, 61, 122, 0.2); border: 1px solid #1a2d4a;'><h3 style='color: #F4F7F6; margin: 0; font-size: 1.3rem; font-weight: 600;'>📊 Resumen Ejecutivo de Corredores</h3></div>""", unsafe_allow_html=True)
     
     col_m1, col_m2, col_m3, col_m4 = st.columns(4)
     with col_m1:
-        st.markdown(f"""
-            <div style='background-color: rgba(0, 102, 204, 0.15); 
-                        border-left: 5px solid #0066cc;
-                        padding: 20px; 
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(0, 102, 204, 0.1);
-                        margin: 10px 0;'>
-                <p style='color: #0066cc; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Total Corredores</p>
-                <h2 style='color: #FFFFFF; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{total_corredores}</h2>
-                <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>🛣️ Rutas estratégicas</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div style='background-color: rgba(41, 181, 232, 0.15); border-left: 5px solid #1a2d4a; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 102, 204, 0.1); margin: 10px 0;'> <p style='color: #F4F7F6; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Total Corredores</p> <h2 style='color: #FFFFFF; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{total_corredores}</h2> <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>🛣️ Rutas estratégicas</p> </div>""", unsafe_allow_html=True)
     with col_m2:
-        st.markdown(f"""
-            <div style='background-color: rgba(79, 211, 143, 0.15); 
-                        border-left: 5px solid #4FD38F;
-                        padding: 20px; 
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(79, 211, 143, 0.1);
-                        margin: 10px 0;'>
-                <p style='color: #4FD38F; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Bajo Riesgo</p>
-                <h2 style='color: #FFFFFF; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{corredores_bajo_riesgo}</h2>
-                <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>✅ Rutas seguras</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div style='background-color: rgba(79, 211, 143, 0.15); border-left: 5px solid #4FD38F; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(79, 211, 143, 0.1); margin: 10px 0;'> <p style='color: #4FD38F; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Bajo Riesgo</p> <h2 style='color: #FFFFFF; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{corredores_bajo_riesgo}</h2> <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>✅ Rutas seguras</p> </div>""", unsafe_allow_html=True)
     with col_m3:
-        st.markdown(f"""
-            <div style='background-color: rgba(25, 118, 210, 0.15); 
-                        border-left: 5px solid #1976d2;
-                        padding: 20px; 
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(25, 118, 210, 0.1);
-                        margin: 10px 0;'>
-                <p style='color: #1976d2; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Alta Rentabilidad</p>
-                <h2 style='color: #1976d2; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{corredores_alta_rentabilidad}</h2>
-                <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>💰 Rutas premium</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div style='background-color: rgba(41, 181, 232, 0.15); border-left: 5px solid #131b2e; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(25, 118, 210, 0.1); margin: 10px 0;'> <p style='color: #29B5E8; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Alta Rentabilidad</p> <h2 style='color: #29B5E8; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{corredores_alta_rentabilidad}</h2> <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>💰 Rutas premium</p> </div>""", unsafe_allow_html=True)
     with col_m4:
-        st.markdown(f"""
-            <div style='background-color: rgba(0, 82, 163, 0.15); 
-                        border-left: 5px solid #0052a3;
-                        padding: 20px; 
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(0, 82, 163, 0.1);
-                        margin: 10px 0;'>
-                <p style='color: #0052a3; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Distancia Promedio</p>
-                <h2 style='color: #FFFFFF; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{distancia_promedio:,.0f}</h2>
-                <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>📏 Kilómetros</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div style='background-color: rgba(41, 181, 232, 0.15); border-left: 5px solid #1a2d4a; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 82, 163, 0.1); margin: 10px 0;'> <p style='color: #29B5E8; font-size: 0.85rem; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;'>Distancia Promedio</p> <h2 style='color: #FFFFFF; font-size: 2.5rem; font-weight: 700; margin: 10px 0 5px 0;'>{distancia_promedio:,.0f}</h2> <p style='color: #AAA; font-size: 0.85rem; margin: 0;'>📏 Kilómetros</p> </div>""", unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -176,22 +112,10 @@ def page_corredores_logisticos():
                 st.caption(f"🔷 {hub}")
     
     # ============ MAPA DE RUTAS ============
-    st.markdown("""
-        <div style='background: linear-gradient(135deg, #003d7a 0%, #0052a3 100%); 
-                    color: white; 
-                    padding: 15px 20px; 
-                    border-radius: 10px; 
-                    margin: 20px 0;
-                    box-shadow: 0 4px 12px rgba(0, 61, 122, 0.2);
-                    border: 1px solid #0066cc;'>
-            <h3 style='color: #0066cc; margin: 0; font-size: 1.3rem; font-weight: 600;'>🗺️ Mapa Interactivo de Corredores</h3>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div style='background: linear-gradient(135deg, #0b1326 0%, #1a2d4a 100%); color: white; padding: 15px 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0, 61, 122, 0.2); border: 1px solid #1a2d4a;'><h3 style='color: #F4F7F6; margin: 0; font-size: 1.3rem; font-weight: 600;'>🗺️ Mapa Interactivo de Corredores</h3></div>""", unsafe_allow_html=True)
     
     # ============ CONTROLES DEL MAPA (CREADOS ANTES DE DIBUJAR) ============
-    st.markdown("""
-        <p style='color: #AAA; font-size: 0.9rem; margin: 15px 0 10px 0;'><b>📍 Filtros de Visualización:</b></p>
-    """, unsafe_allow_html=True)
+    st.markdown("""<p style='color: #AAA; font-size: 0.9rem; margin: 15px 0 10px 0;'><b>📍 Filtros de Visualización:</b></p>""", unsafe_allow_html=True)
     
     col_filter1, col_filter2, col_filter3, col_filter4 = st.columns(4)
     
@@ -542,16 +466,7 @@ def page_corredores_logisticos():
     st.markdown("<br>", unsafe_allow_html=True)
     
     # ============ MATRIZ DE DECISIÓN ============
-    st.markdown("""
-        <div style='background: linear-gradient(135deg, #4070F4 0%, #29B5E8 100%); 
-                    color: white; 
-                    padding: 15px 20px; 
-                    border-radius: 10px; 
-                    margin: 20px 0;
-                    box-shadow: 0 4px 12px rgba(64, 112, 244, 0.2);'>
-            <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>📊 Matriz de Decisión de Corredores</h3>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div style='background: linear-gradient(135deg, #4070F4 0%, #29B5E8 100%); color: white; padding: 15px 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 12px rgba(64, 112, 244, 0.2);'> <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>📊 Matriz de Decisión de Corredores</h3> </div>""", unsafe_allow_html=True)
     
     st.markdown("<h4 style='color: #11101D; font-weight: 600;'>Análisis Comparativo</h4>", unsafe_allow_html=True)
     
@@ -591,16 +506,7 @@ def page_corredores_logisticos():
     st.markdown("<br>", unsafe_allow_html=True)
     
     # ============ ANÁLISIS DE RENTABILIDAD VS RIESGO ============
-    st.markdown("""
-        <div style='background: linear-gradient(135deg, #4070F4 0%, #29B5E8 100%); 
-                    color: white; 
-                    padding: 15px 20px; 
-                    border-radius: 10px; 
-                    margin: 20px 0;
-                    box-shadow: 0 4px 12px rgba(64, 112, 244, 0.2);'>
-            <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>📈 Análisis de Eficiencia</h3>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div style='background: linear-gradient(135deg, #4070F4 0%, #29B5E8 100%); color: white; padding: 15px 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 12px rgba(64, 112, 244, 0.2);'> <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>📈 Análisis de Eficiencia</h3> </div>""", unsafe_allow_html=True)
     
     col_an1, col_an2 = st.columns(2)
     
@@ -655,16 +561,7 @@ def page_corredores_logisticos():
     st.markdown("<br>", unsafe_allow_html=True)
     
     # ============ RECOMENDACIONES ============
-    st.markdown("""
-        <div style='background: linear-gradient(135deg, #FFA726 0%, #EF553B 100%); 
-                    color: white; 
-                    padding: 15px 20px; 
-                    border-radius: 10px; 
-                    margin: 20px 0;
-                    box-shadow: 0 4px 12px rgba(239, 85, 59, 0.2);'>
-            <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>💡 Recomendaciones Estratégicas</h3>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div style='background: linear-gradient(135deg, #FFA726 0%, #EF553B 100%); color: white; padding: 15px 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 12px rgba(239, 85, 59, 0.2);'> <h3 style='color: white; margin: 0; font-size: 1.3rem; font-weight: 600;'>💡 Recomendaciones Estratégicas</h3> </div>""", unsafe_allow_html=True)
     
     col_rec1, col_rec2 = st.columns(2)
     
@@ -675,40 +572,8 @@ def page_corredores_logisticos():
     with col_rec1:
         if not mejor_bajo_riesgo.empty:
             corredor = mejor_bajo_riesgo.iloc[0]
-            st.markdown(f"""
-                <div style='background-color: #E8F5E9; 
-                            border-left: 4px solid #4CAF50;
-                            padding: 20px; 
-                            border-radius: 10px;
-                            margin: 10px 0;'>
-                    <h4 style='color: #11101D; margin-top: 0; font-weight: 600;'>✅ Corredor Óptimo</h4>
-                    <p style='color: #333; line-height: 1.6; margin-bottom: 10px;'>
-                        <strong>{corredor['nombre']}</strong><br>
-                        Combina bajo riesgo con alta rentabilidad. Ideal para cargas de alto valor.
-                    </p>
-                    <p style='color: #666; font-size: 0.9rem; margin: 0;'>
-                        📍 {corredor['origen']} → {corredor['destino']}<br>
-                        🚛 {corredor['distancia_km']:,.0f} km | ⏱️ {corredor['tiempo_hrs']} hrs
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"""<div style='background-color: #E8F5E9; border-left: 4px solid #4CAF50; padding: 20px; border-radius: 10px; margin: 10px 0;'> <h4 style='color: #11101D; margin-top: 0; font-weight: 600;'>✅ Corredor Óptimo</h4> <p style='color: #333; line-height: 1.6; margin-bottom: 10px;'> <strong>{corredor['nombre']}</strong><br> Combina bajo riesgo con alta rentabilidad. Ideal para cargas de alto valor. </p> <p style='color: #666; font-size: 0.9rem; margin: 0;'> 📍 {corredor['origen']} → {corredor['destino']}<br> 🚛 {corredor['distancia_km']:,.0f} km | ⏱️ {corredor['tiempo_hrs']} hrs </p> </div>""", unsafe_allow_html=True)
     
     with col_rec2:
         if mejor_rentabilidad is not None:
-            st.markdown(f"""
-                <div style='background-color: #FFF8E1; 
-                            border-left: 4px solid #FFA726;
-                            padding: 20px; 
-                            border-radius: 10px;
-                            margin: 10px 0;'>
-                    <h4 style='color: #11101D; margin-top: 0; font-weight: 600;'>💰 Más Rentable</h4>
-                    <p style='color: #333; line-height: 1.6; margin-bottom: 10px;'>
-                        <strong>{mejor_rentabilidad['nombre']}</strong><br>
-                        Ruta de alta rentabilidad con la menor distancia. Optimiza costos operativos.
-                    </p>
-                    <p style='color: #666; font-size: 0.9rem; margin: 0;'>
-                        📍 {mejor_rentabilidad['origen']} → {mejor_rentabilidad['destino']}<br>
-                        🚛 {mejor_rentabilidad['distancia_km']:,.0f} km | ⏱️ {mejor_rentabilidad['tiempo_hrs']} hrs
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"""<div style='background-color: #FFF8E1; border-left: 4px solid #FFA726; padding: 20px; border-radius: 10px; margin: 10px 0;'> <h4 style='color: #11101D; margin-top: 0; font-weight: 600;'>💰 Más Rentable</h4> <p style='color: #333; line-height: 1.6; margin-bottom: 10px;'> <strong>{mejor_rentabilidad['nombre']}</strong><br> Ruta de alta rentabilidad con la menor distancia. Optimiza costos operativos. </p> <p style='color: #666; font-size: 0.9rem; margin: 0;'> 📍 {mejor_rentabilidad['origen']} → {mejor_rentabilidad['destino']}<br> 🚛 {mejor_rentabilidad['distancia_km']:,.0f} km | ⏱️ {mejor_rentabilidad['tiempo_hrs']} hrs </p> </div>""", unsafe_allow_html=True)

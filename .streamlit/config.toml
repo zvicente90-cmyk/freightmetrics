@@ -1,18 +1,16 @@
 [browser]
 gatherUsageStats = false
-
+ 
+[theme]
+primaryColor = "#29B5E8"
+backgroundColor = "#0b1326"
+secondaryBackgroundColor = "#131b2e"
+textColor = "#F4F7F6"
+ 
 [client]
 showErrorDetails = true
-toolbarMode = "minimal"
-
+toolbarMode = "auto"
+showSidebarNavigation = true
+ 
 [logger]
 level = "error"
-
-[theme]
-primaryColor = "#4070F4"
-backgroundColor = "#F4F7F6"
-secondaryBackgroundColor = "#E8F0F5"
-textColor = "#11101D"
-font = "sans serif"
-# Keep only supported theme keys here. Invalid theme keys were removed to avoid
-# Streamlit server warnings about unknown config options.

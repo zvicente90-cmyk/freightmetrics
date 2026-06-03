@@ -125,14 +125,77 @@ def _fetch_todos_los_puertos() -> dict:
         logger.error(f"CBP API error: {e}")
         return {}
 
+    puertos = {}
+    timestamp = datetime.now().strftime("%H:%M:%S")
+
+    # Intentar parsear JSON si la respuesta no es XML (nuevo comportamiento del API)
+    parsed_json = None
+    content_type = resp.headers.get("Content-Type", "").lower()
+    text_strip = resp.text.strip()
+    if "application/json" in content_type or text_strip.startswith("[") or text_strip.startswith("{"):
+        try:
+            parsed_json = resp.json()
+        except Exception as e:
+            logger.warning(f"JSON parse attempt failed: {e}")
+
+    if parsed_json is not None:
+        # La API puede devolver una lista de objetos JSON (bwtpublicmod)
+        for item in parsed_json:
+            nombre = (item.get("port_name") or "").strip()
+            crossing = (item.get("crossing_name") or "").strip()
+            port_status = (item.get("port_status") or "").strip()
+
+            espera_std = None
+            espera_fast = None
+            lanes_open = ""
+            update_time = ""
+            commercial_op_status = ""
+
+            commercial = item.get("commercial_vehicle_lanes") or {}
+            standard = commercial.get("standard_lanes") or {}
+            if standard:
+                delay_text = standard.get("delay_minutes", "")
+                try:
+                    espera_std = int(delay_text) if str(delay_text).strip().isdigit() else None
+                except Exception:
+                    espera_std = None
+                lanes_open = (standard.get("lanes_open") or "").strip()
+                update_time = (standard.get("update_time") or "").strip()
+                commercial_op_status = (standard.get("operational_status") or standard.get("operational_status", "") or "").strip()
+
+            fast = commercial.get("FAST_lanes") or commercial.get("fast_lanes") or {}
+            if fast:
+                delay_text = fast.get("delay_minutes", "")
+                try:
+                    espera_fast = int(delay_text) if str(delay_text).strip().isdigit() else None
+                except Exception:
+                    espera_fast = None
+
+            hours = (item.get("hours") or "").strip()
+            key = f"{nombre} / {crossing}" if crossing else nombre
+            puertos[key] = {
+                "port_name": nombre,
+                "crossing_name": crossing,
+                "espera_minutos": espera_std,
+                "espera_fast_minutos": espera_fast,
+                "lanes_open": lanes_open,
+                "port_status": port_status,
+                "commercial_op_status": commercial_op_status,
+                "hours": hours,
+                "update_time": update_time,
+                "actualizado": timestamp,
+                "fuente": "CBP API (Tiempo Real)",
+                "metodo": "json_bwtpublicmod",
+            }
+
+        return puertos
+
+    # Intentar parsear XML (comportamiento histórico)
     try:
         root = ET.fromstring(resp.content)
     except ET.ParseError as e:
         logger.error(f"XML parse error: {e}")
         return {}
-
-    puertos = {}
-    timestamp = datetime.now().strftime("%H:%M:%S")
 
     for port in root.iter("port"):
         nombre = port.findtext("port_name", "").strip()
